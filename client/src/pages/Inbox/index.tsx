@@ -183,8 +183,14 @@ const Inbox: React.FC = () => {
                             <IonImg src={chat.avatar} />
                           )}
                         </IonAvatar>
-                        <IonLabel>{chat.name}</IonLabel>
-                        <IonIcon icon={arrowForward}></IonIcon>
+                        <div className="ion-margin">
+                          <IonLabel>{chat.name}</IonLabel>
+                          <LastMessage
+                            messages={chat.messages}
+                            length={chat.messages.length}
+                          />
+                        </div>
+                        <IonIcon icon={arrowForward} slot="end"></IonIcon>
                       </IonItem>
                     </IonCard>
                   )}
