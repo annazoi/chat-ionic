@@ -28,6 +28,7 @@ import Modal from "./Modal";
 import Settings from "./Settings";
 import { arrowForward } from "ionicons/icons";
 import { useSocket } from "../../hooks/sockets";
+import { set } from "react-hook-form";
 
 const Inbox: React.FC = () => {
   const { logOutUser, avatar, userId, username } = authStore(
@@ -62,6 +63,17 @@ const Inbox: React.FC = () => {
       console.log("new message", data);
     });
   }, [socket]);
+
+  const LastMessage = ({ messages, length }: any) => {
+    const lastMessage = messages[length - 1];
+    return (
+      <IonLabel>
+        {lastMessage.senderId._id === userId
+          ? "You: " + lastMessage.message
+          : lastMessage.message}
+      </IonLabel>
+    );
+  };
 
   return (
     <IonPage>
@@ -138,8 +150,17 @@ const Inbox: React.FC = () => {
                                 <IonAvatar slot="start">
                                   <IonImg src={member.avatar} />
                                 </IonAvatar>
-                                <IonLabel>{member.username}</IonLabel>
-                                <IonIcon icon={arrowForward}></IonIcon>
+                                <div className="ion-margin">
+                                  <IonLabel>{member.username}</IonLabel>
+                                  <LastMessage
+                                    messages={chat.messages}
+                                    length={chat.messages.length}
+                                  />
+                                </div>
+                                <IonIcon
+                                  icon={arrowForward}
+                                  slot="end"
+                                ></IonIcon>
                               </IonItem>
                             )}
                           </div>
