@@ -28,7 +28,6 @@ import Modal from "./Modal";
 import Settings from "./Settings";
 import { arrowForward } from "ionicons/icons";
 import { useSocket } from "../../hooks/sockets";
-import { set } from "react-hook-form";
 
 const Inbox: React.FC = () => {
   const { logOutUser, avatar, userId, username } = authStore(
@@ -74,6 +73,8 @@ const Inbox: React.FC = () => {
       </IonLabel>
     );
   };
+
+  console.log("data", data);
 
   return (
     <IonPage>
