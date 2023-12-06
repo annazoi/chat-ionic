@@ -12,12 +12,13 @@ import {
   useIonRouter,
 } from "@ionic/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 import { getUsers } from "../../../../services/users";
 import { createChat } from "../../../../services/chat";
 import { authStore } from "../../../../store/auth";
 import ConfirmModal from "../../../../components/ConfirmModal";
 import ImagePicker from "../../../../components/ImagePicker";
+import SearchUsers from "../../../../components/SearchUsers";
 interface GroupProps {
   closeModal: any;
   setOpenGroupModal: any;
@@ -32,8 +33,9 @@ const Group: React.FC<GroupProps> = ({
   const { userId } = authStore((store: any) => store);
   const router = useIonRouter();
   const [selectedUsers, setSelectedUser] = React.useState<any[]>([]);
-  const [name, setName] = React.useState<string>("");
-  const [avatar, setAvatar] = React.useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("");
+  const [filteredUser, setFilteredUser] = useState([]);
 
   const { data } = useQuery({
     queryKey: ["users"],
@@ -98,9 +100,12 @@ const Group: React.FC<GroupProps> = ({
             }}
           ></IonInput>
         </div>
-        <IonSearchbar></IonSearchbar>
+        <SearchUsers
+          setFilteredUser={setFilteredUser}
+          placeholder="Search for users"
+        />
 
-        {data?.users.map((user: any, index: any) => (
+        {filteredUser.map((user: any, index: any) => (
           <div key={index}>
             {user._id !== userId && (
               <IonCard>

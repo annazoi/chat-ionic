@@ -66,15 +66,34 @@ const Inbox: React.FC = () => {
   const LastMessage = ({ messages, length }: any) => {
     const lastMessage = messages[length - 1];
     return (
-      <IonLabel>
-        {lastMessage.senderId._id === userId
-          ? "You: " + lastMessage.message
-          : lastMessage.message}
-      </IonLabel>
+      <>
+        {lastMessage === undefined ? (
+          <IonLabel>You have no messages yet.</IonLabel>
+        ) : (
+          <IonLabel>
+            {lastMessage.senderId._id === userId
+              ? "You: " + lastMessage.message
+              : lastMessage.message}
+          </IonLabel>
+        )}
+      </>
     );
   };
 
-  console.log("data", data);
+  const sortChats = (chats: any) => {
+    const sortedChats = chats.sort((a: any, b: any) => {
+      if (a.messages.length === 0) {
+        return 1;
+      }
+      if (b.messages.length === 0) {
+        return -1;
+      }
+      const aDate = new Date(a.messages[a.messages.length - 1]?.createdAt);
+      const bDate = new Date(b.messages[b.messages.length - 1]?.createdAt);
+      return bDate.getTime() - aDate.getTime();
+    });
+    return sortedChats;
+  };
 
   return (
     <IonPage>
@@ -129,6 +148,7 @@ const Inbox: React.FC = () => {
         ) : (
           <>
             {data?.chats?.map((chat: any, index: any) => {
+              sortChats(data.chats);
               return (
                 <div key={index}>
                   {isLoading && (
