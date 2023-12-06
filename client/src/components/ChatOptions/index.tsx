@@ -19,9 +19,8 @@ import { useParams } from "react-router";
 import { updatedChat, getChat } from "../../services/chat";
 import { chatSchema } from "../../validations-schemas/chat";
 import { ChatConfig } from "../../validations-schemas/interfaces/chat";
-import Loading from "../Loading";
 import SearchUsers from "../SearchUsers";
-import { addCircle, people } from "ionicons/icons";
+import { addCircle } from "ionicons/icons";
 
 interface ChatOptionsProps {
   closeModal: () => void;
@@ -87,6 +86,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
     try {
       updatedMutate(data, {
         onSuccess: (res: any) => {
+          res.chat.members.push(member);
           console.log("success mutate", res);
           window.location.reload();
           closeModal();
@@ -100,6 +100,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
       console.log("error", error);
     }
   };
+
   return (
     <div
       style={{
@@ -108,7 +109,6 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
         padding: "20px",
       }}
     >
-      {/* <Loading showLoading={updatedIsLoading} /> */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <ImagePicker
           onChange={handleImage}
@@ -147,14 +147,18 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
         />
         {filteredUser.map((user: any, index: number) => (
           <IonCard
-            key={user._id}
+            key={index}
             className="ion-no-margin ion-margin-top"
             onClick={() => {
-              register("members", { required: true });
               setMember([...member, user]);
-
-              console.log("new member", member);
+              console.log("member", member);
             }}
+
+            // remove member from chat
+            // onClick={() => {
+            //   setMember(member.filter((m) => m._id !== user._id));
+            //   console.log("member", member);
+            // }}
           >
             <IonCardContent className="ion-no-padding">
               <IonItem lines="none">

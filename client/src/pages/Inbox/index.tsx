@@ -74,6 +74,7 @@ const Inbox: React.FC = () => {
             {lastMessage.senderId._id === userId
               ? "You: " + lastMessage.message
               : lastMessage.message}
+            s
           </IonLabel>
         )}
       </>

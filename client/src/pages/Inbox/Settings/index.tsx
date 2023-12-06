@@ -1,15 +1,24 @@
-import { IonCard, IonContent, IonIcon, IonItem } from "@ionic/react";
+import {
+  IonCard,
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonToggle,
+} from "@ionic/react";
 import React, { useState } from "react";
 import { authStore } from "../../../store/auth";
-import { arrowForward, eye, logIn, settings } from "ionicons/icons";
+import { arrowForward, eye, logIn, moon, settings } from "ionicons/icons";
 
 import Modal from "../Modal";
 import Account from "./Account";
 
 const Settings: React.FC = () => {
-  const { avatar } = authStore((store: any) => store);
+  const { avatar, username } = authStore((store: any) => store);
 
   const [openAccount, setOpenAccount] = useState<boolean>(false);
+  const toggleDarkModeHandler = () => document.body.classList.toggle("dark");
 
   return (
     <IonContent>
@@ -23,8 +32,24 @@ const Settings: React.FC = () => {
             border: "black 2px solid",
           }}
         ></img>
+        <h1>{username}</h1>
       </div>
       <IonCard>
+        <IonItem>
+          <IonIcon
+            slot="start"
+            icon={moon}
+            className="ion-no-margin"
+            style={{ paddingRight: "15px" }}
+          />
+          Dark Mode
+          <IonToggle
+            slot="end"
+            name="darkMode"
+            onIonChange={toggleDarkModeHandler}
+          />
+        </IonItem>
+
         <IonItem
           onClick={() => {
             setOpenAccount(true);

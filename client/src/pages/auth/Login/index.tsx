@@ -95,6 +95,13 @@ const Login: React.FC = () => {
                 {isLoading && (
                   <IonProgressBar type="indeterminate"></IonProgressBar>
                 )}
+
+                {isError && (
+                  <p style={{ color: "red" }}>
+                    Invalid username or password. Please try again.
+                  </p>
+                )}
+
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <IonInput
                     fill="outline"
