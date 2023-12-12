@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 import ImagePicker from "../ImagePicker";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import { updatedChat, getChat } from "../../services/chat";
 import { chatSchema } from "../../validations-schemas/chat";
@@ -30,7 +30,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
   const { chatId } = useParams<{ chatId: string }>();
 
   const [filteredUser, setFilteredUser] = useState([]);
-  const [member, setMember] = useState<any[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
 
   const { register, handleSubmit, setValue, getValues, reset } =
     useForm<ChatConfig>({
@@ -45,17 +45,21 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
   const { mutate: updatedMutate, isLoading: updatedIsLoading } = useMutation({
     mutationKey: ["chatInfo"],
     mutationFn: (newData: any) => updatedChat(chatId, newData),
+    // onMutate: (newData: any) => {
+    //   setMembers([...members, newData]);
+    //   console.log("newData", newData);
+    // },
   });
 
-  const { data, isLoading } = useQuery<any>({
-    queryKey: ["chat"],
-    refetchOnMount: "always",
-    refetchIntervalInBackground: true,
-    queryFn: () => getChat(chatId),
-    onSuccess: (res: any) => {
-      console.log("chat query", res.chat.messages);
-    },
-  });
+  // const { data, isLoading } = useQuery<any>({
+  //   queryKey: ["chat"],
+  //   refetchOnMount: "always",
+  //   refetchIntervalInBackground: true,
+  //   queryFn: () => getChat(chatId),
+  //   onSuccess: (res: any) => {
+  //     console.log("chat query", res.chat.messages);
+  //   },
+  // });
 
   const handleImage = (avatar: string) => {
     setValue("avatar", avatar);
@@ -68,6 +72,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
       mutateChat(chatId, {
         onSuccess: (data: any) => {
           console.log("chat", data.chat);
+          setMembers(data?.chat.members);
           setAvatar(data?.chat.avatar);
           reset({
             avatar: avatar
@@ -84,9 +89,13 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
 
   const onSubmit = (data: any) => {
     try {
-      updatedMutate(data, {
+      const payload = {
+        avatar: data.avatar,
+        name: data.name,
+        members: members,
+      };
+      updatedMutate(payload, {
         onSuccess: (res: any) => {
-          res.chat.members.push(member);
           console.log("success mutate", res);
           window.location.reload();
           closeModal();
@@ -125,7 +134,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
         <IonButton type="submit" expand="block" className="ion-margin-top">
           {updatedIsLoading ? "Updating..." : "Update"}
         </IonButton>
-        {data?.chat.members.map((member: any, index: any) => {
+        {members.map((member: any, index: any) => {
           return (
             <div key={index} id={index}>
               <IonItem
@@ -150,8 +159,8 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
             key={index}
             className="ion-no-margin ion-margin-top"
             onClick={() => {
-              setMember([...member, user]);
-              console.log("member", member);
+              setMembers([...members, user]);
+              console.log("member", members);
             }}
 
             // remove member from chat

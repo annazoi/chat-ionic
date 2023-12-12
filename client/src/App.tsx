@@ -39,10 +39,13 @@ import Chat from "./pages/Inbox/Chat";
 import { authStore } from "./store/auth";
 import Settings from "./pages/Inbox/Settings";
 import Account from "./pages/Inbox/Settings/Account";
+import { useNotifications } from "./hooks/notifications";
 setupIonicReact();
 
 const App: React.FC = () => {
   const { isLoggedIn } = authStore((store): any => store);
+  useNotifications();
+
   return (
     <IonApp>
       <IonReactRouter>

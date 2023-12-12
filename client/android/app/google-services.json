@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "849359660905",
+    "project_id": "ionic-chat-f7e1b",
+    "storage_bucket": "ionic-chat-f7e1b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849359660905:android:2ee0fcceccb966a3ea3ff8",
+        "android_client_info": {
+          "package_name": "com.devdactic.devpush"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBzXLZwEUEkj3rZtRtmk3aeMNISiAck1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
