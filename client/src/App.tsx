@@ -28,17 +28,17 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
+import Login from "./pages/auth/login";
+import Register from "./pages/auth/register";
 import { homeOutline, chatbubblesOutline, cameraOutline } from "ionicons/icons";
-import Inbox from "./pages/Inbox/index";
+import Inbox from "./pages/inbox/index";
 import Menu from "./pages/menu/Menu";
-import Users from "./pages/Inbox/CreateChat";
-import Group from "./pages/Inbox/CreateChat/Group";
-import Chat from "./pages/Inbox/Chat";
+import Users from "./pages/inbox/CreateChat";
+import Group from "./pages/inbox/CreateChat/Group";
+import Chat from "./pages/inbox/chat";
 import { authStore } from "./store/auth";
-import Settings from "./pages/Inbox/Settings";
-import Account from "./pages/Inbox/Settings/Account";
+import Settings from "./pages/inbox/Settings";
+import Account from "./pages/inbox/Settings/Account";
 setupIonicReact();
 
 const App: React.FC = () => {

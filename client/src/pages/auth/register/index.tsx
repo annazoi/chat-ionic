@@ -98,7 +98,7 @@ const Register: React.FC = () => {
         <IonToolbar>
           <IonButtons slot="start">
             <IonButton routerLink="/login">
-              <IonIcon icon={arrowBack} size="large"></IonIcon>
+              <IonIcon icon={arrowBack} size="medium"></IonIcon>
             </IonButton>
           </IonButtons>
           <IonTitle class="ion-no-padding">Register</IonTitle>
@@ -107,8 +107,9 @@ const Register: React.FC = () => {
       <IonContent>
         <IonRow class="ion-justify-content-center">
           <IonCol size="12" sizeMd="8" sizeLg="6" sizeXl="4">
-            <IonImg src={Logo} alt="logo" class="ion-padding"></IonImg>
             <IonCard>
+              <IonImg src={Logo} alt="logo" class="ion-padding"></IonImg>
+
               <IonCardContent>
                 {isLoading && (
                   <IonProgressBar type="indeterminate"></IonProgressBar>

@@ -139,7 +139,7 @@ const Chat: React.FC = () => {
         <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref="/inbox">
-              <IonIcon icon={arrowBack} size="large"></IonIcon>
+              <IonIcon icon={arrowBack} size="medium"></IonIcon>
             </IonBackButton>
 
             {data?.chat.type === "private" ? (
@@ -204,20 +204,34 @@ const Chat: React.FC = () => {
         </IonFabList>
       </IonFab>
       <IonContent>
-        {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
-        {messages.map((message: any, index: any) => {
-          return (
-            <div key={index} id={index}>
-              <MessageBox message={message}></MessageBox>
-            </div>
-          );
-        })}
+        <>
+          {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
+          {messages.map((message: any, index: any) => {
+            return (
+              <div key={index} id={index} style={{ display: "flex" }}>
+                <IonAvatar style={{ border: "1px solid" }}>
+                  <img
+                    src={message.senderId.avatar}
+                    style={{ width: "100%" }}
+                  />
+                </IonAvatar>
+                <MessageBox message={message}></MessageBox>
+              </div>
+            );
+          })}
+        </>
 
-        <IonItem>
+        <IonItem
+          style={{
+            border: "1px solid #e6e6e8",
+            borderRadius: "10px",
+            margin: "5px",
+          }}
+        >
           <IonInput
             type="text"
             value={newMessage}
-            placeholder="Aa"
+            placeholder="Aa..."
             onKeyPress={handleEnterPress}
             onIonChange={(event: any) => {
               setNewMessage(event.target.value);

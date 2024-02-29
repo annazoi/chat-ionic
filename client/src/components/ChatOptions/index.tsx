@@ -19,9 +19,8 @@ import { useParams } from "react-router";
 import { updatedChat, getChat } from "../../services/chat";
 import { chatSchema } from "../../validations-schemas/chat";
 import { ChatConfig } from "../../validations-schemas/interfaces/chat";
-import Loading from "../Loading";
 import SearchUsers from "../SearchUsers";
-import { addCircle, people } from "ionicons/icons";
+import { addCircle } from "ionicons/icons";
 
 interface ChatOptionsProps {
   closeModal: () => void;

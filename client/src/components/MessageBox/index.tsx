@@ -41,27 +41,42 @@ const MessageBox: React.FC<MessageConfig> = ({ message }) => {
       <IonCard
         onClick={toggleTime}
         // onClick={messageChoise}
-        className={
-          userId === message.senderId._id ? "sender-message" : "other-message"
+        // className={
+        //   userId === message.senderId._id ? "sender-message" : "other-message"
+        // }
+
+        style={
+          userId === message.senderId._id
+            ? {
+                display: "flex",
+                borderRadius: "25px",
+                backgroundColor: "#f4f4f4",
+              }
+            : {
+                display: "flex",
+                borderRadius: "25px",
+                backgroundColor: "#3880ff",
+              }
         }
-        style={{
-          display: "flex",
-          borderRadius: "25px",
-        }}
       >
-        <IonAvatar className="ion-avatar">
+        {/* <IonAvatar className="ion-avatar">
           <img src={message.senderId.avatar} alt="" />
-        </IonAvatar>
+        </IonAvatar> */}
         <IonCardHeader style={{ display: "grid" }}>
-          <IonCardSubtitle color="dark">
+          {/* <IonCardSubtitle color="dark">
             {message.senderId.username}
-          </IonCardSubtitle>
+          </IonCardSubtitle> */}
           <IonCardTitle>
             <p
               onClick={(event: React.MouseEvent<HTMLParagraphElement>) => {
-                event.stopPropagation(); // Stop event propagation
+                event.stopPropagation();
                 alert(message.message);
               }}
+              style={
+                userId === message.senderId._id
+                  ? { color: "black" }
+                  : { color: "white" }
+              }
             >
               {message.message}
             </p>

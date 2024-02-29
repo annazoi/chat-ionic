@@ -3,6 +3,7 @@ import {
   IonButton,
   IonButtons,
   IonCard,
+  IonCardHeader,
   IonContent,
   IonFab,
   IonFabButton,
@@ -14,6 +15,7 @@ import {
   IonLabel,
   IonPage,
   IonProgressBar,
+  IonText,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
@@ -49,29 +51,64 @@ const Inbox: React.FC = () => {
     socket.emit("join_room", chatId);
   };
 
-  const handleLogout = () => {
-    logOutUser();
-  };
-
-  const refresh = () => {
-    window.location.reload();
-  };
-
   useEffect(() => {
     socket?.on("new_message", (data: any) => {
       console.log("new message", data);
     });
   }, [socket]);
 
+  const handleLogout = () => {
+    logOutUser();
+  };
+
+  const handleLastMessage = (chat: any) => {
+    const lastMessage = chat?.messages[chat.messages.length - 1];
+
+    if (!lastMessage) {
+      return "No messages yet";
+    }
+    if (lastMessage.senderId._id === userId) {
+      return "You: " + lastMessage.message;
+    } else {
+      if (chat.type === "private") {
+        return lastMessage.message;
+      } else {
+        return lastMessage.senderId.username + ": " + lastMessage.message;
+      }
+    }
+  };
+
+  const getRefresh = () => {
+    window.location.reload();
+  };
+
+  const getName = (chat: any) => {
+    const member = chat.members.find((member: any) => member._id !== userId);
+    return member.username;
+  };
+
+  const getAvatar = (chat: any) => {
+    const member = chat.members.find((member: any) => member._id !== userId);
+    return member.avatar;
+  };
+
+  console.log("data", data);
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>{username}'s inbox</IonTitle>
+          <IonTitle
+            className="ion-no-padding"
+            style={{ fontWeight: "bold", letterSpacing: "2px" }}
+            color="primary"
+          >
+            {username}'s inbox
+          </IonTitle>
           <IonButtons slot="start">
             <IonButton
+              // color="primary"
               onClick={() => {
-                refresh();
+                getRefresh();
               }}
             >
               <IonIcon icon={sync}></IonIcon>
@@ -106,71 +143,81 @@ const Inbox: React.FC = () => {
       </IonFab>
       <IonContent>
         {data?.chats?.length === 0 ? (
-          <IonCard>
-            <IonItem>
-              <IonLabel>
-                You have no chats yet. Click the button below to find a contact.
-              </IonLabel>
-            </IonItem>
+          <IonCard style={{ margin: "20px" }}>
+            <IonCardHeader
+              style={{
+                letterSpacing: "2px",
+                fontSize: "14px",
+                fontWeight: "bold",
+                color: "var(--ion-color-primary-tint)",
+                textAlign: "center",
+              }}
+            >
+              Click the button below to find a contact.
+            </IonCardHeader>
           </IonCard>
         ) : (
-          <>
+          <div>
+            <p
+              style={{
+                fontWeight: "bold",
+                fontSize: "14px",
+                paddingLeft: "10px",
+                color: "var(--ion-color-primary)",
+              }}
+            >
+              Messages({data?.chats.length})
+            </p>
             {data?.chats?.map((chat: any, index: any) => {
               return (
                 <div key={index}>
                   {isLoading && (
                     <IonProgressBar type="indeterminate"></IonProgressBar>
                   )}
-                  {chat.type === "private" ? (
-                    <IonCard
-                      className="ion-no-margin ion-no-padding"
-                      routerLink={`/chat/${chat._id}`}
-                      onClick={() => {
-                        console.log("selected chat", chat);
-                        joinRoom(chat._id);
-                      }}
-                    >
-                      {chat.members.map((member: any, index: any) => {
-                        return (
-                          <div key={index}>
-                            {member._id !== userId && (
-                              <IonItem lines="none">
-                                <IonAvatar slot="start">
-                                  <IonImg src={member.avatar} />
-                                </IonAvatar>
-                                <IonLabel>{member.username}</IonLabel>
-                                <IonIcon icon={arrowForward}></IonIcon>
-                              </IonItem>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </IonCard>
-                  ) : (
-                    <IonCard
-                      className="ion-no-margin"
-                      routerLink={`/chat/${chat._id}`}
-                      onClick={() => {
-                        joinRoom(chat._id);
-                      }}
-                    >
-                      <IonItem lines="none">
-                        <IonAvatar slot="start">
-                          {!chat.avatar ? (
-                            <IonIcon size={"large"} icon={people}></IonIcon>
-                          ) : (
-                            <IonImg src={chat.avatar} />
-                          )}
+                  <IonCard
+                    style={{ borderRadius: "10px" }}
+                    routerLink={`/chat/${chat._id}`}
+                    onClick={() => {
+                      console.log("selected chat", chat);
+                      joinRoom(chat._id);
+                    }}
+                  >
+                    <div>
+                      <IonItem lines="none" style={{ padding: "3px" }}>
+                        <IonAvatar slot="start" className=" ion-no-margin">
+                          <IonImg
+                            src={
+                              chat.type === "private"
+                                ? getAvatar(chat)
+                                : chat.avatar
+                            }
+                            alt=""
+                          />
                         </IonAvatar>
-                        <IonLabel>{chat.name}</IonLabel>
-                        <IonIcon icon={arrowForward}></IonIcon>
+                        <div
+                          style={{
+                            padding: "10px",
+                            display: "grid",
+                            width: "100%",
+                            gap: "5px",
+                          }}
+                        >
+                          <IonLabel style={{ fontWeight: "bold" }}>
+                            {chat.type === "private"
+                              ? getName(chat)
+                              : "Group: " + chat.name}
+                          </IonLabel>
+                          <IonText style={{ fontSize: "14px" }}>
+                            {handleLastMessage(chat)}
+                          </IonText>
+                        </div>
                       </IonItem>
-                    </IonCard>
-                  )}
+                    </div>
+                  </IonCard>
                 </div>
               );
             })}
-          </>
+          </div>
         )}
 
         <IonFab slot="fixed" vertical="bottom" horizontal="end">

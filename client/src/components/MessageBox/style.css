@@ -20,7 +20,7 @@
 
 .sender-message {
   box-sizing: border-box;
-  box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22);
+  /* box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22); */
   backdrop-filter: blur(6px);
   cursor: pointer;
   transition: all 0.5s;
@@ -38,11 +38,11 @@
 
 .sender-message:active {
   transform: scale(0.95);
-} 
+}
 
 .other-message {
   box-sizing: border-box;
-  box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22);
+  /* box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22); */
   backdrop-filter: blur(6px);
   cursor: pointer;
   transition: all 0.5s;

@@ -89,8 +89,9 @@ const Login: React.FC = () => {
       <IonContent>
         <IonRow class="ion-justify-content-center">
           <IonCol size="12" sizeMd="8" sizeLg="6" sizeXl="4">
-            <IonImg src={Logo} alt="logo" class="ion-padding"></IonImg>
             <IonCard>
+              <IonImg src={Logo} alt="logo" class="ion-padding "></IonImg>
+
               <IonCardContent>
                 {isLoading && (
                   <IonProgressBar type="indeterminate"></IonProgressBar>
