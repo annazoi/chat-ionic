@@ -15,7 +15,7 @@ import { logIn } from "ionicons/icons";
 import { get, set, useForm } from "react-hook-form";
 import ImagePicker from "../../../../components/ImagePicker";
 import Loading from "../../../../components/Loading";
-import Toast from "../../../../components/Toast";
+import Toast from "../../../../components/ui/Toast";
 import { registerSchema } from "../../../../validations-schemas/auth";
 import { RegisterConfig } from "../../../../validations-schemas/interfaces/user";
 import { useEffect } from "react";

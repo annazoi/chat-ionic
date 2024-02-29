@@ -15,7 +15,7 @@ const Title: React.FC<TitleProps> = ({ title, className }) => {
         letterSpacing: "2px",
         // textAlign: "center",
       }}
-      color="primary"
+      color="secondary"
     >
       {title}
     </IonTitle>

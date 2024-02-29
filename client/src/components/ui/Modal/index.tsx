@@ -8,6 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import "./style.css";
+import Title from "../Title";
 
 interface ModalProps {
   isOpen: any;
@@ -28,14 +29,14 @@ const Modal: React.FC<ModalProps> = ({
     <IonModal isOpen={isOpen} onDidDismiss={closeModal}>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>{title}</IonTitle>
+          <Title title="Settings" className="ion-padding"></Title>
           <IonButtons slot="end">
             <IonButton
               onClick={() => {
                 onClose(false);
               }}
             >
-              Close
+              <p style={{ fontWeight: "bold", letterSpacing: "2px" }}>CLOSE</p>
             </IonButton>
           </IonButtons>
         </IonToolbar>

@@ -8,8 +8,7 @@ import { API_URL } from "../constants";
 export const registerUser = async (payload: RegisterConfig) => {
   try {
     if (payload.avatar === "") {
-      payload.avatar =
-        "https://iconape.com/wp-content/files/zk/367905/png/367905.png";
+      payload.avatar = "";
     } else {
       payload.avatar = payload.avatar;
     }

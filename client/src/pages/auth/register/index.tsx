@@ -27,7 +27,7 @@ import { registerUser } from "../../../services/auth";
 import { RegisterConfig } from "../../../validations-schemas/interfaces/user";
 import ImagePicker from "../../../components/ImagePicker";
 import { authStore } from "../../../store/auth";
-import Toast from "../../../components/Toast";
+import Toast from "../../../components/ui/Toast";
 import Loading from "../../../components/Loading";
 import { arrowBack } from "ionicons/icons";
 import Logo from "../../../assets/logo.png";
@@ -174,6 +174,7 @@ const Register: React.FC = () => {
                 className="ion-margin-top"
                 expand="block"
                 disabled={isLoading}
+                color={isLoading ? "medium" : "primary"}
               >
                 Register
               </IonButton>

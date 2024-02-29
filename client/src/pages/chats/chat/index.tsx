@@ -36,10 +36,11 @@ import { useSocket } from "../../../hooks/sockets";
 import MessageBox from "../../../components/MessageBox";
 
 import "./style.css";
-import Modal from "../Modal";
+import Modal from "../../../components/ui/Modal";
 
 import ChatOptions from "../../../components/ChatOptions";
 import { RiGroup2Fill } from "react-icons/ri";
+import Title from "../../../components/ui/Title";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -52,6 +53,8 @@ const Chat: React.FC = () => {
   const { userId } = authStore((store: any) => store);
   const { socket } = useSocket();
 
+  const [chat, setChat] = useState<any>(null);
+
   const { data, isLoading } = useQuery<any>({
     queryKey: ["chat"],
     refetchOnMount: "always",
@@ -60,6 +63,7 @@ const Chat: React.FC = () => {
     onSuccess: (res: any) => {
       console.log("chat query", res.chat.messages);
       setMessages(res.chat.messages);
+      setChat(res.chat);
     },
   });
   const { mutate, isLoading: messageIsLoading } = useMutation({
@@ -134,51 +138,120 @@ const Chat: React.FC = () => {
     }
   };
 
+  const getAvatar = () => {
+    const member = chat?.members.find((member: any) => member._id !== userId);
+    return member.avatar;
+  };
+
+  const getName = (chat: any) => {
+    const member = chat?.members.find((member: any) => member._id !== userId);
+    return member.username;
+  };
+
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
           <IonButtons slot="start">
             <IonBackButton defaultHref="/inbox">
               <IonIcon icon={arrowBack} size="medium"></IonIcon>
             </IonBackButton>
 
-            {data?.chat.type === "private" ? (
-              <>
-                {data?.chat.members.map((member: any, index: any) => {
-                  return (
-                    <div key={index} id={index}>
-                      {member._id !== userId && (
-                        <IonItem>
-                          <IonAvatar>
-                            <img src={member.avatar} alt="" />
-                          </IonAvatar>
-                          <IonTitle>{member.username}</IonTitle>
-                        </IonItem>
-                      )}
-                    </div>
-                  );
-                })}
-              </>
-            ) : (
-              <>
-                <IonItem>
-                  <IonAvatar>
-                    {!data?.chat.avatar ? (
-                      <RiGroup2Fill size="100%" />
-                    ) : (
-                      <img src={data?.chat.avatar} alt="" />
-                    )}
-                  </IonAvatar>
-                  <IonTitle>{data?.chat.name}</IonTitle>
-                </IonItem>
-              </>
+            {chat && (
+              <IonItem lines="none" className="ion-no-padding" color="primary">
+                <IonAvatar>
+                  {chat.type === "private" ? (
+                    <img src={getAvatar()} alt="" />
+                  ) : (
+                    <RiGroup2Fill size="100%" />
+                  )}
+                </IonAvatar>
+                <Title title={getName(chat)} className="ion-padding"></Title>
+              </IonItem>
             )}
           </IonButtons>
         </IonToolbar>
       </IonHeader>
+
+      {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
+      <>
+        {messages.map((message: any, index: any) => {
+          return (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                flexDirection:
+                  userId === message.senderId._id ? "row-reverse" : "row",
+                alignSelf:
+                  userId === message.senderId._id ? "flex-end" : "flex-start",
+              }}
+            >
+              <img
+                src={message.senderId.avatar}
+                style={{
+                  borderRadius: "100%",
+                  height: "20px",
+                  width: "20px",
+                  margin: "10px",
+                  marginTop: "15px",
+                }}
+                alt=""
+              />
+              <MessageBox message={message}></MessageBox>
+            </div>
+          );
+        })}
+      </>
+
+      <div
+        style={{
+          justifyItems: "flex-end",
+        }}
+      >
+        <IonItem
+          lines="none"
+          style={{
+            border: "1px solid #9b95ec",
+            borderRadius: "10px",
+            margin: "5px",
+            boxShadow: "0px 0px 5px 0px #9b95ec",
+          }}
+        >
+          <IonInput
+            type="text"
+            value={newMessage}
+            placeholder="Aa..."
+            onKeyPress={handleEnterPress}
+            onIonChange={(event: any) => {
+              setNewMessage(event.target.value);
+            }}
+          />
+          <IonButton onClick={sendNewMessage} expand="block" fill="clear">
+            {messageIsLoading ? (
+              <IonIcon icon={ellipsisHorizontalOutline}></IonIcon>
+            ) : (
+              <IonIcon icon={send}></IonIcon>
+            )}
+          </IonButton>
+        </IonItem>
+      </div>
+      <Modal
+        isOpen={openMembers}
+        onClose={setOpenMembers}
+        title="Members"
+        closeModal={() => {
+          setOpenMembers(false);
+        }}
+      >
+        <ChatOptions
+          closeModal={() => {
+            setOpenMembers(false);
+          }}
+        ></ChatOptions>
+      </Modal>
       <IonFab slot="fixed" horizontal="end">
-        <IonFabButton size="small">
+        <IonFabButton size="small" color="secondary">
           <IonIcon icon={informationOutline}></IonIcon>
         </IonFabButton>
         <IonFabList side="bottom">
@@ -204,63 +277,6 @@ const Chat: React.FC = () => {
           )}
         </IonFabList>
       </IonFab>
-      <IonContent>
-        <>
-          {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
-          {messages.map((message: any, index: any) => {
-            return (
-              <div key={index} id={index} style={{ display: "flex" }}>
-                <IonAvatar style={{ border: "1px solid" }}>
-                  <img
-                    src={message.senderId.avatar}
-                    style={{ width: "100%" }}
-                  />
-                </IonAvatar>
-                <MessageBox message={message}></MessageBox>
-              </div>
-            );
-          })}
-        </>
-
-        <IonItem
-          style={{
-            border: "1px solid #e6e6e8",
-            borderRadius: "10px",
-            margin: "5px",
-          }}
-        >
-          <IonInput
-            type="text"
-            value={newMessage}
-            placeholder="Aa..."
-            onKeyPress={handleEnterPress}
-            onIonChange={(event: any) => {
-              setNewMessage(event.target.value);
-            }}
-          />
-          <IonButton onClick={sendNewMessage} expand="block" fill="clear">
-            {messageIsLoading ? (
-              <IonIcon icon={ellipsisHorizontalOutline}></IonIcon>
-            ) : (
-              <IonIcon icon={send}></IonIcon>
-            )}
-          </IonButton>
-        </IonItem>
-      </IonContent>
-      <Modal
-        isOpen={openMembers}
-        onClose={setOpenMembers}
-        title="Members"
-        closeModal={() => {
-          setOpenMembers(false);
-        }}
-      >
-        <ChatOptions
-          closeModal={() => {
-            setOpenMembers(false);
-          }}
-        ></ChatOptions>
-      </Modal>
     </IonPage>
   );
 };

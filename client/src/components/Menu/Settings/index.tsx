@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { authStore } from "../../../store/auth";
 import { arrowForward, eye, logIn, settings } from "ionicons/icons";
 
-import Modal from "../Modal";
+import Modal from "../../../components/ui/Modal";
 import Account from "./Account";
 import Title from "../../../components/ui/Title";
 

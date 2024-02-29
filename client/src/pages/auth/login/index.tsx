@@ -3,16 +3,11 @@ import {
   IonHeader,
   IonInput,
   IonPage,
-  IonTitle,
   IonToolbar,
   IonButton,
   useIonRouter,
   IonCard,
   IonCardContent,
-  IonCol,
-  IonRow,
-  IonAvatar,
-  IonImg,
   IonProgressBar,
 } from "@ionic/react";
 import React, { useState } from "react";
@@ -24,7 +19,7 @@ import { authStore } from "../../../store/auth";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../../../validations-schemas/auth";
 import HidePassword from "../../../components/HidePassword";
-import Toast from "../../../components/Toast";
+import Toast from "../../../components/ui/Toast";
 import Logo from "../../../assets/logo.png";
 import "./style.css";
 import Title from "../../../components/ui/Title";

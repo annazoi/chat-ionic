@@ -16,85 +16,31 @@ interface MessageConfig {
 const MessageBox: React.FC<MessageConfig> = ({ message }) => {
   const { userId } = authStore((store: any) => store);
   const [timeOpen, setTimeOpen] = useState<boolean>(false);
-  const [messageData, setMessageData] = useState<boolean>(false);
 
   const toggleTime = () => {
     setTimeOpen(!timeOpen);
   };
 
-  const messageChoise = () => {
-    setMessageData(!messageData);
-  };
-
-  // const handleTextClick = (
-  //   event: React.MouseEvent<HTMLParagraphElement>,
-  //   copiedMessage: any
-  // ) => {
-  //   event.stopPropagation(); // Stop event propagation
-  //   alert(copiedMessage);
-  // };
-
-  const textRef = useRef(null);
-
   return (
     <>
       <IonCard
-        onClick={toggleTime}
-        // onClick={messageChoise}
-        // className={
-        //   userId === message.senderId._id ? "sender-message" : "other-message"
-        // }
-
-        style={
-          userId === message.senderId._id
-            ? {
-                display: "flex",
-                borderRadius: "25px",
-                backgroundColor: "#f4f4f4",
-              }
-            : {
-                display: "flex",
-                borderRadius: "25px",
-                backgroundColor: "#3880ff",
-              }
+        className={
+          userId === message.senderId._id ? "userId-message" : "other-message"
         }
+        onClick={toggleTime}
       >
-        {/* <IonAvatar className="ion-avatar">
-          <img src={message.senderId.avatar} alt="" />
-        </IonAvatar> */}
-        <IonCardHeader style={{ display: "grid" }}>
-          {/* <IonCardSubtitle color="dark">
-            {message.senderId.username}
-          </IonCardSubtitle> */}
-          <IonCardTitle>
-            <p
-              onClick={(event: React.MouseEvent<HTMLParagraphElement>) => {
-                event.stopPropagation();
-                alert(message.message);
-              }}
-              style={
-                userId === message.senderId._id
-                  ? { color: "black" }
-                  : { color: "white" }
-              }
-            >
-              {message.message}
-            </p>
-          </IonCardTitle>
-        </IonCardHeader>
-      </IonCard>
-
-      {timeOpen && (
-        <IonCardSubtitle
-          className={
-            userId === message.senderId._id
-              ? "toggle-time-sender"
-              : "toggle-time-other"
-          }
-          color="dark"
+        <p
+          style={{
+            paddingLeft: "10px",
+            paddingRight: "10px",
+            color: userId === message.senderId._id ? "black" : "black",
+          }}
         >
-          {message.createdAt}
-        </IonCardSubtitle>
+          {message.message}
+        </p>
+      </IonCard>
+      {timeOpen && (
+        <IonCardSubtitle color="dark">{message.createdAt}</IonCardSubtitle>
       )}
     </>
   );

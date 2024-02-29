@@ -31,14 +31,13 @@ import "./theme/variables.css";
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import { homeOutline, chatbubblesOutline, cameraOutline } from "ionicons/icons";
-import Inbox from "./pages/inbox/index";
-import Menu from "./pages/menu/Menu";
-import Users from "./pages/inbox/CreateChat";
-import Group from "./pages/inbox/CreateChat/Group";
-import Chat from "./pages/inbox/chat";
+import Inbox from "./pages/chats/index";
+import Users from "./pages/chats/CreateChat";
+import Group from "./pages/chats/CreateChat/Group";
+import Chat from "./pages/chats/chat";
 import { authStore } from "./store/auth";
-import Settings from "./pages/inbox/Settings";
-import Account from "./pages/inbox/Settings/Account";
+import Settings from "./components/Menu/Settings";
+import Account from "./components/Menu/Settings/Account";
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -47,7 +46,6 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route component={Menu} path="/menu" exact />
           <Route component={Register} path="/register" exact />
           <Route component={Login} path="/login" exact />
 
