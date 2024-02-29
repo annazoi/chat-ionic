@@ -29,15 +29,6 @@ const register = async (req, res, next) => {
   let hashedPassword;
   try {
     hashedPassword = await bcrypt.hash(password, 12);
-    if (!avatar) {
-      const createdUser = await User.create({
-        phone,
-        username,
-        password: hashedPassword,
-        avatar: "",
-      });
-      return res.status(201).json({ message: "User created" });
-    }
   } catch (err) {
     console.log(err);
 
@@ -51,7 +42,6 @@ const register = async (req, res, next) => {
         folder: "users",
       });
     }
-    console.log(result.url);
     const createdUser = await User.create({
       phone,
       username,
@@ -72,7 +62,7 @@ const register = async (req, res, next) => {
     res.status(201).json({
       userId: createdUser.id,
       token: token,
-      avatar: result.url,
+      avatar: result?.url,
       username: createdUser.username,
     });
   } catch (err) {

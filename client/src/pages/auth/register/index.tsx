@@ -66,7 +66,6 @@ const Register: React.FC = () => {
   const router = useIonRouter();
 
   const onSubmit = async (data: any) => {
-    console.log(data);
     console.log("dat", data);
     try {
       mutate(data, {
