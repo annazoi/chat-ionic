@@ -151,7 +151,7 @@ const Chat: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="primary">
+        <IonToolbar>
           <IonButtons slot="start">
             <IonBackButton defaultHref="/inbox">
               <IonIcon icon={arrowBack} size="medium"></IonIcon>

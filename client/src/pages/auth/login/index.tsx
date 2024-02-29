@@ -81,7 +81,7 @@ const Login: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <Title title="Login" />
+          <Title title="Login" className="ion-padding" />
         </IonToolbar>
       </IonHeader>
       <IonContent class="ion-padding">
@@ -135,6 +135,7 @@ const Login: React.FC = () => {
                 className="ion-margin-top"
                 expand="block"
                 disabled={isLoading}
+                color={isLoading ? "medium" : "primary"}
               >
                 Login
               </IonButton>

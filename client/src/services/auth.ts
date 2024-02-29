@@ -7,19 +7,14 @@ import { API_URL } from "../constants";
 
 export const registerUser = async (payload: RegisterConfig) => {
   try {
-    if (payload.avatar === "") {
-      payload.avatar = "";
-    } else {
-      payload.avatar = payload.avatar;
-    }
-
     const response = await Axios.post(`${API_URL}/auth/register`, {
       phone: payload.phone,
       username: payload.username,
       password: payload.password,
 
-      avatar: payload.avatar,
+      // avatar: payload.avatar,
     });
+
     return response.data;
   } catch (err: any) {
     console.log("err", err);

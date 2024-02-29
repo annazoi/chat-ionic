@@ -29,6 +29,15 @@ const register = async (req, res, next) => {
   let hashedPassword;
   try {
     hashedPassword = await bcrypt.hash(password, 12);
+    if (!avatar) {
+      const createdUser = await User.create({
+        phone,
+        username,
+        password: hashedPassword,
+        avatar: "",
+      });
+      return res.status(201).json({ message: "User created" });
+    }
   } catch (err) {
     console.log(err);
 
@@ -36,9 +45,12 @@ const register = async (req, res, next) => {
   }
 
   try {
-    const result = await cloudinary.uploader.upload(avatar, {
-      folder: "users",
-    });
+    let result;
+    if (avatar) {
+      result = await cloudinary.uploader.upload(avatar, {
+        folder: "users",
+      });
+    }
     console.log(result.url);
     const createdUser = await User.create({
       phone,

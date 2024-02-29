@@ -94,7 +94,7 @@ const Inbox: React.FC = () => {
       <Menu />
       <IonPage id="main-content">
         <IonHeader>
-          <IonToolbar color="primary">
+          <IonToolbar>
             <IonMenuToggle>
               <img
                 src={avatar ? avatar : <IoPersonCircleSharp />}
@@ -148,7 +148,7 @@ const Inbox: React.FC = () => {
                   color: "var(--ion-color-success)",
                 }}
               >
-                Messages({data?.chats.length})
+                {/* Messages({data?.chats.length}) */}
               </p>
               {data?.chats?.map((chat: any, index: any) => {
                 return (
@@ -160,7 +160,8 @@ const Inbox: React.FC = () => {
                       style={{
                         borderRadius: "10px",
                         padding: "3px",
-                        backgroundColor: "var(--ion-color-primary)",
+                        boxShadow: "0px 0px 15px 0px var(--ion-color-primary)",
+                        border: "1px solid var(--ion-color-primary)",
                       }}
                       routerLink={`/chat/${chat._id}`}
                       onClick={() => {

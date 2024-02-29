@@ -2,7 +2,7 @@ export interface RegisterConfig {
   phone: string;
   username: string;
   password: string;
-  avatar?: any;
+  avatar?: string | undefined;
 }
 
 export interface LoginConfig {
@@ -15,5 +15,5 @@ export interface UserConfig {
   phone: string;
   username: string;
   password: string;
-  avatar: string;
+  avatar?: string | undefined;
 }

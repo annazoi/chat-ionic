@@ -72,10 +72,13 @@ const Register: React.FC = () => {
       mutate(data, {
         onSuccess: (data: any) => {
           console.log("success", data);
+          if (data.avatar === undefined || data.avatar === " ") {
+            data.avatar = "";
+          }
           logIn({
             token: data.token,
             userId: data.userId,
-            avatar: data.avatar,
+            avatar: data?.avatar,
             username: data.username,
           });
           setMessage("Form submitted successfully!");
