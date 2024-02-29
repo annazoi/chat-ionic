@@ -39,6 +39,7 @@ import "./style.css";
 import Modal from "../Modal";
 
 import ChatOptions from "../../../components/ChatOptions";
+import { RiGroup2Fill } from "react-icons/ri";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -164,7 +165,7 @@ const Chat: React.FC = () => {
                 <IonItem>
                   <IonAvatar>
                     {!data?.chat.avatar ? (
-                      <IonIcon size={"large"} icon={people}></IonIcon>
+                      <RiGroup2Fill size="100%" />
                     ) : (
                       <img src={data?.chat.avatar} alt="" />
                     )}

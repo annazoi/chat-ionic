@@ -27,6 +27,7 @@ import HidePassword from "../../../components/HidePassword";
 import Toast from "../../../components/Toast";
 import Logo from "../../../assets/logo.png";
 import "./style.css";
+import Title from "../../../components/ui/Title";
 
 const Login: React.FC = () => {
   const router = useIonRouter();
@@ -71,6 +72,8 @@ const Login: React.FC = () => {
         },
 
         onError: (error: any) => {
+          setMessage("Could not login. Ckeck your credentials");
+          setShowToast(true);
           console.log("error", error);
         },
       });
@@ -83,56 +86,75 @@ const Login: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Sign</IonTitle>
+          <Title title="Login" />
         </IonToolbar>
       </IonHeader>
-      <IonContent>
-        <IonRow class="ion-justify-content-center">
-          <IonCol size="12" sizeMd="8" sizeLg="6" sizeXl="4">
-            <IonCard>
-              <IonImg src={Logo} alt="logo" class="ion-padding "></IonImg>
+      <IonContent class="ion-padding">
+        <IonCard
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            maxWidth: "600px",
+            justifyContent: "center",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "30px",
+            marginTop: "30px",
+            alignSelf: "center",
+            // marginLeft: "30px",
+            // marginRight: "30px",
+          }}
+        >
+          <img
+            src={Logo}
+            alt="logo"
+            style={{
+              borderRadius: "30px",
+              width: "40%",
+              padding: "10px",
+              alignSelf: "center",
+            }}
+          ></img>
 
-              <IonCardContent>
-                {isLoading && (
-                  <IonProgressBar type="indeterminate"></IonProgressBar>
-                )}
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <IonInput
-                    fill="outline"
-                    labelPlacement="floating"
-                    label="Username"
-                    className="ion-margin-top"
-                    {...register("username", { required: true })}
-                  />
-                  {errors.username && (
-                    <p style={{ color: "red" }}>{errors.username?.message}</p>
-                  )}
-                  <HidePassword register={register} />
-                  {errors.password && (
-                    <p style={{ color: "red" }}>{errors.password?.message}</p>
-                  )}
-                  <IonButton
-                    type="submit"
-                    className="ion-margin-top"
-                    expand="block"
-                    disabled={isLoading}
-                  >
-                    Login
-                  </IonButton>
-                </form>
-
-                <Toast
-                  showToast={showToast}
-                  message={message}
-                  setShowToast={setShowToast}
-                />
-              </IonCardContent>
-              <IonButton routerLink="/register" fill="clear" expand="block">
-                Create New Account
+          <IonCardContent>
+            {isLoading && (
+              <IonProgressBar type="indeterminate"></IonProgressBar>
+            )}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <IonInput
+                fill="outline"
+                labelPlacement="floating"
+                label="Username"
+                className="ion-margin-top"
+                {...register("username", { required: true })}
+              />
+              {errors.username && (
+                <p style={{ color: "red" }}>{errors.username?.message}</p>
+              )}
+              <HidePassword register={register} />
+              {errors.password && (
+                <p style={{ color: "red" }}>{errors.password?.message}</p>
+              )}
+              <IonButton
+                type="submit"
+                className="ion-margin-top"
+                expand="block"
+                disabled={isLoading}
+              >
+                Login
               </IonButton>
-            </IonCard>
-          </IonCol>
-        </IonRow>
+            </form>
+
+            <Toast
+              showToast={showToast}
+              message={message}
+              setShowToast={setShowToast}
+            />
+          </IonCardContent>
+          <IonButton routerLink="/register" fill="clear" expand="block">
+            Create New Account
+          </IonButton>
+        </IonCard>
       </IonContent>
     </IonPage>
   );

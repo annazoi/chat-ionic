@@ -28,8 +28,9 @@ import React from "react";
 import Users from "./CreateChat";
 import Modal from "./Modal";
 import Settings from "./Settings";
-import { arrowForward } from "ionicons/icons";
 import { useSocket } from "../../hooks/sockets";
+import { RiGroup2Fill } from "react-icons/ri";
+import Title from "../../components/ui/Title";
 
 const Inbox: React.FC = () => {
   const { logOutUser, avatar, userId, username } = authStore(
@@ -97,13 +98,7 @@ const Inbox: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle
-            className="ion-no-padding"
-            style={{ fontWeight: "bold", letterSpacing: "2px" }}
-            color="primary"
-          >
-            {username}'s inbox
-          </IonTitle>
+          <Title title={`${username}'s inbox`} />
           <IonButtons slot="start">
             <IonButton
               // color="primary"
@@ -185,15 +180,17 @@ const Inbox: React.FC = () => {
                     <div>
                       <IonItem lines="none" style={{ padding: "3px" }}>
                         <IonAvatar slot="start" className=" ion-no-margin">
-                          <IonImg
-                            src={
-                              chat.type === "private"
-                                ? getAvatar(chat)
-                                : chat.avatar
-                            }
-                            alt=""
-                          />
+                          {chat.type === "private" ? (
+                            <img
+                              src={getAvatar(chat)}
+                              style={{ width: "100%", height: "100%" }}
+                              alt=""
+                            />
+                          ) : (
+                            <RiGroup2Fill size="100%" />
+                          )}
                         </IonAvatar>
+
                         <div
                           style={{
                             padding: "10px",
@@ -205,7 +202,7 @@ const Inbox: React.FC = () => {
                           <IonLabel style={{ fontWeight: "bold" }}>
                             {chat.type === "private"
                               ? getName(chat)
-                              : "Group: " + chat.name}
+                              : chat.name}
                           </IonLabel>
                           <IonText style={{ fontSize: "14px" }}>
                             {handleLastMessage(chat)}

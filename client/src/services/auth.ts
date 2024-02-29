@@ -9,7 +9,7 @@ export const registerUser = async (payload: RegisterConfig) => {
   try {
     if (payload.avatar === "") {
       payload.avatar =
-        "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png";
+        "https://iconape.com/wp-content/files/zk/367905/png/367905.png";
     } else {
       payload.avatar = payload.avatar;
     }
@@ -24,7 +24,7 @@ export const registerUser = async (payload: RegisterConfig) => {
     return response.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };
 
@@ -37,6 +37,6 @@ export const loginUser = async (payload: LoginConfig) => {
     return response.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };

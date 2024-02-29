@@ -31,6 +31,7 @@ import Toast from "../../../components/Toast";
 import Loading from "../../../components/Loading";
 import { arrowBack } from "ionicons/icons";
 import Logo from "../../../assets/logo.png";
+import Title from "../../../components/ui/Title";
 
 const Register: React.FC = () => {
   const { logIn } = authStore((store: any) => store);
@@ -101,73 +102,89 @@ const Register: React.FC = () => {
               <IonIcon icon={arrowBack} size="medium"></IonIcon>
             </IonButton>
           </IonButtons>
-          <IonTitle class="ion-no-padding">Register</IonTitle>
+          <Title title="Register" />
         </IonToolbar>
       </IonHeader>
-      <IonContent>
-        <IonRow class="ion-justify-content-center">
-          <IonCol size="12" sizeMd="8" sizeLg="6" sizeXl="4">
-            <IonCard>
-              <IonImg src={Logo} alt="logo" class="ion-padding"></IonImg>
+      <IonContent class="ion-padding">
+        <IonCard
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            maxWidth: "600px",
+            justifyContent: "center",
+            margin: "auto",
+            padding: "20px",
+            borderRadius: "30px",
+            alignSelf: "center",
+          }}
+        >
+          <img
+            src={Logo}
+            alt="logo"
+            style={{
+              borderRadius: "30px",
+              width: "40%",
+              padding: "10px",
+              alignSelf: "center",
+            }}
+          ></img>
 
-              <IonCardContent>
-                {isLoading && (
-                  <IonProgressBar type="indeterminate"></IonProgressBar>
-                )}
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <IonInput
-                    fill="outline"
-                    labelPlacement="floating"
-                    label="Enter Phone"
-                    className="ion-margin-top"
-                    {...register("phone", { required: true })}
-                  />
-                  {errors.phone && (
-                    <p style={{ color: "red" }}>{errors.phone?.message}</p>
-                  )}
+          <IonCardContent>
+            {isLoading && (
+              <IonProgressBar type="indeterminate"></IonProgressBar>
+            )}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <IonInput
+                fill="outline"
+                labelPlacement="floating"
+                label="Enter Phone"
+                className="ion-margin-top"
+                {...register("phone", { required: true })}
+              />
+              {errors.phone && (
+                <p style={{ color: "red" }}>{errors.phone?.message}</p>
+              )}
 
-                  <IonInput
-                    fill="outline"
-                    labelPlacement="floating"
-                    label="Enter Username"
-                    className="ion-margin-top"
-                    {...register("username", { required: true })}
-                  />
-                  {errors.username && (
-                    <p style={{ color: "red" }}>{errors.username?.message}</p>
-                  )}
+              <IonInput
+                fill="outline"
+                labelPlacement="floating"
+                label="Enter Username"
+                className="ion-margin-top"
+                {...register("username", { required: true })}
+              />
+              {errors.username && (
+                <p style={{ color: "red" }}>{errors.username?.message}</p>
+              )}
 
-                  <IonInput
-                    fill="outline"
-                    labelPlacement="floating"
-                    label="Enter New Password"
-                    className="ion-margin-top"
-                    type="password"
-                    {...register("password", { required: true })}
-                  />
-                  {errors.password && (
-                    <p style={{ color: "red" }}>{errors.password?.message}</p>
-                  )}
-                  <ImagePicker onChange={handleImage}></ImagePicker>
+              <IonInput
+                fill="outline"
+                labelPlacement="floating"
+                label="Enter New Password"
+                className="ion-margin-top"
+                type="password"
+                {...register("password", { required: true })}
+              />
+              {errors.password && (
+                <p style={{ color: "red" }}>{errors.password?.message}</p>
+              )}
+              <ImagePicker onChange={handleImage}></ImagePicker>
 
-                  <IonButton
-                    type="submit"
-                    className="ion-margin-top"
-                    expand="block"
-                    disabled={isLoading}
-                  >
-                    Register
-                  </IonButton>
-                </form>
-                <Toast
-                  showToast={showToast}
-                  message={message}
-                  setShowToast={setShowToast}
-                />
-              </IonCardContent>
-            </IonCard>
-          </IonCol>
-        </IonRow>
+              <IonButton
+                type="submit"
+                className="ion-margin-top"
+                expand="block"
+                disabled={isLoading}
+              >
+                Register
+              </IonButton>
+            </form>
+            <Toast
+              showToast={showToast}
+              message={message}
+              setShowToast={setShowToast}
+            />
+          </IonCardContent>
+        </IonCard>
       </IonContent>
     </IonPage>
   );
