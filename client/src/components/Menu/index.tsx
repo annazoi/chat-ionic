@@ -18,11 +18,11 @@ const Menu: React.FC = () => {
   const { logOutUser } = authStore((store: any) => store);
   const [openSettings, setOpenSettings] = useState<boolean>(false);
 
-  const router = useIonRouter();
+  // const router = useIonRouter();
 
   const handleLogout = () => {
     logOutUser();
-    router.push("/login", "forward", "replace");
+    // router.push("/login", "forward", "replace");
   };
   return (
     <>
@@ -53,6 +53,7 @@ const Menu: React.FC = () => {
               onClick={handleLogout}
               icon={logOut}
               iconSlot="start"
+              routerLink="/login"
             ></Button>
           </div>
         </IonContent>

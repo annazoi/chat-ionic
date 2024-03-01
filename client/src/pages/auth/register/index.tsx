@@ -32,6 +32,8 @@ import Loading from "../../../components/Loading";
 import { arrowBack } from "ionicons/icons";
 import Logo from "../../../assets/logo.png";
 import Title from "../../../components/ui/Title";
+import HidePassword from "../../../components/HidePassword";
+import Input from "../../../components/ui/Input";
 
 const Register: React.FC = () => {
   const { logIn } = authStore((store: any) => store);
@@ -108,18 +110,7 @@ const Register: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent class="ion-padding">
-        <IonCard
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "600px",
-            justifyContent: "center",
-            margin: "auto",
-            padding: "20px",
-            borderRadius: "30px",
-            alignSelf: "center",
-          }}
-        >
+        <IonCard className="auth-card">
           <img
             src={Logo}
             alt="logo"
@@ -136,36 +127,26 @@ const Register: React.FC = () => {
               <IonProgressBar type="indeterminate"></IonProgressBar>
             )}
             <form onSubmit={handleSubmit(onSubmit)}>
-              <IonInput
-                fill="outline"
-                labelPlacement="floating"
-                label="Enter Phone"
-                className="ion-margin-top"
-                {...register("phone", { required: true })}
-              />
+              <Input
+                label="Entrer Username"
+                register={register("username", { required: true })}
+              ></Input>
+              <Input
+                label="Entrer Phone"
+                register={register("phone", { required: true })}
+              ></Input>
               {errors.phone && (
                 <p style={{ color: "red" }}>{errors.phone?.message}</p>
               )}
 
-              <IonInput
-                fill="outline"
-                labelPlacement="floating"
-                label="Enter Username"
-                className="ion-margin-top"
-                {...register("username", { required: true })}
-              />
               {errors.username && (
                 <p style={{ color: "red" }}>{errors.username?.message}</p>
               )}
 
-              <IonInput
-                fill="outline"
-                labelPlacement="floating"
-                label="Enter New Password"
-                className="ion-margin-top"
-                type="password"
-                {...register("password", { required: true })}
-              />
+              <HidePassword register={register} />
+              {errors.password && (
+                <p style={{ color: "red" }}>{errors.password?.message}</p>
+              )}
               {errors.password && (
                 <p style={{ color: "red" }}>{errors.password?.message}</p>
               )}

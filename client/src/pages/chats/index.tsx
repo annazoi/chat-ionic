@@ -29,6 +29,8 @@ import { RiGroup2Fill } from "react-icons/ri";
 import { IoPersonCircleSharp } from "react-icons/io5";
 import Title from "../../components/ui/Title";
 import Menu from "../../components/Menu";
+import userDefaulfAvatar from "../../assets/user.png";
+import { get } from "react-hook-form";
 
 const Inbox: React.FC = () => {
   const { avatar, userId, username } = authStore((store: any) => store);
@@ -82,7 +84,8 @@ const Inbox: React.FC = () => {
   const getAvatar = (chat: any) => {
     const member = chat.members.find((member: any) => member._id !== userId);
     if (!member.avatar) {
-      return <IoPersonCircleSharp />;
+      return userDefaulfAvatar;
+      // return <IoPersonCircleSharp />;
     } else {
       return member.avatar;
     }
@@ -97,7 +100,7 @@ const Inbox: React.FC = () => {
           <IonToolbar>
             <IonMenuToggle>
               <img
-                src={avatar ? avatar : <IoPersonCircleSharp />}
+                src={avatar ? avatar : userDefaulfAvatar}
                 alt=""
                 style={{
                   width: "40px",
@@ -128,10 +131,10 @@ const Inbox: React.FC = () => {
             <IonCard style={{ margin: "20px" }}>
               <IonCardHeader
                 style={{
-                  letterSpacing: "2px",
+                  letterSpacing: "3px",
                   fontSize: "14px",
-                  fontWeight: "bold",
-                  color: "var(--ion-color-primary-tint)",
+                  // fontWeight: "bold",
+                  color: "var(--ion-color-primary)",
                   textAlign: "center",
                 }}
               >
@@ -160,8 +163,8 @@ const Inbox: React.FC = () => {
                       style={{
                         borderRadius: "10px",
                         padding: "3px",
-                        boxShadow: "0px 0px 15px 0px var(--ion-color-primary)",
-                        border: "1px solid var(--ion-color-primary)",
+                        boxShadow: "0px 0px 6px 0px var(--ion-color-primary)",
+                        border: "1px solid var(--ion-color-secondary)",
                       }}
                       routerLink={`/chat/${chat._id}`}
                       onClick={() => {
@@ -170,23 +173,22 @@ const Inbox: React.FC = () => {
                       }}
                     >
                       <div style={{ display: "flex" }}>
-                        <IonAvatar
-                          slot="start"
-                          className=" ion-no-margin"
-                          color="primary"
-                        >
-                          {chat.type === "private" ? (
-                            <img
-                              src={getAvatar(chat)}
-                              style={{
-                                backgroundColor: "var(--ion-color-primary)",
-                              }}
-                              alt=""
-                            />
-                          ) : (
+                        {chat.type === "private" ? (
+                          <img
+                            src={getAvatar(chat)}
+                            alt=""
+                            style={{
+                              width: "46px",
+                              height: "46px",
+                              borderRadius: "50%",
+                              margin: "5px",
+                            }}
+                          />
+                        ) : (
+                          <IonAvatar slot="start" className=" ion-no-margin">
                             <RiGroup2Fill size="100%" color="black" />
-                          )}
-                        </IonAvatar>
+                          </IonAvatar>
+                        )}
 
                         <div
                           style={{

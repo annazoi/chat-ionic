@@ -6,9 +6,16 @@ interface ButtonProps {
   onClick?: () => void;
   icon?: any;
   iconSlot?: string;
+  routerLink?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ onClick, name, icon, iconSlot }) => {
+const Button: React.FC<ButtonProps> = ({
+  onClick,
+  name,
+  icon,
+  iconSlot,
+  routerLink,
+}) => {
   return (
     <IonButton
       onClick={onClick}
@@ -16,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({ onClick, name, icon, iconSlot }) => {
       fill="solid"
       color="tertiary"
       shape="round"
+      routerLink={routerLink}
     >
       <IonIcon icon={icon} slot={iconSlot}></IonIcon>
       {name}

@@ -19,6 +19,8 @@ import Toast from "../../../../components/ui/Toast";
 import { registerSchema } from "../../../../validations-schemas/auth";
 import { RegisterConfig } from "../../../../validations-schemas/interfaces/user";
 import { useEffect } from "react";
+import userDefaultAvatar from "../../../../assets/user.png";
+import HidePassword from "../../../HidePassword";
 
 const Settings: React.FC = () => {
   const {
@@ -32,11 +34,14 @@ const Settings: React.FC = () => {
     resolver: yupResolver(registerSchema),
   });
 
-  const { userId, updateUser: updateStoreUser } = authStore(
-    (store: any) => store
-  );
+  const {
+    userId,
+    updateUser: updateStoreUser,
+    avatar: storeAvatar,
+  } = authStore((store: any) => store);
   const [showToast, setShowToast] = useState<boolean>(false);
   const [message, setMessage] = useState<any>("");
+  const [useAvatar, setUseAvatar] = useState<string>("");
 
   const {
     mutate: userMutate,
@@ -53,6 +58,11 @@ const Settings: React.FC = () => {
   });
 
   const handleImage = (avatar: string) => {
+    // if (avatar) {
+    //   setValue("avatar", avatar);
+    // } else {
+    //   setValue("avatar", userDefaultAvatar);
+    // }
     setValue("avatar", avatar);
   };
 
@@ -118,21 +128,14 @@ const Settings: React.FC = () => {
               <p style={{ color: "red" }}>{errors.username?.message}</p>
             )}
 
-            <IonInput
-              fill="outline"
-              labelPlacement="floating"
-              label="Enter New Password"
-              className="ion-margin-top"
-              type="password"
-              {...register("password", { required: true })}
-            />
+            <HidePassword register={register} />
             {errors.password && (
               <p style={{ color: "red" }}>{errors.password?.message}</p>
             )}
             <ImagePicker
               onChange={handleImage}
               register={register}
-              value={getValues("avatar")}
+              value={storeAvatar ? getValues("avatar") : userDefaultAvatar}
             ></ImagePicker>
 
             <IonButton

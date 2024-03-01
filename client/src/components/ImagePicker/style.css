@@ -6,7 +6,7 @@
 }
 
 .icon {
-  /* color: red; */
+  color: var(--ion-color-primary);
   font-size: 3rem;
   cursor: pointer;
 }
@@ -23,5 +23,5 @@
   margin: 0 auto;
   justify-content: center;
   align-items: center;
-  border: 2px solid black;
+  border: 2px solid var(--ion-color-primary);
 }

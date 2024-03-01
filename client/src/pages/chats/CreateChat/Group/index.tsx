@@ -18,6 +18,7 @@ import { createChat } from "../../../../services/chat";
 import { authStore } from "../../../../store/auth";
 import ConfirmModal from "../../../../components/ConfirmModal";
 import ImagePicker from "../../../../components/ImagePicker";
+import userDefaultAvatar from "../../../../assets/user.png";
 interface GroupProps {
   closeModal: any;
   setOpenGroupModal: any;
@@ -107,7 +108,9 @@ const Group: React.FC<GroupProps> = ({
                 <IonCardContent className="ion-no-padding">
                   <IonItem lines="none">
                     <IonAvatar slot="start">
-                      <IonImg src={user.avatar} />
+                      <IonImg
+                        src={user.avatar ? user.avatar : userDefaultAvatar}
+                      />
                     </IonAvatar>
                     <IonCheckbox
                       labelPlacement="start"

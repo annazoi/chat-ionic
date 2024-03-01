@@ -2,6 +2,7 @@ import { IonCard, IonContent, IonIcon, IonItem } from "@ionic/react";
 import React, { useState } from "react";
 import { authStore } from "../../../store/auth";
 import { arrowForward, eye, logIn, settings } from "ionicons/icons";
+import userDefaulfAvatar from "../../../assets/user.png";
 
 import Modal from "../../../components/ui/Modal";
 import Account from "./Account";
@@ -15,7 +16,10 @@ const Settings: React.FC = () => {
   return (
     <IonContent>
       <div style={{ textAlign: "center", padding: "20px" }}>
-        <img src={avatar} className="image-preview"></img>
+        <img
+          src={avatar ? avatar : userDefaulfAvatar}
+          className="image-preview"
+        ></img>
         <Title title={username} className="ion-padding"></Title>
       </div>
       <IonCard>

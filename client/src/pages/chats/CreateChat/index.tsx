@@ -18,6 +18,7 @@ import { authStore } from "../../../store/auth";
 import { createChat } from "../../../services/chat";
 import Group from "./Group";
 import SearchUsers from "../../../components/SearchUsers";
+import userDefaultAvatar from "../../../assets/user.png";
 
 interface UsersProps {
   closeModal: any;
@@ -80,7 +81,9 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal }) => {
                   <IonCardContent className="ion-no-padding">
                     <IonItem lines="none">
                       <IonAvatar slot="start">
-                        <IonImg src={user.avatar} />
+                        <IonImg
+                          src={user.avatar ? user.avatar : userDefaultAvatar}
+                        />
                       </IonAvatar>
                       <IonLabel>{user.username}</IonLabel>
                       <IonIcon icon={chatbubblesOutline}></IonIcon>

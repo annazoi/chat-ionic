@@ -23,6 +23,7 @@ import Toast from "../../../components/ui/Toast";
 import Logo from "../../../assets/logo.png";
 import "./style.css";
 import Title from "../../../components/ui/Title";
+import Input from "../../../components/ui/Input";
 
 const Login: React.FC = () => {
   const router = useIonRouter();
@@ -85,21 +86,7 @@ const Login: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent class="ion-padding">
-        <IonCard
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "600px",
-            justifyContent: "center",
-            margin: "auto",
-            padding: "20px",
-            borderRadius: "30px",
-            marginTop: "30px",
-            alignSelf: "center",
-            // marginLeft: "30px",
-            // marginRight: "30px",
-          }}
-        >
+        <IonCard className="auth-card">
           <img
             src={Logo}
             alt="logo"
@@ -116,13 +103,10 @@ const Login: React.FC = () => {
               <IonProgressBar type="indeterminate"></IonProgressBar>
             )}
             <form onSubmit={handleSubmit(onSubmit)}>
-              <IonInput
-                fill="outline"
-                labelPlacement="floating"
+              <Input
                 label="Username"
-                className="ion-margin-top"
-                {...register("username", { required: true })}
-              />
+                register={register("username", { required: true })}
+              ></Input>
               {errors.username && (
                 <p style={{ color: "red" }}>{errors.username?.message}</p>
               )}

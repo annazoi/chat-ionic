@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import { authStore } from "../../../store/auth";
 import { useSocket } from "../../../hooks/sockets";
 import MessageBox from "../../../components/MessageBox";
+import userDefaulfAvatar from "../../../assets/user.png";
 
 import "./style.css";
 import Modal from "../../../components/ui/Modal";
@@ -140,6 +141,9 @@ const Chat: React.FC = () => {
 
   const getAvatar = () => {
     const member = chat?.members.find((member: any) => member._id !== userId);
+    if (!member.avatar) {
+      return userDefaulfAvatar;
+    }
     return member.avatar;
   };
 
@@ -158,12 +162,16 @@ const Chat: React.FC = () => {
             </IonBackButton>
 
             {chat && (
-              <IonItem lines="none" className="ion-no-padding" color="primary">
+              <IonItem
+                lines="none"
+                className="ion-no-padding"
+                color="secondary"
+              >
                 <IonAvatar>
                   {chat.type === "private" ? (
                     <img src={getAvatar()} alt="" />
                   ) : (
-                    <RiGroup2Fill size="100%" />
+                    <RiGroup2Fill size="100%" color="black" />
                   )}
                 </IonAvatar>
                 <Title title={getName(chat)} className="ion-padding"></Title>
@@ -251,7 +259,7 @@ const Chat: React.FC = () => {
         ></ChatOptions>
       </Modal>
       <IonFab slot="fixed" horizontal="end">
-        <IonFabButton size="small" color="secondary">
+        <IonFabButton size="small" color="primary">
           <IonIcon icon={informationOutline}></IonIcon>
         </IonFabButton>
         <IonFabList side="bottom">
