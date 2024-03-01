@@ -29,6 +29,8 @@ import { IoPersonCircleSharp } from "react-icons/io5";
 import Title from "../../components/ui/Title";
 import Menu from "../../components/Menu";
 import userDefaulfAvatar from "../../assets/user.png";
+import { IoCreate } from "react-icons/io5";
+import Button from "../../components/ui/Button";
 
 const Inbox: React.FC = () => {
   const { avatar, userId, username } = authStore((store: any) => store);
@@ -219,13 +221,21 @@ const Inbox: React.FC = () => {
           )}
 
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            <IonIcon
+            {/* <IonIcon
               icon={create}
               size="large"
               onClick={() => {
                 setOpenCreateChat(true);
               }}
-            ></IonIcon>
+            ></IonIcon> */}
+            <Button
+              name="Create Chat"
+              iconSlot="end"
+              icon={create}
+              onClick={() => {
+                setOpenCreateChat(true);
+              }}
+            ></Button>
           </IonFab>
         </IonContent>
 
