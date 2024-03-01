@@ -9,6 +9,8 @@ import {
 } from "@ionic/react";
 import "./style.css";
 import Title from "../Title";
+import Button from "../Button";
+import { closeOutline } from "ionicons/icons";
 
 interface ModalProps {
   isOpen: any;
@@ -29,15 +31,16 @@ const Modal: React.FC<ModalProps> = ({
     <IonModal isOpen={isOpen} onDidDismiss={closeModal}>
       <IonHeader>
         <IonToolbar>
-          <Title title="Settings" className="ion-padding"></Title>
+          <Title title={title} className="ion-padding"></Title>
           <IonButtons slot="end">
-            <IonButton
+            <Button
+              name="Close"
+              iconSlot="end"
+              icon={closeOutline}
               onClick={() => {
                 onClose(false);
               }}
-            >
-              <p style={{ fontWeight: "bold", letterSpacing: "2px" }}>CLOSE</p>
-            </IonButton>
+            ></Button>
           </IonButtons>
         </IonToolbar>
       </IonHeader>

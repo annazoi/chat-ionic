@@ -9,7 +9,9 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import "./style.css";
-import { arrowBack } from "ionicons/icons";
+import { addOutline, arrowBack } from "ionicons/icons";
+import Button from "../ui/Button";
+import Title from "../ui/Title";
 
 interface ConfirmModalProps {
   isOpen: any;
@@ -36,18 +38,19 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 onClose(false);
               }}
             >
-              <IonIcon icon={arrowBack} size="large"></IonIcon>
+              <IonIcon icon={arrowBack} size="medium"></IonIcon>
             </IonButton>
           </IonButtons>
-          <IonTitle>{title}</IonTitle>
+          <Title title={title}></Title>
           <IonButtons slot="end">
-            <IonButton
+            <Button
               onClick={() => {
                 onClick();
               }}
-            >
-              CREATE
-            </IonButton>
+              name="create"
+              iconSlot="end"
+              icon={addOutline}
+            ></Button>
           </IonButtons>
         </IonToolbar>
       </IonHeader>

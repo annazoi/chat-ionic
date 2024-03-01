@@ -8,7 +8,6 @@ import {
   IonFab,
   IonHeader,
   IonIcon,
-  IonItem,
   IonLabel,
   IonMenuToggle,
   IonPage,
@@ -30,7 +29,6 @@ import { IoPersonCircleSharp } from "react-icons/io5";
 import Title from "../../components/ui/Title";
 import Menu from "../../components/Menu";
 import userDefaulfAvatar from "../../assets/user.png";
-import { get } from "react-hook-form";
 
 const Inbox: React.FC = () => {
   const { avatar, userId, username } = authStore((store: any) => store);
@@ -39,10 +37,11 @@ const Inbox: React.FC = () => {
 
   const { socket } = useSocket();
 
-  const { data, isLoading } = useQuery<any>({
+  const { data, isLoading, refetch } = useQuery<any>({
     queryKey: ["chats"],
     queryFn: getChats,
     refetchOnMount: "always",
+    refetchIntervalInBackground: true,
   });
 
   const joinRoom = (chatId: string) => {
@@ -233,7 +232,8 @@ const Inbox: React.FC = () => {
         <Modal
           isOpen={openCreateChat}
           onClose={setOpenCreateChat}
-          title="New Message"
+          // title="New Message"
+          title="Create a new chat"
           closeModal={() => {
             setOpenCreateChat(false);
           }}

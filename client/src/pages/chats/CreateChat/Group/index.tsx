@@ -12,33 +12,44 @@ import {
   useIonRouter,
 } from "@ionic/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { FC, useState } from "react";
 import { getUsers } from "../../../../services/users";
 import { createChat } from "../../../../services/chat";
 import { authStore } from "../../../../store/auth";
 import ConfirmModal from "../../../../components/ConfirmModal";
 import ImagePicker from "../../../../components/ImagePicker";
 import userDefaultAvatar from "../../../../assets/user.png";
+import SearchUsers from "../../../../components/SearchUsers";
 interface GroupProps {
   closeModal: any;
   setOpenGroupModal: any;
   openGroupModal: any;
 }
 
-const Group: React.FC<GroupProps> = ({
+const Group: FC<GroupProps> = ({
   closeModal,
   setOpenGroupModal,
   openGroupModal,
 }) => {
   const { userId } = authStore((store: any) => store);
   const router = useIonRouter();
-  const [selectedUsers, setSelectedUser] = React.useState<any[]>([]);
-  const [name, setName] = React.useState<string>("");
-  const [avatar, setAvatar] = React.useState<string>("");
+  const [selectedUsers, setSelectedUser] = useState<any[]>([]);
+  const [name, setName] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [filteredUser, setFilteredUser] = useState<any[]>([]);
 
   const { data } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUsers(),
+    select: (data: any) => {
+      if (searchValue) {
+        return data.filter((user: any) =>
+          user.username.toLowerCase().includes(searchValue.toLowerCase())
+        );
+      }
+      return data;
+    },
   });
 
   const { mutate } = useMutation({
@@ -79,6 +90,10 @@ const Group: React.FC<GroupProps> = ({
     }
   };
 
+  const hadleSearchValue = (e: any) => {
+    setSearchValue(e.target.value);
+  };
+
   return (
     <ConfirmModal
       isOpen={openGroupModal}
@@ -99,9 +114,12 @@ const Group: React.FC<GroupProps> = ({
             }}
           ></IonInput>
         </div>
-        <IonSearchbar></IonSearchbar>
+        <SearchUsers
+          setFilteredUser={setFilteredUser}
+          placeholder="Search for users"
+        />
 
-        {data?.users.map((user: any, index: any) => (
+        {filteredUser.map((user: any, index: any) => (
           <div key={index}>
             {user._id !== userId && (
               <IonCard>

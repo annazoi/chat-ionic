@@ -21,6 +21,7 @@ import { chatSchema } from "../../validations-schemas/chat";
 import { ChatConfig } from "../../validations-schemas/interfaces/chat";
 import SearchUsers from "../SearchUsers";
 import { addCircle } from "ionicons/icons";
+import userDefaultAvatar from "../../assets/user.png";
 
 interface ChatOptionsProps {
   closeModal: () => void;
@@ -132,7 +133,10 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
                 // routerLink={`/chat/${chat._id}`}
               >
                 <IonAvatar>
-                  <img src={member.avatar} alt="" />
+                  <img
+                    src={member.avatar ? member.avatar : userDefaultAvatar}
+                    alt=""
+                  />
                 </IonAvatar>
                 <IonTitle>{member.username}</IonTitle>
               </IonItem>

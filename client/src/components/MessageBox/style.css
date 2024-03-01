@@ -17,6 +17,6 @@
 
 .other-message {
   border-radius: 25px;
-  width: 80px;
-  background-color: var(--ion-color-primary);
+  width: 250px;
+  background-color: var(--ion-color-secondary);
 }

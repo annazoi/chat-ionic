@@ -22,6 +22,7 @@ import userDefaultAvatar from "../../../assets/user.png";
 
 interface UsersProps {
   closeModal: any;
+  refetch?: any;
 }
 
 const CreateChat: React.FC<UsersProps> = ({ closeModal }) => {

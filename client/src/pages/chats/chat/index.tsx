@@ -148,8 +148,12 @@ const Chat: React.FC = () => {
   };
 
   const getName = (chat: any) => {
-    const member = chat?.members.find((member: any) => member._id !== userId);
-    return member.username;
+    if (chat.type === "private") {
+      const member = chat?.members.find((member: any) => member._id !== userId);
+      return member.username;
+    } else {
+      return chat.name;
+    }
   };
 
   return (
@@ -182,7 +186,7 @@ const Chat: React.FC = () => {
       </IonHeader>
 
       {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
-      <>
+      <IonContent className="ion-padding-top">
         {messages.map((message: any, index: any) => {
           return (
             <div
@@ -210,7 +214,7 @@ const Chat: React.FC = () => {
             </div>
           );
         })}
-      </>
+      </IonContent>
 
       <div
         style={{
