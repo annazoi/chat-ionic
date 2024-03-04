@@ -16,7 +16,7 @@ const messageSchema = mongoose.Schema(
     },
     createdAt: {
       type: String,
-      default: moment().format("YYYY-MM-DD HH:mm:ss"),
+      default: moment().format("YYYY-MM-DD HH:mm"),
     },
   },
   { timestamps: true }

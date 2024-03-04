@@ -28,8 +28,8 @@ interface UsersProps {
 const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
   const { userId, isLoggedIn, username } = authStore((store: any) => store);
 
-  const [openGroupModal, setOpenGroupModal] = React.useState<boolean>(false);
-  const [filteredUser, setFilteredUser] = useState([]);
+  const [openGroupModal, setOpenGroupModal] = useState<boolean>(false);
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
 
   const router = useIonRouter();
 
@@ -43,7 +43,6 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
       { type: "private", members: [userId, memberId] },
       {
         onSuccess: (res: any) => {
-          console.log(res);
           if (res.exist) {
             router.push(`/chat/${res.chatId}`);
           } else {
@@ -59,25 +58,27 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
   return (
     <>
       <IonContent>
-        {isLoggedIn && (
+        <IonCardContent>
+          <SearchUsers
+            type="private"
+            onUsersFiltered={(users) => {
+              setFilteredUsers(users);
+              console.log("users", users);
+            }}
+            placeholder="Search Users..."
+          />
+          <IonButton
+            style={{ marginLeft: "8px" }}
+            onClick={() => {
+              setOpenGroupModal(true);
+            }}
+          >
+            Create a Group
+          </IonButton>
           <>
-            <IonCardContent>
-              <SearchUsers
-                setFilteredUser={setFilteredUser}
-                placeholder="Search Users..."
-              />
-              <IonButton
-                style={{ marginLeft: "8px" }}
-                onClick={() => {
-                  setOpenGroupModal(true);
-                }}
-              >
-                Create a Group
-              </IonButton>
-              <>
-                {filteredUser.map((user: any, index: number) => (
-                  // <div key={user._id}>
-                  //   {userId !== user._id && (
+            {filteredUsers?.map((user: any, index: number) => (
+              <div key={user._id}>
+                {userId !== user._id && (
                   <IonCard
                     key={user._id}
                     onClick={() => {
@@ -96,13 +97,11 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
                       </IonItem>
                     </IonCardContent>
                   </IonCard>
-                  //   )}
-                  // </div>
-                ))}
-              </>
-            </IonCardContent>
+                )}
+              </div>
+            ))}
           </>
-        )}
+        </IonCardContent>
       </IonContent>
 
       <CreateGroup

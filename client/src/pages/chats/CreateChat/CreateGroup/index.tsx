@@ -38,7 +38,6 @@ const CreateGroup: FC<GroupProps> = ({
   const [selectedUser, setSelectedUser] = useState<any[]>([]);
   const [name, setName] = useState<string>("");
   const [avatar, setAvatar] = useState<string>("");
-  const [filteredUser, setFilteredUser] = useState<any[]>([]);
   const [openUserAlert, setOpenUserAlert] = useState<boolean>(false);
   const [openNameAlert, setOpenNameAlert] = useState<boolean>(false);
 
@@ -102,10 +101,11 @@ const CreateGroup: FC<GroupProps> = ({
           ></IonInput>
         </div>
         <SearchUsers
-          setFilteredUser={setFilteredUser}
+          type="group"
           placeholder="Search Users..."
+          handleSelectUser={handleSelectUser}
         />
-
+        {/* 
         {filteredUser.map((user: any, index: any) => (
           <div key={index}>
             {user._id !== userId && (
@@ -130,7 +130,7 @@ const CreateGroup: FC<GroupProps> = ({
               </IonCard>
             )}
           </div>
-        ))}
+        ))} */}
       </IonContent>
       <IonAlert
         isOpen={openNameAlert}
