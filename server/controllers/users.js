@@ -40,7 +40,6 @@ const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).exec();
 
-    console.log("user", user);
     if (!user) {
       return res.status(404).json({
         message: "The User with the given ID was not found.",
@@ -59,9 +58,29 @@ const updateUser = async (req, res) => {
       });
       user.avatar = result.url;
     }
-
-    user.phone = phone || user.phone;
+    const userId = req.params.id;
+    if (username !== user.username) {
+      if (id !== userId) {
+        const existingUser = await User.findOne({
+          $or: [
+            {
+              username: req.body.username,
+            },
+          ],
+        });
+        if (existingUser) {
+          return res.status(400).send({ message: "User already exits" });
+        }
+        return res.status(400).send({ message: "User already exits" });
+      } else {
+        user.username = username;
+      }
+      // if (user._id !== userId) {
+      //   username = user.username;
+      // }
+    }
     user.username = username || user.username;
+    user.phone = phone || user.phone;
 
     await user.save();
 

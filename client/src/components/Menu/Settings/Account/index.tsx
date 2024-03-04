@@ -43,16 +43,20 @@ const Settings: React.FC = () => {
   const [message, setMessage] = useState<any>("");
   const [useAvatar, setUseAvatar] = useState<string>("");
 
-  const {
-    mutate: userMutate,
-    isLoading: isUserLoading,
-    error: userError,
-  } = useMutation({
-    mutationKey: ["user"],
-    mutationFn: (userId: string) => getUser(userId),
+  // const {
+  //   mutate: userMutate,
+  //   isLoading: isUserLoading,
+  //   error: userError,
+  // } = useMutation({
+  //   mutationKey: ["user"],
+  //   mutationFn: (userId: string) => getUser(userId),
+  // });
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUser(userId),
   });
 
-  const { mutate, isLoading, error } = useMutation({
+  const { mutate, isLoading, isError } = useMutation({
     mutationKey: ["updateUser"],
     mutationFn: (newData: any) => updateUser(userId, newData),
   });
@@ -62,17 +66,22 @@ const Settings: React.FC = () => {
   };
 
   useEffect(() => {
-    try {
-      userMutate(userId, {
-        onSuccess: (data: any) => {
-          console.log("user", data.user);
-          reset(data?.user);
-        },
-      });
-    } catch (error) {
-      console.log(error);
+    if (user) {
+      reset(user?.user);
     }
-  }, []);
+  }, [user]);
+
+  // useEffect(() => {
+  //   try {
+  //     user(userId, {
+  //       onSuccess: (data: any) => {
+  //         reset(data?.user);
+  //       },
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, []);
 
   const onSubmit = (data: RegisterConfig) => {
     try {
@@ -86,7 +95,8 @@ const Settings: React.FC = () => {
           setShowToast(true);
         },
         onError: (error) => {
-          console.log("Could not create user", error);
+          setMessage("Could not create user. The username already exists.");
+          setShowToast(true);
         },
       });
     } catch (error) {
@@ -98,19 +108,8 @@ const Settings: React.FC = () => {
     <IonContent>
       <IonCard>
         <IonCardContent>
-          {isLoading && <Loading showLoading={isLoading} />}
+          <Loading showLoading={isLoading} />
           <form onSubmit={handleSubmit(onSubmit)}>
-            <IonInput
-              fill="outline"
-              labelPlacement="floating"
-              label="Enter Phone"
-              className="ion-margin-top"
-              {...register("phone", { required: true })}
-            />
-            {errors.phone && (
-              <p style={{ color: "red" }}>{errors.phone?.message}</p>
-            )}
-
             <IonInput
               fill="outline"
               labelPlacement="floating"
@@ -119,12 +118,29 @@ const Settings: React.FC = () => {
               {...register("username", { required: true })}
             />
             {errors.username && (
-              <p style={{ color: "red" }}>{errors.username?.message}</p>
+              <div className="auth-error-box">
+                <p className="auth-error-text">{errors.username?.message}</p>
+              </div>
+            )}
+
+            <IonInput
+              fill="outline"
+              labelPlacement="floating"
+              label="Enter Phone"
+              className="ion-margin-top"
+              {...register("phone", { required: true })}
+            />
+            {errors.phone && (
+              <div className="auth-error-box">
+                <p className="auth-error-text">{errors.phone?.message}</p>
+              </div>
             )}
 
             <HidePassword register={register} />
             {errors.password && (
-              <p style={{ color: "red" }}>{errors.password?.message}</p>
+              <div className="auth-error-box">
+                <p className="auth-error-text">{errors.password?.message}</p>
+              </div>
             )}
             <ImagePicker
               onChange={handleImage}
@@ -145,6 +161,7 @@ const Settings: React.FC = () => {
             showToast={showToast}
             message={message}
             setShowToast={setShowToast}
+            isError={isError}
           />
         </IonCardContent>
       </IonCard>

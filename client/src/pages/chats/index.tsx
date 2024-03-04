@@ -108,7 +108,6 @@ const Inbox: React.FC = () => {
     }
   };
 
-  console.log("data", data);
   return (
     <>
       <Menu />
@@ -160,16 +159,16 @@ const Inbox: React.FC = () => {
             </IonCard>
           ) : (
             <div>
-              <p
+              {/* <p
                 style={{
                   fontWeight: "bold",
                   fontSize: "14px",
                   paddingLeft: "10px",
-                  color: "var(--ion-color-success)",
+                  color: "var(--ion-color-primary)",
                 }}
               >
-                {/* Messages({data?.chats.length}) */}
-              </p>
+                Messages({data?.chats.length})
+              </p> */}
               {data?.chats?.map((chat: any, index: any) => {
                 sortChats(data?.chats);
                 return (
@@ -186,7 +185,6 @@ const Inbox: React.FC = () => {
                       }}
                       routerLink={`/chat/${chat._id}`}
                       onClick={() => {
-                        console.log("selected chat", chat);
                         // joinRoom(chat._id);
                       }}
                     >
@@ -218,7 +216,7 @@ const Inbox: React.FC = () => {
                         >
                           <IonLabel
                             style={{ fontWeight: "bold" }}
-                            color="success"
+                            color="primary"
                           >
                             {chat.type === "private"
                               ? getName(chat)

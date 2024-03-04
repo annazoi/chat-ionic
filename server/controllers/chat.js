@@ -9,7 +9,6 @@ const createChat = async (req, res) => {
       type: "private",
     });
     if (existingChat.length > 0) {
-      console.log(existingChat);
       return res.status(400).json({ exist: true, chatId: existingChat[0]._id });
     }
   }

@@ -16,7 +16,7 @@ import { chatbubblesOutline } from "ionicons/icons";
 import React, { useState } from "react";
 import { authStore } from "../../../store/auth";
 import { createChat } from "../../../services/chat";
-import Group from "./Group";
+import CreateGroup from "./CreateGroup";
 import SearchUsers from "../../../components/SearchUsers";
 import userDefaultAvatar from "../../../assets/user.png";
 
@@ -43,6 +43,7 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
       { type: "private", members: [userId, memberId] },
       {
         onSuccess: (res: any) => {
+          console.log(res);
           if (res.exist) {
             router.push(`/chat/${res.chatId}`);
           } else {
@@ -73,32 +74,38 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
               >
                 Create a Group
               </IonButton>
-              {filteredUser.map((user: any, index: number) => (
-                <IonCard
-                  key={user._id}
-                  onClick={() => {
-                    createPrivateChat(index, user._id);
-                  }}
-                >
-                  <IonCardContent className="ion-no-padding">
-                    <IonItem lines="none">
-                      <IonAvatar slot="start">
-                        <IonImg
-                          src={user.avatar ? user.avatar : userDefaultAvatar}
-                        />
-                      </IonAvatar>
-                      <IonLabel>{user.username}</IonLabel>
-                      <IonIcon icon={chatbubblesOutline}></IonIcon>
-                    </IonItem>
-                  </IonCardContent>
-                </IonCard>
-              ))}
+              <>
+                {filteredUser.map((user: any, index: number) => (
+                  // <div key={user._id}>
+                  //   {userId !== user._id && (
+                  <IonCard
+                    key={user._id}
+                    onClick={() => {
+                      createPrivateChat(index, user._id);
+                    }}
+                  >
+                    <IonCardContent className="ion-no-padding">
+                      <IonItem lines="none">
+                        <IonAvatar slot="start">
+                          <IonImg
+                            src={user.avatar ? user.avatar : userDefaultAvatar}
+                          />
+                        </IonAvatar>
+                        <IonLabel>{user.username}</IonLabel>
+                        <IonIcon icon={chatbubblesOutline}></IonIcon>
+                      </IonItem>
+                    </IonCardContent>
+                  </IonCard>
+                  //   )}
+                  // </div>
+                ))}
+              </>
             </IonCardContent>
           </>
         )}
       </IonContent>
 
-      <Group
+      <CreateGroup
         closeModal={closeModal}
         setOpenGroupModal={() => {
           setOpenGroupModal(false);

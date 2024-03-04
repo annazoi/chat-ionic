@@ -53,9 +53,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
     queryFn: () => getChat(chatId),
-    onSuccess: (res: any) => {
-      console.log("chat query", res.chat.messages);
-    },
+    onSuccess: (res: any) => {},
   });
 
   const handleImage = (avatar: string) => {
@@ -68,7 +66,6 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
     try {
       mutateChat(chatId, {
         onSuccess: (data: any) => {
-          console.log("chat", data.chat);
           setAvatar(data?.chat.avatar);
           reset({
             avatar: avatar
@@ -87,7 +84,6 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
     try {
       updatedMutate(data, {
         onSuccess: (res: any) => {
-          console.log("success mutate", res);
           window.location.reload();
           closeModal();
         },
@@ -155,8 +151,6 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
             onClick={() => {
               register("members", { required: true });
               setMember([...member, user]);
-
-              console.log("new member", member);
             }}
           >
             <IonCardContent className="ion-no-padding">

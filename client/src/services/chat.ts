@@ -28,7 +28,7 @@ export const createChat = async (payload: CreateChatConfig) => {
     );
     return response.data;
   } catch (err: any) {
-    return err.response.data;
+    throw err;
   }
 };
 export const getChats = async () => {
@@ -36,7 +36,7 @@ export const getChats = async () => {
     const response = await Axios.get(`${API_URL}/chat`, getConfig());
     return response.data;
   } catch (err: any) {
-    return err;
+    throw err;
   }
 };
 export const getChat = async (id: string) => {
@@ -45,7 +45,7 @@ export const getChat = async (id: string) => {
     return response.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };
 
@@ -59,7 +59,7 @@ export const sendMessage = async (id: string, message: string) => {
     return response.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };
 
@@ -73,7 +73,7 @@ export const updatedChat = async (id: string, payload: any) => {
     return response.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };
 
@@ -83,6 +83,6 @@ export const deleteChat = async (id: string) => {
     return response.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };

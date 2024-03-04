@@ -18,7 +18,7 @@ export const getUser = async (id: string) => {
     return res.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };
 
@@ -28,17 +28,16 @@ export const getUsers = async () => {
     return res.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };
 
 export const updateUser = async (id: string, data: any) => {
   try {
     const res = await Axios.put(`${API_URL}/users/${id}`, data, getConfig());
-
     return res.data;
   } catch (err: any) {
     console.log("err", err);
-    return err;
+    throw err;
   }
 };

@@ -5,7 +5,6 @@ const cloudinary = require("../utils/cloudinary");
 
 const register = async (req, res, next) => {
   const { phone, username, password, avatar } = req.body;
-  console.log(req.body);
 
   let existingUser;
   try {

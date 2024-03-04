@@ -1,7 +1,21 @@
 import { useRef, useState, useEffect } from "react";
 import "./style.css";
 
-const ImagePicker = ({ name = "image", onChange, value }: any) => {
+interface ImagePickerProps {
+  name?: string;
+  onChange: (event: any) => void;
+  value?: any;
+  text?: any;
+  register?: any;
+}
+
+const ImagePicker = ({
+  name,
+  onChange,
+  value,
+  text,
+  register,
+}: ImagePickerProps) => {
   const imageRef: any = useRef(null);
   const [image, setImage] = useState(null);
 
@@ -78,10 +92,10 @@ const ImagePicker = ({ name = "image", onChange, value }: any) => {
             </svg>
           </div>
           <p
-            className="image-container "
-            style={{ color: "var(--ion-color-primary)" }}
+            className="image-container"
+            style={{ color: "var(--ion-color-primary)", paddingBottom: "20px" }}
           >
-            Your Avatar
+            {text ? text : "You can upload an image here"}
           </p>
         </>
       )}

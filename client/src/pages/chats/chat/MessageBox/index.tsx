@@ -1,12 +1,6 @@
-import {
-  IonAvatar,
-  IonCard,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-} from "@ionic/react";
+import { IonCard, IonCardSubtitle } from "@ionic/react";
 import React, { useRef, useState } from "react";
-import { authStore } from "../../store/auth";
+import { authStore } from "../../../../store/auth";
 import "./style.css";
 
 interface MessageConfig {
@@ -40,7 +34,9 @@ const MessageBox: React.FC<MessageConfig> = ({ message }) => {
         </p>
       </IonCard>
       {timeOpen && (
-        <IonCardSubtitle color="dark">{message.createdAt}</IonCardSubtitle>
+        <div color="dark" className="timer-box">
+          {message.createdAt}
+        </div>
       )}
     </>
   );

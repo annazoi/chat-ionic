@@ -32,7 +32,7 @@ import { useParams } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import { authStore } from "../../../store/auth";
 // import { useSocket } from "../../../hooks/sockets";
-import MessageBox from "../../../components/MessageBox";
+import MessageBox from "./MessageBox";
 import userDefaulfAvatar from "../../../assets/user.png";
 
 import "./style.css";
@@ -65,7 +65,6 @@ const Chat: React.FC = () => {
     // refetchInterval: !isTyping ? 1000 : false,
     queryFn: () => getChat(chatId),
     onSuccess: (res: any) => {
-      console.log("chat query", res.chat.messages);
       setMessages(res.chat.messages);
       setChat(res.chat);
     },
@@ -91,10 +90,10 @@ const Chat: React.FC = () => {
   //   },1000)
   // },[])
 
+  // sockets
   // useEffect(() => {
   //   socket?.emit("join_room", chatId);
   // }, [socket]);
-
   // useEffect(() => {
   //   socket?.on("receive_message", (message: any) => {
   //     console.log("receive_message", message);
@@ -111,7 +110,6 @@ const Chat: React.FC = () => {
       { chatId },
       {
         onSuccess: (res: any) => {
-          console.log("success mutate", res);
           router.push("/inbox", "forward", "replace");
         },
         onError: (error: any) => {
@@ -127,7 +125,6 @@ const Chat: React.FC = () => {
       { chatId, newMessage },
       {
         onSuccess: (res: any) => {
-          console.log("success mutate", res);
           const messageData = {
             ...res.chat.messages[res.chat.messages.length - 1],
             room: chatId,

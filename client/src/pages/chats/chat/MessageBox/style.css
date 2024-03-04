@@ -20,3 +20,13 @@
   width: 250px;
   background-color: var(--ion-color-secondary);
 }
+
+.timer-box {
+  height: 100%;
+  padding: 6px;
+  align-items: center;
+  background-color: var(--ion-color-secondary);
+  box-shadow: 0 5px 8px 0 var(--ion-color-primary);
+  border-radius: 50px;
+  font-size: 12px;
+}

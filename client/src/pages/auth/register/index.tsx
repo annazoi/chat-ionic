@@ -39,7 +39,7 @@ const Register: React.FC = () => {
   const { logIn } = authStore((store: any) => store);
 
   const [showToast, setShowToast] = useState(false);
-  const [message, setMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
 
   const {
     register,
@@ -56,23 +56,20 @@ const Register: React.FC = () => {
     resolver: yupResolver(registerSchema),
   });
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isLoading, isError } = useMutation({
     mutationFn: registerUser,
   });
 
   const handleImage = (avatar: string) => {
     setValue("avatar", avatar);
-    console.log("imag", avatar);
   };
 
   const router = useIonRouter();
 
   const onSubmit = async (data: any) => {
-    console.log("dat", data);
     try {
       mutate(data, {
         onSuccess: (data: any) => {
-          console.log("success", data);
           if (data.avatar === undefined || data.avatar === " ") {
             data.avatar = "";
           }
@@ -82,16 +79,18 @@ const Register: React.FC = () => {
             avatar: data?.avatar,
             username: data.username,
           });
-          setMessage("Form submitted successfully!");
+          setToastMessage("Form submitted successfully!");
           setShowToast(true);
           router.push("/inbox", "forward", "replace");
           // window.location.reload();
         },
         onError: (error) => {
-          console.log("Could not create user", error);
+          setToastMessage(
+            "Could not create user. The username already exists."
+          );
+          setShowToast(true);
         },
       });
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -109,7 +108,13 @@ const Register: React.FC = () => {
           <Title title="Register" />
         </IonToolbar>
       </IonHeader>
-      <IonContent class="ion-padding">
+      <div
+        style={{
+          alignItems: "flex-start",
+          display: "flex",
+          height: "100%",
+        }}
+      >
         <IonCard className="auth-card">
           <img
             src={Logo}
@@ -131,21 +136,28 @@ const Register: React.FC = () => {
                 label="Entrer Username"
                 register={register("username", { required: true })}
               ></Input>
-              <div className="auth-error-box">
-                <p className="auth-error-text">{errors.username?.message}</p>
-              </div>
+              {errors.username && (
+                <div className="auth-error-box">
+                  <p className="auth-error-text">{errors.username?.message}</p>
+                </div>
+              )}
+
               <Input
                 label="Entrer Phone"
                 register={register("phone", { required: true })}
               ></Input>
-              <div className="auth-error-box">
-                <p className="auth-error-text">{errors.phone?.message}</p>
-              </div>
+              {errors.phone && (
+                <div className="auth-error-box">
+                  <p className="auth-error-text">{errors.phone?.message}</p>
+                </div>
+              )}
 
               <HidePassword register={register} />
-              <div className="auth-error-box">
-                <p className="auth-error-text">{errors.password?.message}</p>
-              </div>
+              {errors.password && (
+                <div className="auth-error-box">
+                  <p className="auth-error-text">{errors.password?.message}</p>
+                </div>
+              )}
 
               <ImagePicker onChange={handleImage}></ImagePicker>
 
@@ -161,12 +173,13 @@ const Register: React.FC = () => {
             </form>
             <Toast
               showToast={showToast}
-              message={message}
+              message={toastMessage}
               setShowToast={setShowToast}
+              isError={isError}
             />
           </IonCardContent>
         </IonCard>
-      </IonContent>
+      </div>
     </IonPage>
   );
 };

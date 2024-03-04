@@ -56,8 +56,6 @@ const Login: React.FC = () => {
     try {
       mutate(data, {
         onSuccess: (data: any) => {
-          console.log("success", data);
-
           logIn({
             token: data.token,
             userId: data.userId,
@@ -137,6 +135,7 @@ const Login: React.FC = () => {
               showToast={showToast}
               message={message}
               setShowToast={setShowToast}
+              isError={isError}
             />
           </IonCardContent>
           <IonButton

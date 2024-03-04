@@ -28,7 +28,7 @@ interface GroupProps {
   openGroupModal: any;
 }
 
-const Group: FC<GroupProps> = ({
+const CreateGroup: FC<GroupProps> = ({
   closeModal,
   setOpenGroupModal,
   openGroupModal,
@@ -58,7 +58,6 @@ const Group: FC<GroupProps> = ({
         { name, type: "group", avatar, members: [...members, userId] },
         {
           onSuccess: (res: any) => {
-            console.log(res);
             setOpenGroupModal(false);
             closeModal();
             router.push(`/chat/${res.chat._id}`);
@@ -86,12 +85,16 @@ const Group: FC<GroupProps> = ({
       title="New Group"
     >
       <IonContent className="ion-padding">
-        <ImagePicker onChange={handleImage} value={avatar}></ImagePicker>
-        <div style={{ padding: "8px" }}>
+        <ImagePicker
+          onChange={handleImage}
+          value={avatar}
+          text="You can add a group image."
+        ></ImagePicker>
+        <div style={{ padding: "8px", paddingTop: "20px" }}>
           <IonInput
             fill="outline"
             labelPlacement="floating"
-            label="Enter Group Name"
+            label="Enter group name"
             value={name}
             onIonChange={(e: any) => {
               setName(e.detail.value);
@@ -128,21 +131,6 @@ const Group: FC<GroupProps> = ({
             )}
           </div>
         ))}
-        <div>
-          <IonItem>
-            <IonLabel>Selected Users</IonLabel>
-            {/* {selectedUsers.map((userId: string, index: number) => {
-              const user = data?.find((user: any) => user._id === userId);
-              return (
-                <IonAvatar key={index} slot="start">
-                  <IonImg
-                    src={user?.avatar ? user.avatar : userDefaultAvatar}
-                  />
-                </IonAvatar>
-              );
-            })} */}
-          </IonItem>
-        </div>
       </IonContent>
       <IonAlert
         isOpen={openNameAlert}
@@ -160,4 +148,4 @@ const Group: FC<GroupProps> = ({
   );
 };
 
-export default Group;
+export default CreateGroup;
