@@ -43,12 +43,13 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
       { type: "private", members: [userId, memberId] },
       {
         onSuccess: (res: any) => {
-          if (res.exist) {
-            router.push(`/chat/${res.chatId}`);
-          } else {
-            router.push(`/chat/${res.chat._id}`);
-            refetch();
-          }
+          // if (res.exist) {
+          router.push(`/chat/${res.chat._id}`);
+
+          // } else {
+          // router.push(`/chat/${res.chat._id}`);
+          refetch();
+          // }
           closeModal();
         },
       }
@@ -63,7 +64,6 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
             type="private"
             onUsersFiltered={(users) => {
               setFilteredUsers(users);
-              console.log("users", users);
             }}
             placeholder="Search Users..."
           />
