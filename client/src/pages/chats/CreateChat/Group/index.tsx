@@ -1,4 +1,5 @@
 import {
+  IonAlert,
   IonAvatar,
   IonCard,
   IonCardContent,
@@ -20,6 +21,7 @@ import ConfirmModal from "../../../../components/ConfirmModal";
 import ImagePicker from "../../../../components/ImagePicker";
 import userDefaultAvatar from "../../../../assets/user.png";
 import SearchUsers from "../../../../components/SearchUsers";
+import { set } from "react-hook-form";
 interface GroupProps {
   closeModal: any;
   setOpenGroupModal: any;
@@ -33,24 +35,12 @@ const Group: FC<GroupProps> = ({
 }) => {
   const { userId } = authStore((store: any) => store);
   const router = useIonRouter();
-  const [selectedUsers, setSelectedUser] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any[]>([]);
   const [name, setName] = useState<string>("");
   const [avatar, setAvatar] = useState<string>("");
-  const [searchValue, setSearchValue] = useState<string>("");
   const [filteredUser, setFilteredUser] = useState<any[]>([]);
-
-  const { data } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => getUsers(),
-    select: (data: any) => {
-      if (searchValue) {
-        return data.filter((user: any) =>
-          user.username.toLowerCase().includes(searchValue.toLowerCase())
-        );
-      }
-      return data;
-    },
-  });
+  const [openUserAlert, setOpenUserAlert] = useState<boolean>(false);
+  const [openNameAlert, setOpenNameAlert] = useState<boolean>(false);
 
   const { mutate } = useMutation({
     mutationFn: ({ name, type, avatar, members }: any) =>
@@ -62,8 +52,8 @@ const Group: FC<GroupProps> = ({
   };
 
   const createGroupChat = () => {
-    if (selectedUsers.length > 1 && name !== "") {
-      let members = selectedUsers;
+    if (selectedUser.length > 1 && name !== "") {
+      let members = selectedUser;
       mutate(
         { name, type: "group", avatar, members: [...members, userId] },
         {
@@ -75,23 +65,17 @@ const Group: FC<GroupProps> = ({
           },
         }
       );
-    } else if (selectedUsers.length <= 1) {
-      alert("Please select more users");
+    } else if (selectedUser.length <= 1) {
+      setOpenUserAlert(true);
     } else if (name === "") {
-      alert("Please enter group name");
+      setOpenNameAlert(true);
     }
   };
 
-  const selectUser = (e: any, userId: string) => {
+  const handleSelectUser = (e: any, userId: string) => {
     if (e.detail.checked) {
-      setSelectedUser([...selectedUsers, userId]);
-    } else {
-      setSelectedUser(selectedUsers.filter((id) => id !== userId));
+      setSelectedUser([...selectedUser, userId]);
     }
-  };
-
-  const hadleSearchValue = (e: any) => {
-    setSearchValue(e.target.value);
   };
 
   return (
@@ -116,7 +100,7 @@ const Group: FC<GroupProps> = ({
         </div>
         <SearchUsers
           setFilteredUser={setFilteredUser}
-          placeholder="Search for users"
+          placeholder="Search Users..."
         />
 
         {filteredUser.map((user: any, index: any) => (
@@ -132,8 +116,8 @@ const Group: FC<GroupProps> = ({
                     </IonAvatar>
                     <IonCheckbox
                       labelPlacement="start"
-                      checked={selectedUsers.includes(user._id)}
-                      onIonChange={(e) => selectUser(e, user._id)}
+                      checked={selectedUser.includes(user._id)}
+                      onIonChange={(e) => handleSelectUser(e, user._id)}
                       value={user._id}
                     >
                       <IonLabel>{user.username}</IonLabel>
@@ -144,7 +128,34 @@ const Group: FC<GroupProps> = ({
             )}
           </div>
         ))}
+        <div>
+          <IonItem>
+            <IonLabel>Selected Users</IonLabel>
+            {/* {selectedUsers.map((userId: string, index: number) => {
+              const user = data?.find((user: any) => user._id === userId);
+              return (
+                <IonAvatar key={index} slot="start">
+                  <IonImg
+                    src={user?.avatar ? user.avatar : userDefaultAvatar}
+                  />
+                </IonAvatar>
+              );
+            })} */}
+          </IonItem>
+        </div>
       </IonContent>
+      <IonAlert
+        isOpen={openNameAlert}
+        message="Please selecte group name."
+        buttons={["Close"]}
+        onDidDismiss={() => setOpenNameAlert(false)}
+      ></IonAlert>
+      <IonAlert
+        isOpen={openUserAlert}
+        message="Please select at least 2 users to create a group chat."
+        buttons={["Close"]}
+        onDidDismiss={() => setOpenUserAlert(false)}
+      ></IonAlert>
     </ConfirmModal>
   );
 };

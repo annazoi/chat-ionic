@@ -21,9 +21,9 @@ import { useEffect, useState } from "react";
 import { create, sync } from "ionicons/icons";
 import { getChats } from "../../services/chat";
 import React from "react";
-import Users from "./CreateChat";
+import CreateChat from "./CreateChat";
 import Modal from "../../components/ui/Modal";
-import { useSocket } from "../../hooks/sockets";
+// import { useSocket } from "../../hooks/sockets";
 import { RiGroup2Fill } from "react-icons/ri";
 import { IoPersonCircleSharp } from "react-icons/io5";
 import Title from "../../components/ui/Title";
@@ -37,24 +37,25 @@ const Inbox: React.FC = () => {
 
   const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);
 
-  const { socket } = useSocket();
+  // const { socket } = useSocket();
 
   const { data, isLoading, refetch } = useQuery<any>({
     queryKey: ["chats"],
     queryFn: getChats,
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
+    // refetchInterval: 1000,
   });
 
-  const joinRoom = (chatId: string) => {
-    socket.emit("join_room", chatId);
-  };
+  // const joinRoom = (chatId: string) => {
+  //   socket.emit("join_room", chatId);
+  // };
 
-  useEffect(() => {
-    socket?.on("new_message", (data: any) => {
-      console.log("new message", data);
-    });
-  }, [socket]);
+  // useEffect(() => {
+  //   socket?.on("new_message", (data: any) => {
+  //     console.log("new message", data);
+  //   });
+  // }, [socket]);
 
   const handleLastMessage = (chat: any) => {
     const lastMessage = chat?.messages[chat.messages.length - 1];
@@ -71,6 +72,21 @@ const Inbox: React.FC = () => {
         return lastMessage.senderId.username + ": " + lastMessage.message;
       }
     }
+  };
+
+  const sortChats = (chats: any) => {
+    const sortedChats = chats.sort((a: any, b: any) => {
+      if (a.messages.length === 0) {
+        return 1;
+      }
+      if (b.messages.length === 0) {
+        return -1;
+      }
+      const aDate = new Date(a.messages[a.messages.length - 1]?.createdAt);
+      const bDate = new Date(b.messages[b.messages.length - 1]?.createdAt);
+      return bDate.getTime() - aDate.getTime();
+    });
+    return sortedChats;
   };
 
   const getRefresh = () => {
@@ -155,6 +171,7 @@ const Inbox: React.FC = () => {
                 {/* Messages({data?.chats.length}) */}
               </p>
               {data?.chats?.map((chat: any, index: any) => {
+                sortChats(data?.chats);
                 return (
                   <div key={index}>
                     {isLoading && (
@@ -170,7 +187,7 @@ const Inbox: React.FC = () => {
                       routerLink={`/chat/${chat._id}`}
                       onClick={() => {
                         console.log("selected chat", chat);
-                        joinRoom(chat._id);
+                        // joinRoom(chat._id);
                       }}
                     >
                       <div style={{ display: "flex" }}>
@@ -211,7 +228,6 @@ const Inbox: React.FC = () => {
                             {handleLastMessage(chat)}
                           </IonText>
                         </div>
-                        {/* </IonItem> */}
                       </div>
                     </IonCard>
                   </div>
@@ -248,10 +264,11 @@ const Inbox: React.FC = () => {
             setOpenCreateChat(false);
           }}
         >
-          <Users
+          <CreateChat
             closeModal={() => {
               setOpenCreateChat(false);
             }}
+            refetch={refetch}
           />
         </Modal>
       </IonPage>

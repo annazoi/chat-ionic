@@ -1,0 +1,4 @@
+/* This is added for the flashing that happens when toggling between themes */
+ion-item {
+  --transition: none;
+}

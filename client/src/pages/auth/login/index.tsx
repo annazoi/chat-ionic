@@ -9,8 +9,11 @@ import {
   IonCard,
   IonCardContent,
   IonProgressBar,
+  IonPopover,
+  IonItem,
+  IonToast,
 } from "@ionic/react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../../../services/auth";
@@ -108,11 +111,16 @@ const Login: React.FC = () => {
                 register={register("username", { required: true })}
               ></Input>
               {errors.username && (
-                <p style={{ color: "red" }}>{errors.username?.message}</p>
+                <div className="auth-error-box">
+                  <p className="auth-error-text">{errors.username?.message}</p>
+                </div>
+                // <p className="auth-error">{errors.username?.message}</p>
               )}
               <HidePassword register={register} />
               {errors.password && (
-                <p style={{ color: "red" }}>{errors.password?.message}</p>
+                <div className="auth-error-box">
+                  <p className="auth-error-text">{errors.password?.message}</p>
+                </div>
               )}
               <IonButton
                 type="submit"
@@ -131,7 +139,12 @@ const Login: React.FC = () => {
               setShowToast={setShowToast}
             />
           </IonCardContent>
-          <IonButton routerLink="/register" fill="clear" expand="block">
+          <IonButton
+            routerLink="/register"
+            fill="clear"
+            expand="block"
+            id="click-trigger"
+          >
             Create New Account
           </IonButton>
         </IonCard>

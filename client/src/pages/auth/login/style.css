@@ -22,3 +22,23 @@
   border: 1px solid var(--ion-color-secondary);
   box-shadow: 0px 0px 15px 0px var(--ion-color-secondary);
 }
+.auth-error-box {
+  display: flex;
+  width: 200px;
+  flex-direction: column;
+  max-width: 130px;
+  justify-content: center;
+  margin: auto;
+  margin-top: 10px;
+  border-radius: 30px;
+  align-self: center;
+  background: #b67a7a;
+  box-shadow: 0px 0px 10px 0px var(--ion-color-danger);
+}
+
+.auth-error-text {
+  color: var(--ion-color-danger);
+  text-align: center;
+  /* letter-spacing: 1px; */
+  font-weight: bold;
+}

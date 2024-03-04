@@ -131,25 +131,22 @@ const Register: React.FC = () => {
                 label="Entrer Username"
                 register={register("username", { required: true })}
               ></Input>
+              <div className="auth-error-box">
+                <p className="auth-error-text">{errors.username?.message}</p>
+              </div>
               <Input
                 label="Entrer Phone"
                 register={register("phone", { required: true })}
               ></Input>
-              {errors.phone && (
-                <p style={{ color: "red" }}>{errors.phone?.message}</p>
-              )}
-
-              {errors.username && (
-                <p style={{ color: "red" }}>{errors.username?.message}</p>
-              )}
+              <div className="auth-error-box">
+                <p className="auth-error-text">{errors.phone?.message}</p>
+              </div>
 
               <HidePassword register={register} />
-              {errors.password && (
-                <p style={{ color: "red" }}>{errors.password?.message}</p>
-              )}
-              {errors.password && (
-                <p style={{ color: "red" }}>{errors.password?.message}</p>
-              )}
+              <div className="auth-error-box">
+                <p className="auth-error-text">{errors.password?.message}</p>
+              </div>
+
               <ImagePicker onChange={handleImage}></ImagePicker>
 
               <IonButton

@@ -39,31 +39,33 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).exec();
-    if (!user)
+
+    console.log("user", user);
+    if (!user) {
       return res.status(404).json({
         message: "The User with the given ID was not found.",
         user: null,
       });
-
-    let query = { $set: {} };
-    for (let key in req.body) {
-      if (user[key]) {
-        if (key == "password") {
-          req.body[key] = await bcrypt.hash(req.body[key], 10);
-        } else if (key == "avatar") {
-          const result = await cloudinary.uploader.upload(req.body[key], {
-            folder: "users",
-          });
-          req.body[key] = result.url;
-        }
-        query.$set[key] = req.body[key];
-      }
     }
-    await User.updateOne({ _id: req.params.id }, query).exec();
 
-    const userInfo = await User.findById(req.params.id, "-password").exec();
+    const { phone, username, password, avatar } = req.body;
 
-    res.status(201).json({ message: "ok", user: userInfo });
+    if (password) {
+      user.password = await bcrypt.hash(password, 10);
+    }
+    if (avatar !== user.avatar) {
+      const result = await cloudinary.uploader.upload(avatar, {
+        folder: "users",
+      });
+      user.avatar = result.url;
+    }
+
+    user.phone = phone || user.phone;
+    user.username = username || user.username;
+
+    await user.save();
+
+    res.status(201).json({ message: "ok", user: user });
   } catch (err) {
     res.status(404).json({ message: err, user: null });
   }

@@ -11,8 +11,7 @@ export const registerUser = async (payload: RegisterConfig) => {
       phone: payload.phone,
       username: payload.username,
       password: payload.password,
-
-      // avatar: payload.avatar,
+      avatar: payload.avatar,
     });
 
     return response.data;

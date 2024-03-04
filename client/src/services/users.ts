@@ -1,4 +1,4 @@
-  import { API_URL } from "../constants";
+import { API_URL } from "../constants";
 import Axios from "axios";
 
 import { getAuthState } from "../store/auth";
@@ -35,6 +35,7 @@ export const getUsers = async () => {
 export const updateUser = async (id: string, data: any) => {
   try {
     const res = await Axios.put(`${API_URL}/users/${id}`, data, getConfig());
+
     return res.data;
   } catch (err: any) {
     console.log("err", err);

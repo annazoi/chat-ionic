@@ -29,7 +29,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   children,
 }) => {
   return (
-    <IonModal isOpen={isOpen}>
+    <IonModal isOpen={isOpen} style={{ borderRadiues: "50%" }}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">

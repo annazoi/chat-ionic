@@ -23,16 +23,15 @@ import {
   peopleOutline,
   informationOutline,
   imagesOutline,
-  people,
   ellipsisHorizontalOutline,
   trashBinOutline,
 } from "ionicons/icons";
 import { getChat, sendMessage, deleteChat } from "../../../services/chat";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { authStore } from "../../../store/auth";
-import { useSocket } from "../../../hooks/sockets";
+// import { useSocket } from "../../../hooks/sockets";
 import MessageBox from "../../../components/MessageBox";
 import userDefaulfAvatar from "../../../assets/user.png";
 
@@ -46,20 +45,24 @@ import Title from "../../../components/ui/Title";
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
   const [newMessage, setNewMessage] = useState<string>("");
+  const messageRef = useRef<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [openMembers, setOpenMembers] = useState<boolean>(false);
-
+  const [isTyping, setIsTyping] = useState<boolean>(false);
   const router = useIonRouter();
 
   const { userId } = authStore((store: any) => store);
-  const { socket } = useSocket();
+  // const { socket } = useSocket();
 
   const [chat, setChat] = useState<any>(null);
 
-  const { data, isLoading } = useQuery<any>({
+  const contentRef = useRef<HTMLIonContentElement>(null);
+
+  const { data, isLoading, refetch } = useQuery<any>({
     queryKey: ["chat"],
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
+    // refetchInterval: !isTyping ? 1000 : false,
     queryFn: () => getChat(chatId),
     onSuccess: (res: any) => {
       console.log("chat query", res.chat.messages);
@@ -76,25 +79,32 @@ const Chat: React.FC = () => {
     mutationFn: ({ chatId }: any) => deleteChat(chatId),
   });
 
-  useEffect(() => {
-    socket?.emit("join_room", chatId);
-  }, [socket]);
+  // useEffect(()=>{
+  //     mutate();
+
+  // },[])
+
+  // useEffect(()=>{
+  //   setInterval(()=>{
+  //     if(isTyping) return;
+  //     mutate();
+  //   },1000)
+  // },[])
+
+  // useEffect(() => {
+  //   socket?.emit("join_room", chatId);
+  // }, [socket]);
+
+  // useEffect(() => {
+  //   socket?.on("receive_message", (message: any) => {
+  //     console.log("receive_message", message);
+  //     setMessages((prevMessages) => [...prevMessages, message]);
+  //   });
+  // }, [socket]);
 
   useEffect(() => {
-    socket?.on("receive_message", (message: any) => {
-      console.log("receive_message", message);
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-  }, [socket]);
-
-  useEffect(() => {
-    let lastMessage: any = document?.getElementById?.(`${messages.length - 1}`);
-    if (!lastMessage) return;
-    lastMessage.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, [messages]);
+    contentRef?.current?.scrollToBottom();
+  }, [messages, contentRef]);
 
   const deletedChat = () => {
     mutateDeleteChat(
@@ -122,8 +132,10 @@ const Chat: React.FC = () => {
             ...res.chat.messages[res.chat.messages.length - 1],
             room: chatId,
           };
-          socket?.emit("send_message", messageData);
+          // socket?.emit("send_message", messageData);
           setMessages((prevMessages) => [...prevMessages, messageData]);
+          contentRef?.current?.scrollToBottom();
+
           setNewMessage("");
         },
         onError: (error: any) => {
@@ -153,6 +165,16 @@ const Chat: React.FC = () => {
       return member.username;
     } else {
       return chat.name;
+    }
+  };
+
+  const handleInputChange = (event: any) => {
+    const { value } = event.target;
+    setNewMessage(value);
+    if (value.length > 0 && !isTyping) {
+      setIsTyping(true);
+    } else {
+      setIsTyping(false);
     }
   };
 
@@ -186,7 +208,7 @@ const Chat: React.FC = () => {
       </IonHeader>
 
       {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
-      <IonContent className="ion-padding-top">
+      <IonContent ref={contentRef} className="ion-padding-top">
         {messages.map((message: any, index: any) => {
           return (
             <div
@@ -216,38 +238,29 @@ const Chat: React.FC = () => {
         })}
       </IonContent>
 
-      <div
+      <IonItem
+        lines="none"
         style={{
           justifyItems: "flex-end",
+          border: "1px solid #9b95ec",
+          borderRadius: "10px",
+          margin: "5px",
+          boxShadow: "0px 0px 5px 0px #9b95ec",
         }}
       >
-        <IonItem
-          lines="none"
-          style={{
-            border: "1px solid #9b95ec",
-            borderRadius: "10px",
-            margin: "5px",
-            boxShadow: "0px 0px 5px 0px #9b95ec",
-          }}
-        >
-          <IonInput
-            type="text"
-            value={newMessage}
-            placeholder="Aa..."
-            onKeyPress={handleEnterPress}
-            onIonChange={(event: any) => {
-              setNewMessage(event.target.value);
-            }}
-          />
-          <IonButton onClick={sendNewMessage} expand="block" fill="clear">
-            {messageIsLoading ? (
-              <IonIcon icon={ellipsisHorizontalOutline}></IonIcon>
-            ) : (
-              <IonIcon icon={send}></IonIcon>
-            )}
-          </IonButton>
-        </IonItem>
-      </div>
+        <IonInput
+          type="text"
+          value={newMessage}
+          placeholder="Aa..."
+          onKeyPress={handleEnterPress}
+          onIonChange={handleInputChange}
+        />
+        <IonButton onClick={sendNewMessage} expand="block" fill="clear">
+          <IonIcon
+            icon={messageIsLoading ? ellipsisHorizontalOutline : send}
+          ></IonIcon>
+        </IonButton>
+      </IonItem>
       <Modal
         isOpen={openMembers}
         onClose={setOpenMembers}

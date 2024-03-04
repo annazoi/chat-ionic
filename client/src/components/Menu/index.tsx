@@ -13,6 +13,7 @@ import Modal from "../ui/Modal";
 import { authStore } from "../../store/auth";
 import Button from "../ui/Button";
 import { create, globe, logOut, settings, sync } from "ionicons/icons";
+import Title from "../ui/Title";
 
 const Menu: React.FC = () => {
   const { logOutUser } = authStore((store: any) => store);
@@ -28,8 +29,8 @@ const Menu: React.FC = () => {
     <>
       <IonMenu contentId="main-content">
         <IonHeader>
-          <IonToolbar color="tertiary">
-            <IonTitle>Menu Content</IonTitle>
+          <IonToolbar color="secondary">
+            <Title title="menu" className="ion-padding" color="light"></Title>
           </IonToolbar>
         </IonHeader>
         <IonContent>

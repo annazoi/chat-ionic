@@ -58,11 +58,6 @@ const Settings: React.FC = () => {
   });
 
   const handleImage = (avatar: string) => {
-    // if (avatar) {
-    //   setValue("avatar", avatar);
-    // } else {
-    //   setValue("avatar", userDefaultAvatar);
-    // }
     setValue("avatar", avatar);
   };
 
@@ -87,7 +82,6 @@ const Settings: React.FC = () => {
             avatar: data?.user.avatar,
             username: data?.user.username,
           });
-          console.log("success", data);
           setMessage("Form submitted successfully!");
           setShowToast(true);
         },

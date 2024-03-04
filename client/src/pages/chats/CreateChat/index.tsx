@@ -25,7 +25,7 @@ interface UsersProps {
   refetch?: any;
 }
 
-const CreateChat: React.FC<UsersProps> = ({ closeModal }) => {
+const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
   const { userId, isLoggedIn, username } = authStore((store: any) => store);
 
   const [openGroupModal, setOpenGroupModal] = React.useState<boolean>(false);
@@ -47,6 +47,7 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal }) => {
             router.push(`/chat/${res.chatId}`);
           } else {
             router.push(`/chat/${res.chat._id}`);
+            refetch();
           }
           closeModal();
         },
@@ -62,7 +63,7 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal }) => {
             <IonCardContent>
               <SearchUsers
                 setFilteredUser={setFilteredUser}
-                placeholder="Search for users"
+                placeholder="Search Users..."
               />
               <IonButton
                 style={{ marginLeft: "8px" }}

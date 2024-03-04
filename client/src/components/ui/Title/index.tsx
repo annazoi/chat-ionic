@@ -4,9 +4,10 @@ import React from "react";
 interface TitleProps {
   title: string;
   className?: string;
+  color?: string;
 }
 
-const Title: React.FC<TitleProps> = ({ title, className }) => {
+const Title: React.FC<TitleProps> = ({ title, className, color }) => {
   return (
     <IonTitle
       className={className ? className : "ion-no-padding"}
@@ -15,7 +16,7 @@ const Title: React.FC<TitleProps> = ({ title, className }) => {
         letterSpacing: "2px",
         // textAlign: "center",
       }}
-      color="primary"
+      color={color || "primary"}
     >
       {title}
     </IonTitle>
