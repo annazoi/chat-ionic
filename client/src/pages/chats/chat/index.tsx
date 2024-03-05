@@ -41,6 +41,7 @@ import Modal from "../../../components/ui/Modal";
 import ChatOptions from "../../../components/ChatOptions";
 import { RiGroup2Fill } from "react-icons/ri";
 import Title from "../../../components/ui/Title";
+import { ref } from "yup";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -117,9 +118,10 @@ const Chat: React.FC = () => {
         },
       }
     );
+    refetch();
   };
 
-  const sendNewMessage = () => {
+  const handleNewMessage = () => {
     if (newMessage === "") return;
     mutate(
       { chatId, newMessage },
@@ -144,7 +146,19 @@ const Chat: React.FC = () => {
 
   const handleEnterPress = (event: any) => {
     if (event.key === "Enter") {
-      sendNewMessage();
+      // event.preventDefault();
+      // setTimeout(handleNewMessage, 0);
+      handleNewMessage();
+    }
+  };
+
+  const handleInputChange = (event: any) => {
+    const { value } = event.target;
+    setNewMessage(value);
+    if (value.length > 0 && !isTyping) {
+      setIsTyping(true);
+    } else {
+      setIsTyping(false);
     }
   };
 
@@ -162,16 +176,6 @@ const Chat: React.FC = () => {
       return member.username;
     } else {
       return chat.name;
-    }
-  };
-
-  const handleInputChange = (event: any) => {
-    const { value } = event.target;
-    setNewMessage(value);
-    if (value.length > 0 && !isTyping) {
-      setIsTyping(true);
-    } else {
-      setIsTyping(false);
     }
   };
 
@@ -229,7 +233,11 @@ const Chat: React.FC = () => {
                 }}
                 alt=""
               />
-              <MessageBox message={message}></MessageBox>
+              <MessageBox
+                message={message}
+                chatId={chatId}
+                refetch={refetch}
+              ></MessageBox>
             </div>
           );
         })}
@@ -249,10 +257,10 @@ const Chat: React.FC = () => {
           type="text"
           value={newMessage}
           placeholder="Aa..."
-          onKeyPress={handleEnterPress}
+          onKeyUp={handleEnterPress}
           onIonChange={handleInputChange}
         />
-        <IonButton onClick={sendNewMessage} expand="block" fill="clear">
+        <IonButton onClick={handleNewMessage} expand="block" fill="clear">
           <IonIcon
             icon={messageIsLoading ? ellipsisHorizontalOutline : send}
           ></IonIcon>

@@ -49,20 +49,6 @@ export const getChat = async (id: string) => {
   }
 };
 
-export const sendMessage = async (id: string, message: string) => {
-  try {
-    const response = await Axios.post(
-      `${API_URL}/chat/${id}/message`,
-      { message },
-      getConfig()
-    );
-    return response.data;
-  } catch (err: any) {
-    console.log("err", err);
-    throw err;
-  }
-};
-
 export const updatedChat = async (id: string, payload: any) => {
   try {
     const response = await Axios.put(
@@ -80,6 +66,33 @@ export const updatedChat = async (id: string, payload: any) => {
 export const deleteChat = async (id: string) => {
   try {
     const response = await Axios.delete(`${API_URL}/chat/${id}`, getConfig());
+    return response.data;
+  } catch (err: any) {
+    console.log("err", err);
+    throw err;
+  }
+};
+
+export const sendMessage = async (id: string, message: string) => {
+  try {
+    const response = await Axios.post(
+      `${API_URL}/chat/${id}/message`,
+      { message },
+      getConfig()
+    );
+    return response.data;
+  } catch (err: any) {
+    console.log("err", err);
+    throw err;
+  }
+};
+
+export const deleteMessage = async (chatId: string, messageId: string) => {
+  try {
+    const response = await Axios.delete(
+      `${API_URL}/chat/${chatId}/message/${messageId}`,
+      getConfig()
+    );
     return response.data;
   } catch (err: any) {
     console.log("err", err);

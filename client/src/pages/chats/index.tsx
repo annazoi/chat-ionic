@@ -32,7 +32,7 @@ import userDefaulfAvatar from "../../assets/user.png";
 import { IoCreate } from "react-icons/io5";
 import Button from "../../components/ui/Button";
 
-const Inbox: React.FC = () => {
+const Chats: React.FC = () => {
   const { avatar, userId, username } = authStore((store: any) => store);
 
   const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);
@@ -44,7 +44,7 @@ const Inbox: React.FC = () => {
     queryFn: getChats,
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
-    // refetchInterval: 1000,
+    refetchInterval: 1000,
   });
 
   // const joinRoom = (chatId: string) => {
@@ -274,4 +274,4 @@ const Inbox: React.FC = () => {
   );
 };
 
-export default Inbox;
+export default Chats;
