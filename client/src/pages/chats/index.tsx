@@ -74,21 +74,6 @@ const Chats: React.FC = () => {
     }
   };
 
-  const sortChats = (chats: any) => {
-    const sortedChats = chats.sort((a: any, b: any) => {
-      if (a.messages.length === 0) {
-        return 1;
-      }
-      if (b.messages.length === 0) {
-        return -1;
-      }
-      const aDate = new Date(a.messages[a.messages.length - 1]?.createdAt);
-      const bDate = new Date(b.messages[b.messages.length - 1]?.createdAt);
-      return bDate.getTime() - aDate.getTime();
-    });
-    return sortedChats;
-  };
-
   const getRefresh = () => {
     window.location.reload();
   };
@@ -102,7 +87,6 @@ const Chats: React.FC = () => {
     const member = chat.members.find((member: any) => member._id !== userId);
     if (!member.avatar) {
       return userDefaulfAvatar;
-      // return <IoPersonCircleSharp />;
     } else {
       return member.avatar;
     }
@@ -143,7 +127,7 @@ const Chats: React.FC = () => {
         </IonHeader>
 
         <IonContent>
-          {data?.chats?.length === 0 ? (
+          {!data ? (
             <IonCard style={{ margin: "20px" }}>
               <IonCardHeader
                 style={{
@@ -169,8 +153,7 @@ const Chats: React.FC = () => {
               >
                 Messages({data?.chats.length})
               </p> */}
-              {data?.chats?.map((chat: any, index: any) => {
-                sortChats(data?.chats);
+              {data?.map((chat: any, index: any) => {
                 return (
                   <div key={index}>
                     {isLoading && (

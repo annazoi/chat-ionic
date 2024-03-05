@@ -13,6 +13,7 @@ const multer = require("multer");
 const http = require("http").Server(app);
 const io = require("socket.io");
 const { Socket } = require("dgram");
+// const port = process.env.PORT || "8100";
 
 // app.use(formidable());
 app.use(express.json({ limit: "50mb" }));
@@ -34,7 +35,7 @@ app.use("/chat", chatRoutes);
 mongoose.connect(process.env.DB_CONNECTION).then(() => {
   // Listening port
   http.listen(3000, () => {
-    console.log("App is running");
+    console.log(`Server listening at http://localhost:3000`);
   });
 });
 

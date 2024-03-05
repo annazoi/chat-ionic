@@ -34,7 +34,19 @@ export const createChat = async (payload: CreateChatConfig) => {
 export const getChats = async () => {
   try {
     const response = await Axios.get(`${API_URL}/chat`, getConfig());
-    return response.data;
+    const sortedChats = response.data.chats.sort((a: any, b: any) => {
+      if (a.messages.length === 0) {
+        return 1;
+      }
+      if (b.messages.length === 0) {
+        return -1;
+      }
+      const aDate = new Date(a.messages[a.messages.length - 1]?.createdAt);
+      const bDate = new Date(b.messages[b.messages.length - 1]?.createdAt);
+      const latestDate = bDate.getTime() - aDate.getTime();
+      return latestDate;
+    });
+    return sortedChats;
   } catch (err: any) {
     throw err;
   }

@@ -23,7 +23,6 @@ const Menu: React.FC = () => {
 
   const handleLogout = () => {
     logOutUser();
-    // router.push("/login", "forward", "replace");
   };
   return (
     <>
@@ -53,8 +52,8 @@ const Menu: React.FC = () => {
               name="Logout"
               onClick={handleLogout}
               icon={logOut}
+              routerLink={logOutUser && "/login"}
               iconSlot="start"
-              routerLink="/login"
             ></Button>
           </div>
         </IonContent>

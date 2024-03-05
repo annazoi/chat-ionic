@@ -42,6 +42,7 @@ import ChatOptions from "../../../components/ChatOptions";
 import { RiGroup2Fill } from "react-icons/ri";
 import Title from "../../../components/ui/Title";
 import { ref } from "yup";
+import { set } from "react-hook-form";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -68,10 +69,10 @@ const Chat: React.FC = () => {
     onSuccess: (res: any) => {
       setMessages(res.chat.messages);
       setChat(res.chat);
-
       // setOnDeletedMessage(true);
     },
   });
+
   const { mutate, isLoading: messageIsLoading } = useMutation({
     mutationFn: ({ chatId, newMessage }: any) =>
       sendMessage(chatId, newMessage),
@@ -86,12 +87,12 @@ const Chat: React.FC = () => {
 
   // },[])
 
-  // useEffect(()=>{
-  //   setInterval(()=>{
-  //     if(isTyping) return;
-  //     mutate();
-  //   },1000)
-  // },[])
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     if (isTyping) return;
+  //     mutateChat();
+  //   }, 10000);
+  // }, []);
 
   // sockets
   // useEffect(() => {
@@ -120,7 +121,6 @@ const Chat: React.FC = () => {
         },
       }
     );
-    refetch();
   };
 
   const handleNewMessage = () => {
@@ -136,14 +136,15 @@ const Chat: React.FC = () => {
           // socket?.emit("send_message", messageData);
           setMessages((prevMessages) => [...prevMessages, messageData]);
           contentRef?.current?.scrollToBottom();
-
           setNewMessage("");
+          setIsTyping(false);
         },
         onError: (error: any) => {
           console.log("error", error);
         },
       }
     );
+    setIsTyping(false);
   };
 
   const handleEnterPress = (event: any) => {
@@ -179,6 +180,10 @@ const Chat: React.FC = () => {
     } else {
       return chat.name;
     }
+  };
+
+  const getRefresh = () => {
+    window.location.reload();
   };
 
   return (
@@ -225,7 +230,11 @@ const Chat: React.FC = () => {
               }}
             >
               <img
-                src={message.senderId.avatar}
+                src={
+                  message.senderId.avatar
+                    ? message.senderId.avatar
+                    : userDefaulfAvatar
+                }
                 style={{
                   borderRadius: "100%",
                   height: "20px",
@@ -235,10 +244,11 @@ const Chat: React.FC = () => {
                 }}
                 alt=""
               />
+
               <MessageBox
                 message={message}
                 chatId={chatId}
-                refetch={refetch}
+                // refetch={refetch}
               ></MessageBox>
             </div>
           );

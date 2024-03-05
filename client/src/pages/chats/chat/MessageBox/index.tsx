@@ -39,7 +39,8 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
       { chatId, messageId },
       {
         onSuccess: (res: any) => {
-          refetch();
+          // setOnDeletedMessage(true);
+          // refetch();
         },
         onError: (error: any) => {
           console.log("error", error);
@@ -71,59 +72,66 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
   };
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
 
+  console.log("message", message.createdAt);
+
   return (
     <>
       <div>
-        {!onDeletedMessage && (
-          <IonCard
-            data-tooltip-id="message-tooltip"
-            data-tooltip-content={message.createdAt}
-            className={
-              userId === message.senderId._id
-                ? "userId-message"
-                : "other-message"
-            }
-            onClick={handleDeleteEvent}
-            {...longPressEvent}
+        {/* {!onDeletedMessage && ( */}
+        <IonCard
+          data-tooltip-id="message-tooltip"
+          data-tooltip-content={message.createdAt}
+          className={
+            userId === message.senderId._id ? "userId-message" : "other-message"
+          }
+          onClick={toggleTime}
+          {...longPressEvent}
+        >
+          <p
+            style={{
+              paddingLeft: "10px",
+              paddingRight: "10px",
+              color: userId === message.senderId._id ? "black" : "black",
+            }}
           >
-            <p
-              style={{
-                paddingLeft: "10px",
-                paddingRight: "10px",
-                color: userId === message.senderId._id ? "black" : "black",
-              }}
-            >
-              {message.message}
-            </p>
-          </IonCard>
-        )}
+            {message.message}
+          </p>
+        </IonCard>
+        {/* )} */}
 
-        {onDeletedMessage && (
+        {/* {onDeletedMessage && (
           <div className="deleted-message-box">user delete this message</div>
-        )}
+        )} */}
 
-        <ReactTooltip
-          id="message-tooltip"
-          place="left"
-          style={{
-            backgroundColor: "var(--ion-color-secondary)",
-            color: "white",
-            padding: "6px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-          }}
-        />
+        {message.senderId._id === userId && (
+          <ReactTooltip
+            id="message-tooltip"
+            place="left"
+            style={{
+              backgroundColor: "var(--ion-color-secondary)",
+              color: "white",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+            }}
+          />
+        )}
         {/* {timeOpen && <p className="timer-box">{message.createdAt}</p>} */}
       </div>
 
-      {openOptions && (
+      {openOptions && message.senderId._id === userId && (
         <IonAlert
           isOpen={openOptions}
           message="Are you sure you want to delete this message?"
           buttons={[
             "cancel",
-            { text: "Delete", handler: () => handleDeleteMessage(message._id) },
+            {
+              text: "Delete",
+              handler: () => {
+                handleDeleteMessage(message._id);
+              },
+            },
           ]}
           header="Delete Message"
           onDidDismiss={() => setOpenOptions(false)}

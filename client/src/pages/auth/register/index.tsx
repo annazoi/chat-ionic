@@ -108,13 +108,7 @@ const Register: React.FC = () => {
           <Title title="Register" />
         </IonToolbar>
       </IonHeader>
-      <div
-        style={{
-          alignItems: "flex-start",
-          display: "flex",
-          height: "100%",
-        }}
-      >
+      <IonContent class="ion-padding">
         <IonCard className="auth-card">
           <img
             src={Logo}
@@ -179,7 +173,7 @@ const Register: React.FC = () => {
             />
           </IonCardContent>
         </IonCard>
-      </div>
+      </IonContent>
     </IonPage>
   );
 };

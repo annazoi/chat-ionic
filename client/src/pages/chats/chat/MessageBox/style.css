@@ -11,13 +11,13 @@
 
 .userId-message {
   border-radius: 25px;
-  width: 250px;
+  max-width: 250px;
   background-color: #f4f4f4;
 }
 
 .other-message {
   border-radius: 25px;
-  width: 250px;
+  max-width: 250px;
   background-color: var(--ion-color-secondary);
 }
 
