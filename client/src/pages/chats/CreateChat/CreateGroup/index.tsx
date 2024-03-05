@@ -35,7 +35,7 @@ const CreateGroup: FC<GroupProps> = ({
 }) => {
   const { userId } = authStore((store: any) => store);
   const router = useIonRouter();
-  const [selectedUser, setSelectedUser] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [name, setName] = useState<string>("");
   const [avatar, setAvatar] = useState<string>("");
   const [openUserAlert, setOpenUserAlert] = useState<boolean>(false);
@@ -51,10 +51,9 @@ const CreateGroup: FC<GroupProps> = ({
   };
 
   const createGroupChat = () => {
-    if (selectedUser.length > 1 && name !== "") {
-      let members = selectedUser;
+    if (selectedUsers.length > 1 && name !== "") {
       mutate(
-        { name, type: "group", avatar, members: [...members, userId] },
+        { name, type: "group", avatar, members: [...selectedUsers, userId] },
         {
           onSuccess: (res: any) => {
             setOpenGroupModal(false);
@@ -63,7 +62,7 @@ const CreateGroup: FC<GroupProps> = ({
           },
         }
       );
-    } else if (selectedUser.length <= 1) {
+    } else if (selectedUsers.length <= 1) {
       setOpenUserAlert(true);
     } else if (name === "") {
       setOpenNameAlert(true);
@@ -72,7 +71,9 @@ const CreateGroup: FC<GroupProps> = ({
 
   const handleSelectUser = (e: any, userId: string) => {
     if (e.detail.checked) {
-      setSelectedUser([...selectedUser, userId]);
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter((user) => user !== userId));
     }
   };
 
@@ -104,6 +105,7 @@ const CreateGroup: FC<GroupProps> = ({
           type="group"
           placeholder="Search Users..."
           handleSelectUser={handleSelectUser}
+          selectedUsers={selectedUsers}
         />
         {/* 
         {filteredUser.map((user: any, index: any) => (

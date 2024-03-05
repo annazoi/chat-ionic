@@ -43,13 +43,8 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
       { type: "private", members: [userId, memberId] },
       {
         onSuccess: (res: any) => {
-          // if (res.exist) {
           router.push(`/chat/${res.chat._id}`);
-
-          // } else {
-          // router.push(`/chat/${res.chat._id}`);
           refetch();
-          // }
           closeModal();
         },
       }

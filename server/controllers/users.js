@@ -37,8 +37,9 @@ const deleteUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
+  const userId = req.params.id;
   try {
-    const user = await User.findById(req.params.id).exec();
+    const user = await User.findById(userId).exec();
 
     if (!user) {
       return res.status(404).json({
@@ -52,34 +53,22 @@ const updateUser = async (req, res) => {
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
-    if (avatar !== user.avatar) {
+    if (avatar && avatar !== user.avatar) {
       const result = await cloudinary.uploader.upload(avatar, {
         folder: "users",
       });
       user.avatar = result.url;
     }
-    const userId = req.params.id;
     if (username !== user.username) {
-      if (id !== userId) {
-        const existingUser = await User.findOne({
-          $or: [
-            {
-              username: req.body.username,
-            },
-          ],
-        });
-        if (existingUser) {
-          return res.status(400).send({ message: "User already exits" });
-        }
+      const existingUser = await User.findOne({
+        username,
+      });
+      if (existingUser) {
         return res.status(400).send({ message: "User already exits" });
-      } else {
-        user.username = username;
       }
-      // if (user._id !== userId) {
-      //   username = user.username;
-      // }
+      user.username = username || user.username;
     }
-    user.username = username || user.username;
+
     user.phone = phone || user.phone;
 
     await user.save();

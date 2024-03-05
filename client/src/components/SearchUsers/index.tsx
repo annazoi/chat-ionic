@@ -20,6 +20,7 @@ interface SearchUsersProps {
   className?: string;
   type?: string;
   handleSelectUser?: any;
+  selectedUsers?: any[];
 }
 
 const SearchUsers: React.FC<SearchUsersProps> = ({
@@ -27,11 +28,11 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
   className,
   type,
   handleSelectUser,
+  selectedUsers,
   onUsersFiltered,
 }) => {
   const { userId } = authStore((store: any) => store);
 
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [search, setSearch] = useState<string>("");
 
   const { data } = useQuery({
@@ -55,6 +56,10 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
   useEffect(() => {
     onUsersFiltered?.(filteredUsers || []);
   }, [filteredUsers]);
+
+  useEffect(() => {
+    console.log("selectedUsers", selectedUsers);
+  }, [selectedUsers]);
 
   return (
     <>
@@ -83,9 +88,8 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
                       </IonAvatar>
                       <IonCheckbox
                         labelPlacement="start"
-                        checked={selectedUsers.includes(user._id)}
+                        checked={selectedUsers?.includes(user._id)}
                         onIonChange={(e) => handleSelectUser(e, user._id)}
-                        value={user._id}
                       >
                         <IonLabel>{user.username}</IonLabel>
                       </IonCheckbox>
