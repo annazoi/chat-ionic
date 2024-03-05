@@ -72,8 +72,6 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
   };
   const longPressEvent = useLongPress(onLongPress, defaultOptions);
 
-  console.log("message", message.createdAt);
-
   return (
     <>
       <div>

@@ -205,7 +205,14 @@ const Chats: React.FC = () => {
                               ? getName(chat)
                               : chat.name}
                           </IonLabel>
-                          <IonText style={{ fontSize: "14px" }}>
+                          <IonText
+                            style={{
+                              fontSize: "14px",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
                             {handleLastMessage(chat)}
                           </IonText>
                         </div>

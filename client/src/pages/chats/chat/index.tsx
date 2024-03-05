@@ -43,33 +43,42 @@ import { RiGroup2Fill } from "react-icons/ri";
 import Title from "../../../components/ui/Title";
 import { ref } from "yup";
 import { set } from "react-hook-form";
+import { useInterval } from "react-use";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
+  const { userId } = authStore((store: any) => store);
+  // const { socket } = useSocket();
   const [newMessage, setNewMessage] = useState<string>("");
-  const messageRef = useRef<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [openMembers, setOpenMembers] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const router = useIonRouter();
-
-  const { userId } = authStore((store: any) => store);
-  // const { socket } = useSocket();
-
   const [chat, setChat] = useState<any>(null);
+  const [delay, setDelay] = useState(1000);
+  const [isRunning, setIsRunning] = useState(true);
 
+  const messageRef = useRef<any>(null);
+  const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
 
-  const { data, isLoading, refetch } = useQuery<any>({
-    queryKey: ["chat"],
-    refetchOnMount: "always",
-    refetchIntervalInBackground: true,
-    // refetchInterval: !isTyping ? 1000 : false,
-    queryFn: () => getChat(chatId),
+  // const { data, isLoading, refetch } = useQuery<any>({
+  //   queryKey: ["chat"],
+  //   refetchOnMount: "always",
+  //   refetchIntervalInBackground: true,
+  //   // refetchInterval: !isTyping ? 1000 : false,
+  //   queryFn: () => getChat(chatId),
+  //   onSuccess: (res: any) => {
+  //     setMessages(res.chat.messages);
+  //     setChat(res.chat);
+  //     // setOnDeletedMessage(true);
+  //   },
+  // });
+
+  const { mutate: mutateChat, isLoading: chatIsLoading } = useMutation({
+    mutationFn: () => getChat(chatId),
     onSuccess: (res: any) => {
       setMessages(res.chat.messages);
-      setChat(res.chat);
-      // setOnDeletedMessage(true);
+      setChat(res?.chat);
     },
   });
 
@@ -82,28 +91,25 @@ const Chat: React.FC = () => {
     mutationFn: ({ chatId }: any) => deleteChat(chatId),
   });
 
-  // useEffect(()=>{
-  //     mutate();
+  useInterval(
+    () => {
+      if (isRunning) {
+        mutateChat();
+      }
+    },
+    isRunning ? delay : null
+  );
 
-  // },[])
+  useEffect(() => {
+    mutateChat();
+  }, []);
 
   // useEffect(() => {
-  //   setInterval(() => {
-  //     if (isTyping) return;
-  //     mutateChat();
-  //   }, 10000);
+  // setInterval(() => {
+  // if (isTyping) return;
+  // mutateChat();
+  // }, 10000);
   // }, []);
-
-  // sockets
-  // useEffect(() => {
-  //   socket?.emit("join_room", chatId);
-  // }, [socket]);
-  // useEffect(() => {
-  //   socket?.on("receive_message", (message: any) => {
-  //     console.log("receive_message", message);
-  //     setMessages((prevMessages) => [...prevMessages, message]);
-  //   });
-  // }, [socket]);
 
   useEffect(() => {
     contentRef?.current?.scrollToBottom();
@@ -137,32 +143,28 @@ const Chat: React.FC = () => {
           setMessages((prevMessages) => [...prevMessages, messageData]);
           contentRef?.current?.scrollToBottom();
           setNewMessage("");
-          setIsTyping(false);
         },
         onError: (error: any) => {
           console.log("error", error);
         },
       }
     );
-    setIsTyping(false);
   };
 
   const handleEnterPress = (event: any) => {
     if (event.key === "Enter") {
-      // event.preventDefault();
-      // setTimeout(handleNewMessage, 0);
       handleNewMessage();
     }
   };
 
   const handleInputChange = (event: any) => {
     const { value } = event.target;
+    setIsRunning(event.target.value.length > 0);
     setNewMessage(value);
-    if (value.length > 0 && !isTyping) {
-      setIsTyping(true);
-    } else {
-      setIsTyping(false);
-    }
+    // if (value.length > 0) {
+    //   setIsRunning(false);
+    // }
+    // setIsTyping(false);
   };
 
   const getAvatar = () => {
@@ -182,9 +184,16 @@ const Chat: React.FC = () => {
     }
   };
 
-  const getRefresh = () => {
-    window.location.reload();
-  };
+  // sockets
+  // useEffect(() => {
+  //   socket?.emit("join_room", chatId);
+  // }, [socket]);
+  // useEffect(() => {
+  //   socket?.on("receive_message", (message: any) => {
+  //     console.log("receive_message", message);
+  //     setMessages((prevMessages) => [...prevMessages, message]);
+  //   });
+  // }, [socket]);
 
   return (
     <IonPage>
@@ -215,7 +224,7 @@ const Chat: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
+      {chatIsLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
       <IonContent ref={contentRef} className="ion-padding-top">
         {messages.map((message: any, index: any) => {
           return (
@@ -265,12 +274,14 @@ const Chat: React.FC = () => {
           boxShadow: "0px 0px 5px 0px #9b95ec",
         }}
       >
-        <IonInput
+        <input
           type="text"
           value={newMessage}
           placeholder="Aa..."
           onKeyUp={handleEnterPress}
-          onIonChange={handleInputChange}
+          // onIonChange={handleInputChange}
+          onChange={handleInputChange}
+          // checked={isRunning}
         />
         <IonButton onClick={handleNewMessage} expand="block" fill="clear">
           <IonIcon
@@ -308,7 +319,7 @@ const Chat: React.FC = () => {
           >
             <IonIcon icon={trashBinOutline}></IonIcon>
           </IonFabButton>
-          {data?.chat.type === "group" && (
+          {chat?.type === "group" && (
             <IonFabButton
               onClick={() => {
                 setOpenMembers(!openMembers);
