@@ -56,6 +56,7 @@ const Chat: React.FC = () => {
   const [chat, setChat] = useState<any>(null);
   const [delay, setDelay] = useState(1000);
   const [isRunning, setIsRunning] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const messageRef = useRef<any>(null);
   const router = useIonRouter();
@@ -77,6 +78,7 @@ const Chat: React.FC = () => {
   const { mutate: mutateChat, isLoading: chatIsLoading } = useMutation({
     mutationFn: () => getChat(chatId),
     onSuccess: (res: any) => {
+      setIsLoading(true);
       setMessages(res.chat.messages);
       setChat(res?.chat);
     },
@@ -97,7 +99,7 @@ const Chat: React.FC = () => {
         mutateChat();
       }
     },
-    isRunning ? delay : null
+    isRunning ? 1000 : null
   );
 
   useEffect(() => {
@@ -224,7 +226,7 @@ const Chat: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      {chatIsLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
+      {!isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
       <IonContent ref={contentRef} className="ion-padding-top">
         {messages.map((message: any, index: any) => {
           return (
