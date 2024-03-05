@@ -29,9 +29,7 @@ interface ChatOptionsProps {
 
 const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
   const { chatId } = useParams<{ chatId: string }>();
-
-  const [filteredUser, setFilteredUser] = useState([]);
-  const [member, setMember] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
 
   const { register, handleSubmit, setValue, getValues, reset } =
     useForm<ChatConfig>({
@@ -96,6 +94,15 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
       console.log("error", error);
     }
   };
+
+  const handleSelectUser = (e: any, userId: string) => {
+    if (e.detail.checked) {
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter((user) => user !== userId));
+    }
+  };
+
   return (
     <div
       style={{
@@ -140,30 +147,12 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({ closeModal }) => {
           );
         })}
         <SearchUsers
-          setFilteredUser={setFilteredUser}
           placeholder="Add members"
           className="ion-no-margin ion-no-padding ion-margin-top"
+          type="group"
+          handleSelectUser={handleSelectUser}
+          selectedUsers={selectedUsers}
         />
-        {filteredUser.map((user: any, index: number) => (
-          <IonCard
-            key={user._id}
-            className="ion-no-margin ion-margin-top"
-            onClick={() => {
-              register("members", { required: true });
-              setMember([...member, user]);
-            }}
-          >
-            <IonCardContent className="ion-no-padding">
-              <IonItem lines="none">
-                <IonAvatar slot="start">
-                  <IonImg src={user.avatar} />
-                </IonAvatar>
-                <IonLabel>{user.username}</IonLabel>
-                <IonIcon icon={addCircle}></IonIcon>
-              </IonItem>
-            </IonCardContent>
-          </IonCard>
-        ))}
       </form>
     </div>
   );
