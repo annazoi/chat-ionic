@@ -68,6 +68,8 @@ const Chat: React.FC = () => {
     onSuccess: (res: any) => {
       setMessages(res.chat.messages);
       setChat(res.chat);
+
+      // setOnDeletedMessage(true);
     },
   });
   const { mutate, isLoading: messageIsLoading } = useMutation({
