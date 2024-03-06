@@ -34,7 +34,7 @@ export const createChat = async (payload: CreateChatConfig) => {
 export const getChats = async () => {
   try {
     const response = await Axios.get(`${API_URL}/chat`, getConfig());
-    const sortedChats = response.data.chats.sort((a: any, b: any) => {
+    const sortedChats = response.data?.chats.sort((a: any, b: any) => {
       if (a.messages.length === 0) {
         return 1;
       }
@@ -103,6 +103,33 @@ export const deleteMessage = async (chatId: string, messageId: string) => {
   try {
     const response = await Axios.delete(
       `${API_URL}/chat/${chatId}/message/${messageId}`,
+      getConfig()
+    );
+    return response.data;
+  } catch (err: any) {
+    console.log("err", err);
+    throw err;
+  }
+};
+
+export const addMembers = async (chatId: string, members: string[]) => {
+  try {
+    const response = await Axios.post(
+      `${API_URL}/chat/${chatId}/members`,
+      { members },
+      getConfig()
+    );
+    return response.data;
+  } catch (err: any) {
+    console.log("err", err);
+    throw err;
+  }
+};
+
+export const removeMember = async (chatId: string, memberId: string) => {
+  try {
+    const response = await Axios.delete(
+      `${API_URL}/chat/${chatId}/members/${memberId}`,
       getConfig()
     );
     return response.data;

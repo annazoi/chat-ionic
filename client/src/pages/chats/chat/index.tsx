@@ -51,14 +51,13 @@ const Chat: React.FC = () => {
   // const { socket } = useSocket();
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<any[]>([]);
-  const [openMembers, setOpenMembers] = useState<boolean>(false);
+  const [openOptions, setOpenOptions] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [chat, setChat] = useState<any>(null);
   const [delay, setDelay] = useState(1000);
   const [isRunning, setIsRunning] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const messageRef = useRef<any>(null);
   const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
 
@@ -75,11 +74,11 @@ const Chat: React.FC = () => {
   //   },
   // });
 
-  const { mutate: mutateChat, isLoading: chatIsLoading } = useMutation({
+  const { mutate: mutateChat } = useMutation({
     mutationFn: () => getChat(chatId),
     onSuccess: (res: any) => {
       setIsLoading(true);
-      setMessages(res.chat.messages);
+      setMessages(res?.chat.messages);
       setChat(res?.chat);
     },
   });
@@ -95,7 +94,7 @@ const Chat: React.FC = () => {
 
   useInterval(
     () => {
-      if (isRunning) {
+      if (isRunning && !openOptions) {
         mutateChat();
       }
     },
@@ -121,7 +120,7 @@ const Chat: React.FC = () => {
     mutateDeleteChat(
       { chatId },
       {
-        onSuccess: (res: any) => {
+        onSuccess: () => {
           router.push("/inbox", "forward", "replace");
         },
         onError: (error: any) => {
@@ -228,52 +227,52 @@ const Chat: React.FC = () => {
 
       {!isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
       <IonContent ref={contentRef} className="ion-padding-top">
-        {messages.map((message: any, index: any) => {
-          return (
-            <div
-              key={index}
-              style={{
-                display: "flex",
-                flexDirection:
-                  userId === message.senderId._id ? "row-reverse" : "row",
-                alignSelf:
-                  userId === message.senderId._id ? "flex-end" : "flex-start",
-              }}
-            >
-              <img
-                src={
-                  message.senderId.avatar
-                    ? message.senderId.avatar
-                    : userDefaulfAvatar
-                }
+        {messages &&
+          messages.map((message: any, index: any) => {
+            return (
+              <div
+                key={index}
                 style={{
-                  borderRadius: "100%",
-                  height: "20px",
-                  width: "20px",
-                  margin: "10px",
-                  marginTop: "15px",
+                  display: "flex",
+                  flexDirection:
+                    userId === message.senderId._id ? "row-reverse" : "row",
+                  alignSelf:
+                    userId === message.senderId._id ? "flex-end" : "flex-start",
                 }}
-                alt=""
-              />
+              >
+                <img
+                  src={
+                    message.senderId.avatar
+                      ? message.senderId.avatar
+                      : userDefaulfAvatar
+                  }
+                  style={{
+                    borderRadius: "100%",
+                    height: "20px",
+                    width: "20px",
+                    margin: "10px",
+                    marginTop: "15px",
+                  }}
+                  alt=""
+                />
 
-              <MessageBox
-                message={message}
-                chatId={chatId}
-                // refetch={refetch}
-              ></MessageBox>
-            </div>
-          );
-        })}
+                <MessageBox
+                  message={message}
+                  chatId={chatId}
+                  // refetch={refetch}
+                ></MessageBox>
+              </div>
+            );
+          })}
       </IonContent>
 
-      <IonItem
-        lines="none"
+      <div
         style={{
           justifyItems: "flex-end",
-          border: "1px solid #9b95ec",
           borderRadius: "10px",
           margin: "5px",
-          boxShadow: "0px 0px 5px 0px #9b95ec",
+          boxShadow: "0px 1px 5px 0px var(--ion-color-primary)",
+          display: "flex",
         }}
       >
         <input
@@ -283,26 +282,35 @@ const Chat: React.FC = () => {
           onKeyUp={handleEnterPress}
           // onIonChange={handleInputChange}
           onChange={handleInputChange}
+          className="new-message-input"
           // checked={isRunning}
         />
-        <IonButton onClick={handleNewMessage} expand="block" fill="clear">
+        <IonButton
+          onClick={handleNewMessage}
+          expand="block"
+          fill="clear"
+          slot="end"
+        >
           <IonIcon
             icon={messageIsLoading ? ellipsisHorizontalOutline : send}
           ></IonIcon>
         </IonButton>
-      </IonItem>
+      </div>
       <Modal
-        isOpen={openMembers}
-        onClose={setOpenMembers}
+        isOpen={openOptions}
+        onClose={setOpenOptions}
         title="Members"
         closeModal={() => {
-          setOpenMembers(false);
+          setOpenOptions(false);
         }}
       >
         <ChatOptions
           closeModal={() => {
-            setOpenMembers(false);
+            setOpenOptions(false);
           }}
+          mutateChat={mutateChat}
+          chat={chat}
+          isLoading={isLoading}
         ></ChatOptions>
       </Modal>
       <IonFab slot="fixed" horizontal="end">
@@ -324,7 +332,7 @@ const Chat: React.FC = () => {
           {chat?.type === "group" && (
             <IonFabButton
               onClick={() => {
-                setOpenMembers(!openMembers);
+                setOpenOptions(!openOptions);
               }}
             >
               <IonIcon icon={peopleOutline}></IonIcon>

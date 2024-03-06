@@ -11,6 +11,15 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: true,
   },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 0,
+    },
+  },
+  PushNotifications: {
+    presentationOptions: ["badge", "sound", "alert"],
+  },
+  cordova: {},
 };
 
 export default config;

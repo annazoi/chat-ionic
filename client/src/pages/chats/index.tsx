@@ -127,13 +127,12 @@ const Chats: React.FC = () => {
         </IonHeader>
 
         <IonContent>
-          {!data ? (
+          {data?.length === 0 ? (
             <IonCard style={{ margin: "20px" }}>
               <IonCardHeader
                 style={{
                   letterSpacing: "3px",
                   fontSize: "14px",
-                  // fontWeight: "bold",
                   color: "var(--ion-color-primary)",
                   textAlign: "center",
                 }}

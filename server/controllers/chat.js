@@ -83,10 +83,60 @@ const deleteChat = async (req, res) => {
   }
 };
 
+const addMember = async (req, res) => {
+  try {
+    const chat = await Chat.findById(req.params.chatId);
+    if (!chat)
+      return res.status(404).json({
+        message: "The Chat with the given ID was not found.",
+        chat: null,
+      });
+
+    const { members } = req.body;
+    const existingMembers = chat.members.map((member) => member.toString());
+    if (members.some((member) => existingMembers.includes(member.toString()))) {
+      return res
+        .status(400)
+        .json({ message: "Some members already exist in chat", chat: null });
+    }
+    chat.members.push(...members);
+    await chat.save();
+
+    res.status(201).json({ message: "ok", chat: chat });
+  } catch (err) {
+    res.status(404).json({ message: err, chat: null });
+  }
+};
+
+const removeMember = async (req, res) => {
+  const memberId = req.params.memberId;
+  try {
+    const chat = await Chat.findById(req.params.chatId);
+    if (!chat)
+      return res.status(404).json({
+        message: "The Chat with the given ID was not found.",
+        chat: null,
+      });
+
+    console.log("req.body", memberId);
+
+    chat.members = chat.members.filter(
+      (member) => member.toString() !== memberId
+    );
+
+    await chat.save();
+    res.status(200).json({ message: "ok", chat: chat });
+  } catch (err) {
+    res.status(404).json({ message: err, chat: null });
+  }
+};
+
 module.exports = {
   createChat,
   getChats,
   getChat,
   updateChat,
   deleteChat,
+  addMember,
+  removeMember,
 };

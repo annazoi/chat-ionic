@@ -1,21 +1,11 @@
-import {
-  IonButton,
-  IonCard,
-  IonCardSubtitle,
-  IonAlert,
-  IonCardContent,
-  IonContent,
-  IonPopover,
-} from "@ionic/react";
-import React, { useRef, useState } from "react";
+import { IonCard, IonAlert } from "@ionic/react";
+import React, { useState } from "react";
 import { authStore } from "../../../../store/auth";
-import "./style.css";
 import { deleteMessage } from "../../../../services/chat";
 import { useMutation } from "@tanstack/react-query";
-import Button from "../../../../components/ui/Button";
-import { trashOutline } from "ionicons/icons";
 import { useLongPress } from "react-use";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import "./style.css";
 
 interface MessageConfig {
   message: any;
@@ -39,7 +29,6 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
       { chatId, messageId },
       {
         onSuccess: (res: any) => {
-          // setOnDeletedMessage(true);
           // refetch();
         },
         onError: (error: any) => {

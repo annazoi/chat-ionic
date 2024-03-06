@@ -19,4 +19,12 @@ router.delete(
   messageControllers.deleteMessage
 );
 
+// members routes
+router.post("/:chatId/members", protect, chatControllers.addMember);
+router.delete(
+  "/:chatId/members/:memberId",
+  protect,
+  chatControllers.removeMember
+);
+
 module.exports = router;

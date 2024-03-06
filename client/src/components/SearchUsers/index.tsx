@@ -21,6 +21,7 @@ interface SearchUsersProps {
   type?: string;
   handleSelectUser?: any;
   selectedUsers?: any[];
+  existingMembers?: any[];
 }
 
 const SearchUsers: React.FC<SearchUsersProps> = ({
@@ -30,6 +31,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
   handleSelectUser,
   selectedUsers,
   onUsersFiltered,
+  existingMembers,
 }) => {
   const { userId } = authStore((store: any) => store);
 
@@ -53,12 +55,24 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
     });
   }, [search]);
 
+  const handleExistingUsers = useMemo(() => {
+    if (existingMembers) {
+      return data?.filter((user: any) => {
+        return !existingMembers.some(
+          (existingMember: any) => existingMember._id === user._id
+        );
+      });
+    } else {
+      return data;
+    }
+  }, [existingMembers, data]);
+
   useEffect(() => {
     onUsersFiltered?.(filteredUsers || []);
   }, [filteredUsers]);
 
   useEffect(() => {
-    console.log("selectedUsers", selectedUsers);
+    // console.log("selectedUsers", selectedUsers);
   }, [selectedUsers]);
 
   return (
@@ -75,7 +89,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
       ></IonSearchbar>
       {type === "group" && (
         <>
-          {data?.map((user: any, index: number) => (
+          {handleExistingUsers?.map((user: any, index: number) => (
             <div key={index}>
               {user._id !== userId && (
                 <IonCard>

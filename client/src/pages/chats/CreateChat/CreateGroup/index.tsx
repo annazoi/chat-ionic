@@ -38,8 +38,8 @@ const CreateGroup: FC<GroupProps> = ({
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [name, setName] = useState<string>("");
   const [avatar, setAvatar] = useState<string>("");
-  const [openUserAlert, setOpenUserAlert] = useState<boolean>(false);
-  const [openNameAlert, setOpenNameAlert] = useState<boolean>(false);
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { mutate } = useMutation({
     mutationFn: ({ name, type, avatar, members }: any) =>
@@ -63,9 +63,11 @@ const CreateGroup: FC<GroupProps> = ({
         }
       );
     } else if (selectedUsers.length <= 1) {
-      setOpenUserAlert(true);
+      setErrorMessage("Please select at least 2 users to create a group chat.");
+      setOpenAlert(true);
     } else if (name === "") {
-      setOpenNameAlert(true);
+      setErrorMessage("Please selecte group name.");
+      setOpenAlert(true);
     }
   };
 
@@ -135,16 +137,10 @@ const CreateGroup: FC<GroupProps> = ({
         ))} */}
       </IonContent>
       <IonAlert
-        isOpen={openNameAlert}
-        message="Please selecte group name."
+        isOpen={openAlert}
+        message={errorMessage}
         buttons={["Close"]}
-        onDidDismiss={() => setOpenNameAlert(false)}
-      ></IonAlert>
-      <IonAlert
-        isOpen={openUserAlert}
-        message="Please select at least 2 users to create a group chat."
-        buttons={["Close"]}
-        onDidDismiss={() => setOpenUserAlert(false)}
+        onDidDismiss={() => setOpenAlert(false)}
       ></IonAlert>
     </ConfirmModal>
   );

@@ -39,6 +39,8 @@ const register = async (req, res, next) => {
     if (avatar) {
       result = await cloudinary.uploader.upload(avatar, {
         folder: "users",
+        // notification_url:
+        //   " https://api.cloudinary.com/v1_1/dz3gbu9kz/image/upload",
       });
     }
     const createdUser = await User.create({
