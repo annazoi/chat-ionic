@@ -32,20 +32,15 @@ app.use(cors());
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/chat", chatRoutes);
+app.get("/", (req, res) => res.send("Express on Vercel"));
 
 mongoose.connect(process.env.DB_CONNECTION).then(() => {
-  // set private key path
-
-  // const privateKey = fs.readFileSync("path/to/private.key", "utf8");
-  // const certificate = fs.readFileSync("path/to/certificate.crt", "utf8");
-  // const credentials = { key: privateKey, cert: certificate };
-
-  // const httpsServer = https.createServer(credentials, app);
-
   http.listen(3000, () => {
     console.log(`Server listening at http://localhost:3000`);
   });
 });
+
+module.exports = app;
 
 // const socket = io(http, {
 //   cors: {
