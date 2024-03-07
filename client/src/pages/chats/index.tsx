@@ -82,18 +82,20 @@ const Chats: React.FC = () => {
     }
   };
 
-  // const handleUnreadMessages = (chat: any) => {
-  //   let unreadMessages = 0;
-  //   const chats = chat.map((chat: any) => {
-  //     chat.messages.forEach((message: any) => {
-  //       if (message.read === false && message.senderId._id !== userId) {
-  //         unreadMessages++;
-  //       }
-  //     });
-  //   });
+  const handleUnreadChats = () => {
+    let unreadChats = 0;
 
-  //   return unreadMessages;
-  // };
+    data?.forEach((chat: any) => {
+      if (
+        chat.messages[chat.messages.length - 1]?.read === false &&
+        userId !== chat.messages[chat.messages.length - 1]?.senderId._id
+      ) {
+        unreadChats++;
+      }
+    });
+
+    return unreadChats;
+  };
 
   const getRefresh = () => {
     window.location.reload();
@@ -111,21 +113,6 @@ const Chats: React.FC = () => {
     } else {
       return member.avatar;
     }
-  };
-
-  const handleUnreadChats = () => {
-    let unreadChats = 0;
-
-    data?.forEach((chat: any) => {
-      if (
-        chat.messages[chat.messages.length - 1]?.read === false &&
-        userId !== chat.messages[chat.messages.length - 1]?.senderId._id
-      ) {
-        unreadChats++;
-      }
-    });
-
-    return unreadChats;
   };
 
   return (

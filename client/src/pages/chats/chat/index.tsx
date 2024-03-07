@@ -3,6 +3,7 @@ import {
   IonBackButton,
   IonButton,
   IonButtons,
+  IonCard,
   IonContent,
   IonFab,
   IonFabButton,
@@ -13,6 +14,7 @@ import {
   IonItem,
   IonPage,
   IonProgressBar,
+  IonTabBar,
   IonTitle,
   IonToolbar,
   useIonRouter,
@@ -25,6 +27,11 @@ import {
   imagesOutline,
   ellipsisHorizontalOutline,
   trashBinOutline,
+  cameraOutline,
+  imageOutline,
+  happy,
+  happyOutline,
+  documentTextOutline,
 } from "ionicons/icons";
 import {
   getChat,
@@ -90,8 +97,6 @@ const Chat: React.FC = () => {
     },
   });
 
-  console.log("chat", chat);
-
   const { mutate, isLoading: messageIsLoading } = useMutation({
     mutationFn: ({ chatId, newMessage }: any) =>
       sendMessage(chatId, newMessage),
@@ -113,13 +118,6 @@ const Chat: React.FC = () => {
   useEffect(() => {
     mutateChat();
   }, []);
-
-  // useEffect(() => {
-  // setInterval(() => {
-  // if (isTyping) return;
-  // mutateChat();
-  // }, 10000);
-  // }, []);
 
   useEffect(() => {
     contentRef?.current?.scrollToBottom();
@@ -171,10 +169,6 @@ const Chat: React.FC = () => {
     const { value } = event.target;
     setIsRunning(event.target.value.length > 0);
     setNewMessage(value);
-    // if (value.length > 0) {
-    //   setIsRunning(false);
-    // }
-    // setIsTyping(false);
   };
 
   const getAvatar = () => {
@@ -278,10 +272,12 @@ const Chat: React.FC = () => {
       <div
         style={{
           justifyItems: "flex-end",
-          borderRadius: "10px",
-          margin: "5px",
-          boxShadow: "0px 1px 5px 0px var(--ion-color-primary)",
+          // borderRadius: "10px",
+          // margin: "5px",
+          boxShadow: "0px 0px 0px 0px var(--ion-color-primary)",
+          // border: "1px solid var(--ion-color-primary)",
           display: "flex",
+          backgroundColor: "var(--ion-color-secondary)",
         }}
       >
         <input
@@ -305,6 +301,28 @@ const Chat: React.FC = () => {
           ></IonIcon>
         </IonButton>
       </div>
+      <IonCard
+        className="ion-no-margin"
+        color="secondary"
+        style={{
+          padding: "5px",
+          paddingLeft: "10px",
+          display: "flex",
+          // justifyContent: "space-between",
+          flexDirection: "row",
+          gap: "15px",
+        }}
+      >
+        <IonIcon icon={imageOutline} color="primary" size="small"></IonIcon>
+
+        <IonIcon icon={cameraOutline} size="small" color="primary"></IonIcon>
+        <IonIcon
+          icon={documentTextOutline}
+          size="small"
+          color="primary"
+        ></IonIcon>
+        <IonIcon icon={happyOutline} size="small" color="primary"></IonIcon>
+      </IonCard>
       <Modal
         isOpen={openOptions}
         onClose={setOpenOptions}
