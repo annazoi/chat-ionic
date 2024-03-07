@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start-old": "nodemon index.js",
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "author": "anna zoi",
   "license": "ISC",
