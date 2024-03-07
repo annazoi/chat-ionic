@@ -7,9 +7,9 @@ const https = require("https");
 const fs = require("fs");
 const formidable = require("express-formidable");
 // Import the Routes
-const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/users");
-const chatRoutes = require("./routes/chat");
+const authRoutes = require("../routes/auth");
+const userRoutes = require("../routes/users");
+const chatRoutes = require("../routes/chat");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const http = require("http").Server(app);
