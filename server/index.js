@@ -29,10 +29,10 @@ app.use(
 app.use(cors());
 
 // Import the Routes
+// app.get("/", (req, res) => res.send("Express on Vercel"));
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/chat", chatRoutes);
-app.get("/", (req, res) => res.send("Express on Vercel"));
 
 mongoose.connect(process.env.DB_CONNECTION).then(() => {
   http.listen(3000, () => {
