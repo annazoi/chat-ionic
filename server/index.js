@@ -29,7 +29,7 @@ app.use(
 app.use(cors());
 
 // Import the Routes
-// app.get("/", (req, res) => res.send("Express on Vercel"));
+app.get("/", (req, res) => res.send("Express on Vercel"));
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/chat", chatRoutes);
