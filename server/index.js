@@ -75,3 +75,5 @@ mongoose.connect(process.env.DB_CONNECTION).then(() => {
 //     console.log(`connect_error due to ${err.message}`);
 //   });
 // });
+
+module.exports = app;
