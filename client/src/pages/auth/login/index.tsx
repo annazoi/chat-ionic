@@ -86,7 +86,7 @@ const Login: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <Title title="Login" />
+          <Title title="Login" className="ion-padding" />
         </IonToolbar>
       </IonHeader>
       <IonContent class="ion-padding">
