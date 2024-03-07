@@ -4,6 +4,7 @@ const config: CapacitorConfig = {
   appId: "io.ionic.starter",
   appName: "mesge",
   webDir: "dist",
+  bundledWebRuntime: false,
   server: {
     androidScheme: "http",
     allowNavigation: ["localhost", "127.0.0.1", "192.168.1.6"],
@@ -15,11 +16,10 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 0,
     },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
   },
-  PushNotifications: {
-    presentationOptions: ["badge", "sound", "alert"],
-  },
-  cordova: {},
 };
 
 export default config;

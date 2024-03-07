@@ -48,7 +48,7 @@ const updateUser = async (req, res) => {
       });
     }
 
-    const { phone, username, password, avatar } = req.body;
+    const { phone, username, password, avatar, notificationToken } = req.body;
 
     if (password) {
       user.password = await bcrypt.hash(password, 10);
@@ -70,6 +70,7 @@ const updateUser = async (req, res) => {
     }
 
     user.phone = phone || user.phone;
+    user.notificationToken = notificationToken || user.notificationToken;
 
     await user.save();
 

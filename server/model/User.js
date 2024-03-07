@@ -17,6 +17,10 @@ const userSchema = mongoose.Schema({
   avatar: {
     type: String,
   },
+  notificationToken: {
+    type: String,
+    default: "",
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

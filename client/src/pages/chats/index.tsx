@@ -31,8 +31,11 @@ import Menu from "../../components/Menu";
 import userDefaulfAvatar from "../../assets/user.png";
 import { IoCreate } from "react-icons/io5";
 import Button from "../../components/ui/Button";
+import { useNotifications } from "../../hooks/notifications";
 
 const Chats: React.FC = () => {
+  useNotifications();
+
   const { avatar, userId, username } = authStore((store: any) => store);
 
   const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);

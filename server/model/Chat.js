@@ -12,7 +12,6 @@ const messageSchema = mongoose.Schema(
     },
     message: {
       type: String,
-      required: true,
     },
     createdAt: {
       type: String,
