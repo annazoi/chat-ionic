@@ -18,6 +18,11 @@ router.delete(
   protect,
   messageControllers.deleteMessage
 );
+router.put(
+  "/:chatId/message/:messageId",
+  protect,
+  messageControllers.readMessage
+);
 
 // members routes
 router.post("/:chatId/members", protect, chatControllers.addMember);

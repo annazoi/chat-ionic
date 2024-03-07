@@ -6,32 +6,36 @@ import {
   IonCardHeader,
   IonContent,
   IonFab,
+  IonFabButton,
   IonHeader,
   IonIcon,
+  IonItem,
   IonLabel,
   IonMenuToggle,
   IonPage,
   IonProgressBar,
+  IonTabBar,
   IonText,
   IonToolbar,
 } from "@ionic/react";
 import { authStore } from "../../store/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { create, sync } from "ionicons/icons";
+import { chatbubbleEllipsesOutline, create, sync } from "ionicons/icons";
 import { getChats } from "../../services/chat";
 import React from "react";
 import CreateChat from "./CreateChat";
 import Modal from "../../components/ui/Modal";
 // import { useSocket } from "../../hooks/sockets";
 import { RiGroup2Fill } from "react-icons/ri";
-import { IoPersonCircleSharp } from "react-icons/io5";
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import Title from "../../components/ui/Title";
 import Menu from "../../components/Menu";
 import userDefaulfAvatar from "../../assets/user.png";
-import { IoCreate } from "react-icons/io5";
 import Button from "../../components/ui/Button";
 import { useNotifications } from "../../hooks/notifications";
+import { io } from "socket.io-client";
+import { set } from "react-hook-form";
 
 const Chats: React.FC = () => {
   useNotifications();
@@ -39,6 +43,7 @@ const Chats: React.FC = () => {
   const { avatar, userId, username } = authStore((store: any) => store);
 
   const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);
+  const [isOpenChat, setIsOpenChat] = useState<boolean>(false);
 
   // const { socket } = useSocket();
 
@@ -49,6 +54,8 @@ const Chats: React.FC = () => {
     refetchIntervalInBackground: true,
     refetchInterval: 1000,
   });
+
+  console.log(data);
 
   // const joinRoom = (chatId: string) => {
   //   socket.emit("join_room", chatId);
@@ -75,6 +82,14 @@ const Chats: React.FC = () => {
         return lastMessage.senderId.username + ": " + lastMessage.message;
       }
     }
+  };
+
+  const handleUnreadMessages = (chat: any) => {
+    const unreadMessages = chat.messages.filter(
+      (message: any) => message.read === false
+    );
+    return unreadMessages.length;
+    // return unreadMessages.length;
   };
 
   const getRefresh = () => {
@@ -144,7 +159,7 @@ const Chats: React.FC = () => {
               </IonCardHeader>
             </IonCard>
           ) : (
-            <div>
+            <div style={{ padding: "5px" }}>
               {/* <p
                 style={{
                   fontWeight: "bold",
@@ -153,7 +168,7 @@ const Chats: React.FC = () => {
                   color: "var(--ion-color-primary)",
                 }}
               >
-                Messages({data?.chats.length})
+                Messages({data?.length})
               </p> */}
               {data?.map((chat: any, index: any) => {
                 return (
@@ -161,13 +176,9 @@ const Chats: React.FC = () => {
                     {isLoading && (
                       <IonProgressBar type="indeterminate"></IonProgressBar>
                     )}
-                    <IonCard
-                      style={{
-                        borderRadius: "10px",
-                        padding: "3px",
-                        boxShadow: "0px 0px 6px 0px var(--ion-color-primary)",
-                        border: "1px solid var(--ion-color-secondary)",
-                      }}
+                    <IonItem
+                      className="ion-no-padding"
+                      // lines="none"
                       routerLink={`/chat/${chat._id}`}
                       onClick={() => {
                         // joinRoom(chat._id);
@@ -175,16 +186,19 @@ const Chats: React.FC = () => {
                     >
                       <div style={{ display: "flex" }}>
                         {chat.type === "private" ? (
-                          <img
-                            src={getAvatar(chat)}
-                            alt=""
-                            style={{
-                              width: "46px",
-                              height: "46px",
-                              borderRadius: "50%",
-                              margin: "5px",
-                            }}
-                          />
+                          <IonAvatar>
+                            <img
+                              src={getAvatar(chat)}
+                              alt=""
+                              style={{
+                                width: "37px",
+                                height: "37px",
+                                borderRadius: "50%",
+                                marginLeft: "4px",
+                                marginTop: "12px",
+                              }}
+                            />
+                          </IonAvatar>
                         ) : (
                           <IonAvatar slot="start" className=" ion-no-margin">
                             <RiGroup2Fill size="100%" color="black" />
@@ -192,17 +206,32 @@ const Chats: React.FC = () => {
                         )}
 
                         <div
-                          style={{
-                            padding: "10px",
-                            display: "grid",
-                            width: "100%",
-                            gap: "5px",
-                          }}
+                          // style={{
+
+                          // }}
+                          style={
+                            chat.messages[chat.messages.length - 1]?.read ===
+                              false &&
+                            userId !==
+                              chat.messages[chat.messages.length - 1]?.senderId
+                                ._id
+                              ? {
+                                  fontWeight: "bold",
+                                  padding: "10px",
+                                  display: "grid",
+                                  width: "100%",
+                                  gap: "5px",
+                                }
+                              : {
+                                  fontWeight: "normal",
+                                  padding: "10px",
+                                  display: "grid",
+                                  width: "100%",
+                                  gap: "5px",
+                                }
+                          }
                         >
-                          <IonLabel
-                            style={{ fontWeight: "bold" }}
-                            color="primary"
-                          >
+                          <IonLabel color="primary">
                             {chat.type === "private"
                               ? getName(chat)
                               : chat.name}
@@ -219,7 +248,7 @@ const Chats: React.FC = () => {
                           </IonText>
                         </div>
                       </div>
-                    </IonCard>
+                    </IonItem>
                   </div>
                 );
               })}
@@ -227,29 +256,27 @@ const Chats: React.FC = () => {
           )}
 
           <IonFab slot="fixed" vertical="bottom" horizontal="end">
-            {/* <IonIcon
-              icon={create}
-              size="large"
+            <IonFabButton
+              className="ion-no-margin"
+              color="tertiary"
+              // size="small"
               onClick={() => {
                 setOpenCreateChat(true);
               }}
-            ></IonIcon> */}
-            <Button
-              name="Create Chat"
-              iconSlot="end"
-              icon={create}
-              onClick={() => {
-                setOpenCreateChat(true);
-              }}
-            ></Button>
+            >
+              <IonIcon
+                size="large"
+                icon={chatbubbleEllipsesOutline}
+                color="light"
+              />
+            </IonFabButton>
           </IonFab>
         </IonContent>
 
         <Modal
           isOpen={openCreateChat}
           onClose={setOpenCreateChat}
-          // title="New Message"
-          title="Create a new chat"
+          title="New chat"
           closeModal={() => {
             setOpenCreateChat(false);
           }}
@@ -261,6 +288,8 @@ const Chats: React.FC = () => {
             refetch={refetch}
           />
         </Modal>
+
+        {/* <IonTabBar slot="bottom"></IonTabBar> */}
       </IonPage>
     </>
   );

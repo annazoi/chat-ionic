@@ -26,7 +26,12 @@ import {
   ellipsisHorizontalOutline,
   trashBinOutline,
 } from "ionicons/icons";
-import { getChat, sendMessage, deleteChat } from "../../../services/chat";
+import {
+  getChat,
+  sendMessage,
+  deleteChat,
+  readMessage,
+} from "../../../services/chat";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import { useEffect, useState, useRef } from "react";
@@ -61,18 +66,10 @@ const Chat: React.FC = () => {
   const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
 
-  // const { data, isLoading, refetch } = useQuery<any>({
-  //   queryKey: ["chat"],
-  //   refetchOnMount: "always",
-  //   refetchIntervalInBackground: true,
-  //   // refetchInterval: !isTyping ? 1000 : false,
-  //   queryFn: () => getChat(chatId),
-  //   onSuccess: (res: any) => {
-  //     setMessages(res.chat.messages);
-  //     setChat(res.chat);
-  //     // setOnDeletedMessage(true);
-  //   },
-  // });
+  const { mutate: readMessageMutate } = useMutation({
+    mutationFn: ({ chatId, messageId }: any) => readMessage(chatId, messageId),
+    onSuccess: (res: any) => {},
+  });
 
   const { mutate: mutateChat } = useMutation({
     mutationFn: () => getChat(chatId),
@@ -80,8 +77,20 @@ const Chat: React.FC = () => {
       setIsLoading(true);
       setMessages(res?.chat.messages);
       setChat(res?.chat);
+      if (
+        res?.chat.messages[res?.chat.messages.length - 1].senderId._id !==
+          userId &&
+        !res?.chat.messages[res?.chat.messages.length - 1].read
+      ) {
+        readMessageMutate({
+          chatId,
+          messageId: res?.chat.messages[res?.chat.messages.length - 1]._id,
+        });
+      }
     },
   });
+
+  console.log("chat", chat);
 
   const { mutate, isLoading: messageIsLoading } = useMutation({
     mutationFn: ({ chatId, newMessage }: any) =>

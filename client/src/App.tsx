@@ -1,8 +1,10 @@
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
+  IonContent,
   IonIcon,
   IonRouterOutlet,
+  IonTab,
   IonTabBar,
   IonTabButton,
   IonTabs,
@@ -37,40 +39,45 @@ import Chat from "./pages/chats/chat";
 import { authStore } from "./store/auth";
 import Settings from "./components/Menu/Settings";
 import Account from "./components/Menu/Settings/Account";
+import { useState } from "react";
+
 setupIonicReact();
 
 const App: React.FC = () => {
   const { isLoggedIn } = authStore((store): any => store);
+  const [selectedTab, setSelectedTab] = useState<string>("inbox");
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route component={Register} path="/register" exact />
-          <Route component={Login} path="/login" exact />
-
           {isLoggedIn ? (
             <>
-              <IonTabs>
-                <IonRouterOutlet>
-                  <Route path="/inbox" component={Inbox} />
-                  <Route path="/chat/:chatId" component={Chat} />
-                  <Route path="/users" component={Users} />
-                  <Route path="/settings" component={Settings} />
-                  <Route path="/account" component={Account} />
-                  <Redirect exact from="/" to="/inbox" />
-                </IonRouterOutlet>
-                <IonTabBar slot="bottom">
-                  <IonTabButton tab="inbox" href="/inbox">
-                    <IonIcon icon={chatbubblesOutline}></IonIcon>
-                  </IonTabButton>
-                  <IonTabButton tab="camera" href="/camera">
-                    <IonIcon icon={cameraOutline}></IonIcon>
-                  </IonTabButton>
-                </IonTabBar>
-              </IonTabs>
+              {/* <IonTabs> */}
+              {/* <IonRouterOutlet> */}
+              <Route path="/inbox" component={Inbox} />
+              <Route path="/chat/:chatId" component={Chat} />
+              <Route path="/users" component={Users} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/account" component={Account} />
+              <Redirect exact from="/" to="/inbox" />
+              {/* </IonRouterOutlet> */}
+
+              {/* <IonTabBar slot="bottom">
+                    <IonTabButton tab="inbox" href="/inbox">
+                      <IonIcon icon={chatbubblesOutline}></IonIcon>
+                    </IonTabButton>
+                    <IonTabButton tab="camera" href="/camera">
+                      <IonIcon icon={cameraOutline}></IonIcon>
+                    </IonTabButton>
+                  </IonTabBar>
+                </IonTabs> */}
             </>
           ) : (
-            <Redirect exact from="/" to="/login" />
+            <>
+              <Redirect exact from="/" to="/login" />
+              <Route component={Register} path="/register" exact />
+              <Route component={Login} path="/login" exact />
+            </>
           )}
         </IonRouterOutlet>
       </IonReactRouter>

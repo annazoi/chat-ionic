@@ -13,6 +13,10 @@ const messageSchema = mongoose.Schema(
     message: {
       type: String,
     },
+    read: {
+      type: Boolean,
+      default: false,
+    },
     createdAt: {
       type: String,
       default: () => moment().format("YYYY-MM-DD HH:mm:ss"),

@@ -84,7 +84,6 @@ export const deleteChat = async (id: string) => {
     throw err;
   }
 };
-
 export const sendMessage = async (id: string, message: string) => {
   try {
     const response = await Axios.post(
@@ -103,6 +102,20 @@ export const deleteMessage = async (chatId: string, messageId: string) => {
   try {
     const response = await Axios.delete(
       `${API_URL}/chat/${chatId}/message/${messageId}`,
+      getConfig()
+    );
+    return response.data;
+  } catch (err: any) {
+    console.log("err", err);
+    throw err;
+  }
+};
+
+export const readMessage = async (chatId: string, messageId: string) => {
+  try {
+    const response = await Axios.put(
+      `${API_URL}/chat/${chatId}/message/${messageId}`,
+      {},
       getConfig()
     );
     return response.data;

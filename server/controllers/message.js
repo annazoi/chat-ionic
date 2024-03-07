@@ -1,8 +1,6 @@
 const Chat = require("../model/Chat");
 const FCM = require("fcm-node");
-const serverKey =
-  "AAAAxcHH52k:APA91bFbWz7jFU5cZ5Mi8Da6ljq-NcfN0lim-9HD9IFWH3203joBGVzzlY6vo0RNBM2cWiCxiGRQB3gcvinmszfnp19gb2widnE2bgmqynct9wpn9cQC9MC6zbEaiT3-Ah9ZK0wjM9p6";
-const fcm = new FCM(serverKey);
+const fcm = new FCM(process.env.SERVER_KEY);
 
 const createMessage = async (req, res) => {
   try {
@@ -22,7 +20,7 @@ const createMessage = async (req, res) => {
 
     console.log("users", users);
 
-    const senderName = chat.members.find((member) => member._id == req.userId);
+    const sender = chat.members.find((member) => member._id == req.userId);
 
     users.map((members) => {
       const message = {
@@ -30,8 +28,9 @@ const createMessage = async (req, res) => {
         collapse_key: "green",
 
         notification: {
-          title: senderName.username,
+          title: sender.username,
           body: req.body.message,
+          // avatar: sender.avatar,
         },
 
         data: {
@@ -68,4 +67,18 @@ const deleteMessage = async (req, res) => {
   }
 };
 
-module.exports = { createMessage, deleteMessage };
+const readMessage = async (req, res) => {
+  try {
+    const chat = await Chat.findById(req.params.chatId);
+    const message = chat.messages.find(
+      (message) => message._id == req.params.messageId
+    );
+    message.read = true;
+    await chat.save();
+    res.status(200).json({ message: "ok", chat: chat });
+  } catch (err) {
+    res.status(500).json({ message: err, chat: null });
+  }
+};
+
+module.exports = { createMessage, deleteMessage, readMessage };

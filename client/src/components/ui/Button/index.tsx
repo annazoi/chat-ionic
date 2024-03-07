@@ -23,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       expand="block"
       fill="solid"
-      color="tertiary"
+      color="secondary"
       shape="round"
       routerLink={routerLink}
     >
