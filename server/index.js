@@ -40,8 +40,6 @@ mongoose.connect(process.env.DB_CONNECTION).then(() => {
   });
 });
 
-module.exports = app;
-
 // const socket = io(http, {
 //   cors: {
 //     origin: "http://localhost:8100",
