@@ -55,8 +55,6 @@ const Chats: React.FC = () => {
     refetchInterval: 1000,
   });
 
-  console.log(data);
-
   // const joinRoom = (chatId: string) => {
   //   socket.emit("join_room", chatId);
   // };
@@ -84,13 +82,18 @@ const Chats: React.FC = () => {
     }
   };
 
-  const handleUnreadMessages = (chat: any) => {
-    const unreadMessages = chat.messages.filter(
-      (message: any) => message.read === false
-    );
-    return unreadMessages.length;
-    // return unreadMessages.length;
-  };
+  // const handleUnreadMessages = (chat: any) => {
+  //   let unreadMessages = 0;
+  //   const chats = chat.map((chat: any) => {
+  //     chat.messages.forEach((message: any) => {
+  //       if (message.read === false && message.senderId._id !== userId) {
+  //         unreadMessages++;
+  //       }
+  //     });
+  //   });
+
+  //   return unreadMessages;
+  // };
 
   const getRefresh = () => {
     window.location.reload();
@@ -108,6 +111,21 @@ const Chats: React.FC = () => {
     } else {
       return member.avatar;
     }
+  };
+
+  const handleUnreadChats = () => {
+    let unreadChats = 0;
+
+    data?.forEach((chat: any) => {
+      if (
+        chat.messages[chat.messages.length - 1]?.read === false &&
+        userId !== chat.messages[chat.messages.length - 1]?.senderId._id
+      ) {
+        unreadChats++;
+      }
+    });
+
+    return unreadChats;
   };
 
   return (
@@ -160,16 +178,16 @@ const Chats: React.FC = () => {
             </IonCard>
           ) : (
             <div style={{ padding: "5px" }}>
-              {/* <p
+              <p
                 style={{
                   fontWeight: "bold",
                   fontSize: "14px",
-                  paddingLeft: "10px",
+                  paddingLeft: "4px",
                   color: "var(--ion-color-primary)",
                 }}
               >
-                Messages({data?.length})
-              </p> */}
+                Unread Chats({handleUnreadChats()})
+              </p>
               {data?.map((chat: any, index: any) => {
                 return (
                   <div key={index}>
@@ -206,9 +224,6 @@ const Chats: React.FC = () => {
                         )}
 
                         <div
-                          // style={{
-
-                          // }}
                           style={
                             chat.messages[chat.messages.length - 1]?.read ===
                               false &&
