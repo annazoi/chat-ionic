@@ -28,6 +28,7 @@ import Toast from "../../../components/ui/Toast";
 import Logo from "../../../assets/logo.png";
 import "./style.css";
 import Title from "../../../components/ui/Title";
+import Input from "../../../components/ui/Input";
 
 const Login: React.FC = () => {
   const router = useIonRouter();
@@ -35,7 +36,7 @@ const Login: React.FC = () => {
   const { logIn } = authStore((store: any) => store);
 
   const [showToast, setShowToast] = useState(false);
-  const [message, setMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
 
   const {
     register,
@@ -63,18 +64,15 @@ const Login: React.FC = () => {
             avatar: data.avatar,
             username: data.username,
           });
-          setMessage("Form submitted successfully!");
+          setToastMessage("Form submitted successfully!");
           setShowToast(true);
           router.push("/inbox", "forward", "replace");
           window.location.reload();
         },
 
         onError: (error: any) => {
-          setMessage("Could not login. Ckeck your credentials");
+          setToastMessage("Could not login. Ckeck your credentials");
           setShowToast(true);
-          setMessage("Could not login. Ckeck your credentials");
-          setShowToast(true);
-          console.log("error", error);
         },
       });
     } catch (error: any) {
@@ -90,21 +88,7 @@ const Login: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent class="ion-padding">
-        <IonCard
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "600px",
-            justifyContent: "center",
-            margin: "auto",
-            padding: "20px",
-            borderRadius: "30px",
-            marginTop: "30px",
-            alignSelf: "center",
-            // marginLeft: "30px",
-            // marginRight: "30px",
-          }}
-        >
+        <IonCard className="auth-card">
           <img
             src={Logo}
             alt="logo"
@@ -121,20 +105,23 @@ const Login: React.FC = () => {
               <IonProgressBar type="indeterminate"></IonProgressBar>
             )}
             <form onSubmit={handleSubmit(onSubmit)}>
-              <IonInput
-                fill="outline"
-                labelPlacement="floating"
-                label="Username"
-                className="ion-margin-top"
-                {...register("username", { required: true })}
-              />
+              <Input
+                label="Entrer Username"
+                register={register("username", { required: true })}
+              ></Input>
               {errors.username && (
-                <p style={{ color: "red" }}>{errors.username?.message}</p>
+                <div className="auth-error-box">
+                  <p className="auth-error-text">{errors.username?.message}</p>
+                </div>
               )}
+
               <HidePassword register={register} />
               {errors.password && (
-                <p style={{ color: "red" }}>{errors.password?.message}</p>
+                <div className="auth-error-box">
+                  <p className="auth-error-text">{errors.password?.message}</p>
+                </div>
               )}
+
               <IonButton
                 type="submit"
                 className="ion-margin-top"
@@ -147,8 +134,9 @@ const Login: React.FC = () => {
 
             <Toast
               showToast={showToast}
-              message={message}
+              message={toastMessage}
               setShowToast={setShowToast}
+              isError={isError}
             />
           </IonCardContent>
           <IonButton routerLink="/register" fill="clear" expand="block">
