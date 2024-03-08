@@ -25,8 +25,6 @@ const createMessage = async (req, res) => {
     await chat.save();
     const users = chat.members.filter((member) => member._id != req.userId);
 
-    console.log("users", users);
-
     const sender = chat.members.find((member) => member._id == req.userId);
 
     users.map((members) => {
@@ -37,7 +35,7 @@ const createMessage = async (req, res) => {
         notification: {
           title: sender.username,
           body: req.body.message,
-          // avatar: sender.avatar,
+          // image: sender.avatar,
         },
 
         data: {

@@ -35,7 +35,6 @@ import userDefaulfAvatar from "../../assets/user.png";
 import Button from "../../components/ui/Button";
 import { useNotifications } from "../../hooks/notifications";
 import { io } from "socket.io-client";
-import { set } from "react-hook-form";
 
 const Chats: React.FC = () => {
   useNotifications();
@@ -53,6 +52,9 @@ const Chats: React.FC = () => {
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
     refetchInterval: 1000,
+    onSuccess: (data) => {
+      console.log("data", data);
+    },
   });
 
   // const joinRoom = (chatId: string) => {
