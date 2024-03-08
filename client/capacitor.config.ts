@@ -6,8 +6,8 @@ const config: CapacitorConfig = {
   webDir: "dist",
   bundledWebRuntime: false,
   server: {
-    androidScheme: "http",
-    allowNavigation: ["localhost", "127.0.0.1", "192.168.1.6"],
+    androidScheme: "https",
+    // allowNavigation: ["localhost", "127.0.0.1", "192.168.1.6"],
   },
   android: {
     allowMixedContent: true,

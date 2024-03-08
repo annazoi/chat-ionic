@@ -42,12 +42,15 @@ const register = async (req, res, next) => {
         // notification_url:
         //   " https://api.cloudinary.com/v1_1/dz3gbu9kz/image/upload",
       });
+      if (result?.url) {
+        result = result.url.replace("http", "https");
+      }
     }
     const createdUser = await User.create({
       phone,
       username,
       password: hashedPassword,
-      avatar: result?.url || "",
+      avatar: result || "",
     });
 
     let token;

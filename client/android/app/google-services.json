@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "849359660905",
-    "project_id": "ionic-chat-f7e1b",
-    "storage_bucket": "ionic-chat-f7e1b.appspot.com"
+    "project_number": "34632333896",
+    "project_id": "ionic-chat-f373a",
+    "storage_bucket": "ionic-chat-f373a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:849359660905:android:55e82595dba00902ea3ff8",
+        "mobilesdk_app_id": "1:34632333896:android:9531869dd7e5ac2bfa367d",
         "android_client_info": {
           "package_name": "io.ionic.starter"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCBzXLZwEUEkj3rZtRtmk3aeMNISiAck1M"
+          "current_key": "AIzaSyB6YBWYcIj5kYmGgcA4l6jDYuiLsuN1hn0"
         }
       ],
       "services": {

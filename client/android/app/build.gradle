@@ -1,8 +1,5 @@
 apply plugin: 'com.android.application'
 
-
-
-
 android {
     namespace "io.ionic.starter"
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -33,13 +30,6 @@ repositories {
     }
 }
 
-// plugins {
-//     id 'com.android.application'
-//     id 'com.google.gms.google-services'
-
-// }
-
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
@@ -50,15 +40,9 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
-
      implementation platform('com.google.firebase:firebase-bom:32.7.3')
   implementation 'com.google.firebase:firebase-analytics'
-
-
 }
-
-
-
 
 apply from: 'capacitor.build.gradle'
 
@@ -70,8 +54,3 @@ try {
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
-
-
-
-
-
