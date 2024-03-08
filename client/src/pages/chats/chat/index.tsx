@@ -203,7 +203,7 @@ const Chat: React.FC = () => {
 
     // Can be set to the src of an image now
 
-    image.src = imageUrl;
+    // image.src = imageUrl;
   };
 
   // sockets
