@@ -66,7 +66,7 @@ const register = async (req, res, next) => {
     res.status(201).json({
       userId: createdUser.id,
       token: token,
-      avatar: result?.url,
+      avatar: result || "",
       username: createdUser.username,
     });
   } catch (err) {
