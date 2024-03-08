@@ -65,13 +65,14 @@ const MessageBox: React.FC<MessageConfig> = ({
   return (
     <>
       <div>
+        {timeOpen && <p className="timer-box">{message.createdAt}</p>}
         <IonCard
           data-tooltip-id="message-tooltip"
           data-tooltip-content={message.createdAt}
           className={
             userId === message.senderId._id ? "userId-message" : "other-message"
           }
-          onClick={toggleTime}
+          onClick={message.message && !message.image ? toggleTime : undefined}
           {...longPressEvent}
         >
           {message.message && !message.image && (
@@ -94,21 +95,18 @@ const MessageBox: React.FC<MessageConfig> = ({
           )}
         </IonCard>
 
-        {message.senderId._id === userId && (
-          <ReactTooltip
-            id="message-tooltip"
-            place="left"
-            style={{
-              backgroundColor: "var(--ion-color-secondary)",
-              color: "white",
-              padding: "6px",
-              fontSize: "12px",
-              fontWeight: "bold",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            }}
-          />
-        )}
-        {timeOpen && <p className="timer-box">{message.createdAt}</p>}
+        {/* <ReactTooltip
+          id="message-tooltip"
+          place="left"
+          style={{
+            backgroundColor: "var(--ion-color-secondary)",
+            color: "white",
+            padding: "6px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          }}
+        /> */}
       </div>
 
       {openOptions && message.senderId._id === userId && (

@@ -23,6 +23,7 @@
 
 .timer-box {
   padding-left: 15px;
+  padding-right: 15px;
   border-radius: 50px;
   color: var(--ion-color-primary);
   font-size: 12px;
