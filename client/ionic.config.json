@@ -1,8 +1,7 @@
 {
-  "name": "myApp",
+  "name": "mesge",
   "integrations": {
-    "capacitor": {
-    }
+    "capacitor": {}
   },
   "type": "react-vite"
 }
