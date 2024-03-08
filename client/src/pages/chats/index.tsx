@@ -42,7 +42,6 @@ const Chats: React.FC = () => {
   const { avatar, userId, username } = authStore((store: any) => store);
 
   const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);
-  const [isOpenChat, setIsOpenChat] = useState<boolean>(false);
 
   // const { socket } = useSocket();
 
@@ -52,9 +51,6 @@ const Chats: React.FC = () => {
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
     refetchInterval: 1000,
-    onSuccess: (data) => {
-      console.log("data", data);
-    },
   });
 
   // const joinRoom = (chatId: string) => {

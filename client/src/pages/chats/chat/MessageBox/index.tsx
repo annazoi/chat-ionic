@@ -8,12 +8,18 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import "./style.css";
 
 interface MessageConfig {
-  message: any;
+  message?: any;
   refetch?: any;
   chatId?: string;
+  image?: string;
 }
 
-const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
+const MessageBox: React.FC<MessageConfig> = ({
+  message,
+  refetch,
+  chatId,
+  image,
+}) => {
   const { userId } = authStore((store: any) => store);
   const [timeOpen, setTimeOpen] = useState<boolean>(false);
   const [openOptions, setOpenOptions] = useState<boolean>(false);
@@ -38,11 +44,6 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
     );
   };
 
-  const handleDeleteEvent = () => {
-    console.log("messageId", message._id);
-    setOnDeletedMessage(true);
-  };
-
   const handleMessageOptions = () => {
     setOpenOptions(true);
   };
@@ -64,7 +65,6 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
   return (
     <>
       <div>
-        {/* {!onDeletedMessage && ( */}
         <IonCard
           data-tooltip-id="message-tooltip"
           data-tooltip-content={message.createdAt}
@@ -74,21 +74,25 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
           onClick={toggleTime}
           {...longPressEvent}
         >
-          <p
-            style={{
-              paddingLeft: "10px",
-              paddingRight: "10px",
-              color: userId === message.senderId._id ? "black" : "black",
-            }}
-          >
-            {message.message}
-          </p>
+          {message.message && !message.image && (
+            <p
+              style={{
+                paddingLeft: "10px",
+                paddingRight: "10px",
+                color: userId === message.senderId._id ? "black" : "black",
+              }}
+            >
+              {message.message}
+            </p>
+          )}
+          {message.image && !message.message && (
+            <img
+              src={message.image}
+              alt=""
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          )}
         </IonCard>
-        {/* )} */}
-
-        {/* {onDeletedMessage && (
-          <div className="deleted-message-box">user delete this message</div>
-        )} */}
 
         {message.senderId._id === userId && (
           <ReactTooltip
@@ -104,7 +108,7 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId }) => {
             }}
           />
         )}
-        {/* {timeOpen && <p className="timer-box">{message.createdAt}</p>} */}
+        {timeOpen && <p className="timer-box">{message.createdAt}</p>}
       </div>
 
       {openOptions && message.senderId._id === userId && (

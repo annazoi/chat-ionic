@@ -16,7 +16,7 @@ const createMessage = async (req, res) => {
     const chat = await Chat.findById(req.params.chatId);
     chat.messages.push({
       senderId: req.userId,
-      message: req.body.message,
+      message: req.body.message || "",
       image: result?.url || "",
     });
 

@@ -19,7 +19,7 @@ import {
   IonToolbar,
   useIonRouter,
 } from "@ionic/react";
-import { Camera, CameraResultType } from "@capacitor/camera";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import {
   arrowBack,
   send,
@@ -57,6 +57,7 @@ import Title from "../../../components/ui/Title";
 import { ref } from "yup";
 import { set } from "react-hook-form";
 import { useInterval } from "react-use";
+import { h } from "ionicons/dist/types/stencil-public-runtime";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -69,7 +70,9 @@ const Chat: React.FC = () => {
   const [delay, setDelay] = useState(1000);
   const [isRunning, setIsRunning] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [image, setImage] = useState<any>(null);
+  const [openTakePicture, setOpenTakePicture] = useState(false);
+  const [image, setImage] = useState<string>("");
+  const [newImage, setNewImage] = useState<string>("");
 
   const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
@@ -84,22 +87,24 @@ const Chat: React.FC = () => {
       setIsLoading(true);
       setMessages(res?.chat.messages);
       setChat(res?.chat);
-      if (
-        res?.chat.messages[res?.chat.messages.length - 1].senderId._id !==
-          userId &&
-        !res?.chat.messages[res?.chat.messages.length - 1].read
-      ) {
-        readMessageMutate({
-          chatId,
-          messageId: res?.chat.messages[res?.chat.messages.length - 1]._id,
-        });
+      if (res?.chat.messages.length > 0) {
+        if (
+          res?.chat.messages[res?.chat.messages.length - 1].senderId._id !==
+            userId &&
+          !res?.chat.messages[res?.chat.messages.length - 1].read
+        ) {
+          readMessageMutate({
+            chatId,
+            messageId: res?.chat.messages[res?.chat.messages.length - 1]._id,
+          });
+        }
       }
     },
   });
 
   const { mutate, isLoading: messageIsLoading } = useMutation({
-    mutationFn: ({ chatId, newMessage }: any) =>
-      sendMessage(chatId, newMessage),
+    mutationFn: ({ chatId, newMessage, image }: any) =>
+      sendMessage({ chatId, newMessage, image }),
   });
 
   const { mutate: mutateDeleteChat } = useMutation({
@@ -112,7 +117,7 @@ const Chat: React.FC = () => {
         mutateChat();
       }
     },
-    isRunning ? 1000 : null
+    isRunning ? 5000 : null
   );
 
   useEffect(() => {
@@ -138,14 +143,14 @@ const Chat: React.FC = () => {
   };
 
   const handleNewMessage = () => {
-    if (newMessage === "") return;
+    if (newMessage === "" && !image) return;
     mutate(
-      { chatId, newMessage },
+      { chatId, newMessage, image },
       {
         onSuccess: (res: any) => {
           const messageData = {
             ...res.chat.messages[res.chat.messages.length - 1],
-            room: chatId,
+            // room: chatId,
           };
           // socket?.emit("send_message", messageData);
           setMessages((prevMessages) => [...prevMessages, messageData]);
@@ -191,19 +196,16 @@ const Chat: React.FC = () => {
   const takePicture = async () => {
     const image = await Camera.getPhoto({
       quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Uri,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Prompt,
     });
 
-    // image.webPath will contain a path that can be set as an image src.
-    // You can access the original file using image.path, which can be
-    // passed to the Filesystem API to read the raw data of the image,
-    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    var imageUrl = image.webPath;
+    let imageUrl = image.dataUrl;
 
-    // Can be set to the src of an image now
+    setImage(imageUrl || "");
 
-    // image.src = imageUrl;
+    return imageUrl;
   };
 
   // sockets
@@ -279,6 +281,7 @@ const Chat: React.FC = () => {
 
                 <MessageBox
                   message={message}
+                  image={image}
                   chatId={chatId}
                   // refetch={refetch}
                 ></MessageBox>
@@ -340,6 +343,10 @@ const Chat: React.FC = () => {
           color="primary"
         ></IonIcon>
         <IonIcon icon={happyOutline} size="small" color="primary"></IonIcon>
+        <div>
+          <IonButton onClick={takePicture}>Take Picture</IonButton>
+          {/* <img src={image} alt="" /> */}
+        </div>
       </IonCard>
       <Modal
         isOpen={openOptions}

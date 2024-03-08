@@ -84,11 +84,19 @@ export const deleteChat = async (id: string) => {
     throw err;
   }
 };
-export const sendMessage = async (id: string, message: string) => {
+export const sendMessage = async ({
+  chatId,
+  newMessage,
+  image,
+}: {
+  chatId: string;
+  newMessage: string;
+  image: string;
+}) => {
   try {
     const response = await Axios.post(
-      `${API_URL}/chat/${id}/message`,
-      { message },
+      `${API_URL}/chat/${chatId}/message`,
+      { message: newMessage, image },
       getConfig()
     );
     return response.data;
