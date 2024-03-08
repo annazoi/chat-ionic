@@ -172,6 +172,9 @@ const Register: React.FC = () => {
               isError={isError}
             />
           </IonCardContent>
+          <IonButton routerLink="/register" fill="clear" expand="block">
+            Login
+          </IonButton>
         </IonCard>
       </IonContent>
     </IonPage>

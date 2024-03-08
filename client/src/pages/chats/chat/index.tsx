@@ -19,6 +19,7 @@ import {
   IonToolbar,
   useIonRouter,
 } from "@ionic/react";
+import { Camera, CameraResultType } from "@capacitor/camera";
 import {
   arrowBack,
   send,
@@ -64,18 +65,17 @@ const Chat: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<any[]>([]);
   const [openOptions, setOpenOptions] = useState<boolean>(false);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
   const [chat, setChat] = useState<any>(null);
   const [delay, setDelay] = useState(1000);
   const [isRunning, setIsRunning] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState<any>(null);
 
   const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
 
   const { mutate: readMessageMutate } = useMutation({
     mutationFn: ({ chatId, messageId }: any) => readMessage(chatId, messageId),
-    onSuccess: (res: any) => {},
   });
 
   const { mutate: mutateChat } = useMutation({
@@ -186,6 +186,24 @@ const Chat: React.FC = () => {
     } else {
       return chat.name;
     }
+  };
+
+  const takePicture = async () => {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: true,
+      resultType: CameraResultType.Uri,
+    });
+
+    // image.webPath will contain a path that can be set as an image src.
+    // You can access the original file using image.path, which can be
+    // passed to the Filesystem API to read the raw data of the image,
+    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
+    var imageUrl = image.webPath;
+
+    // Can be set to the src of an image now
+
+    image.src = imageUrl;
   };
 
   // sockets

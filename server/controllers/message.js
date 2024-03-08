@@ -1,19 +1,26 @@
 const Chat = require("../model/Chat");
 const FCM = require("fcm-node");
 const fcm = new FCM(process.env.SERVER_KEY);
+const cloudinary = require("../utils/cloudinary");
 
 const createMessage = async (req, res) => {
   try {
-    const chat = await Chat.findById(req.params.chatId).populate(
-      "members creatorId messages.senderId",
-      "-password"
-    );
+    const { image } = req.body;
+    let result;
+    if (image) {
+      result = await cloudinary.uploader.upload(image, {
+        folder: "chat",
+      });
+    }
+
+    const chat = await Chat.findById(req.params.chatId);
     chat.messages.push({
       senderId: req.userId,
       message: req.body.message,
+      image: result?.url || "",
     });
 
-    await chat.populate("members creatorId messages.senderId");
+    await chat.populate("members creatorId messages.senderId", "-password");
 
     await chat.save();
     const users = chat.members.filter((member) => member._id != req.userId);

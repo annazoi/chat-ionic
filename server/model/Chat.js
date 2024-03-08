@@ -21,6 +21,9 @@ const messageSchema = mongoose.Schema(
       type: String,
       default: () => moment().format("YYYY-MM-DD HH:mm:ss"),
     },
+    image: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
