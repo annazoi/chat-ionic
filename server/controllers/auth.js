@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../model/User");
 const cloudinary = require("../utils/cloudinary");
+const uploadImage = require("../lib/uploadImage");
 
 const register = async (req, res, next) => {
   const { phone, username, password, avatar } = req.body;
@@ -37,14 +38,7 @@ const register = async (req, res, next) => {
   try {
     let result;
     if (avatar) {
-      result = await cloudinary.uploader.upload(avatar, {
-        folder: "users",
-        // notification_url:
-        //   " https://api.cloudinary.com/v1_1/dz3gbu9kz/image/upload",
-      });
-      if (result?.url) {
-        result = result.url.replace("http", "https");
-      }
+      result = await uploadImage(avatar);
     }
     const createdUser = await User.create({
       phone,

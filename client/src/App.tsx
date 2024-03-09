@@ -45,7 +45,6 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const { isLoggedIn } = authStore((store): any => store);
-  const [selectedTab, setSelectedTab] = useState<string>("inbox");
   return (
     <IonApp>
       <IonReactRouter>
@@ -54,11 +53,13 @@ const App: React.FC = () => {
             <>
               {/* <IonTabs> */}
               {/* <IonRouterOutlet> */}
+              <Route path="/" component={Inbox} exact />
               <Route path="/inbox" component={Inbox} />
               <Route path="/chat/:chatId" component={Chat} />
               <Route path="/users" component={Users} />
               <Route path="/settings" component={Settings} />
               <Route path="/account" component={Account} />
+
               {/* </IonRouterOutlet> */}
 
               {/* <IonTabBar slot="bottom">

@@ -13,11 +13,15 @@ const createChat = async (req, res) => {
         return res.status(200).json({ message: "ok", chat: existingChat });
       }
     }
+    if (avatar) {
+      const result = await uploadImage(avatar);
+      avatar = result;
+    }
 
     const chat = await Chat.create({
       name,
       type,
-      avatar,
+      avatar: result || "",
       members,
       creatorId: req.userId,
     });
