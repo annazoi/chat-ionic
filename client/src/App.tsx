@@ -59,7 +59,6 @@ const App: React.FC = () => {
               <Route path="/users" component={Users} />
               <Route path="/settings" component={Settings} />
               <Route path="/account" component={Account} />
-              <Redirect exact from="/" to="/inbox" />
               {/* </IonRouterOutlet> */}
 
               {/* <IonTabBar slot="bottom">

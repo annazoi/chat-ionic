@@ -5,7 +5,10 @@ import { deleteMessage } from "../../../../services/chat";
 import { useMutation } from "@tanstack/react-query";
 import { useLongPress } from "react-use";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+
 import "./style.css";
+import Modal from "../../../../components/ui/Modal";
+import { set } from "react-hook-form";
 
 interface MessageConfig {
   message?: any;
@@ -24,6 +27,7 @@ const MessageBox: React.FC<MessageConfig> = ({
   const [timeOpen, setTimeOpen] = useState<boolean>(false);
   const [openOptions, setOpenOptions] = useState<boolean>(false);
   const [onDeletedMessage, setOnDeletedMessage] = useState<boolean>(false);
+  const [openImage, setOpenImage] = useState(false);
 
   const { mutate: mutateDeleteMessage } = useMutation({
     mutationFn: ({ chatId, messageId }: any) =>
@@ -72,7 +76,11 @@ const MessageBox: React.FC<MessageConfig> = ({
           className={
             userId === message.senderId._id ? "userId-message" : "other-message"
           }
-          onClick={message.message && !message.image ? toggleTime : undefined}
+          onClick={
+            message.message && !message.image
+              ? toggleTime
+              : () => setOpenImage(true)
+          }
           {...longPressEvent}
         >
           {message.message && !message.image && (
@@ -108,6 +116,10 @@ const MessageBox: React.FC<MessageConfig> = ({
           }}
         /> */}
       </div>
+
+      <Modal isOpen={openImage} onClose={() => setOpenImage(false)}>
+        <img src={message.image} alt="" style={{ width: "100%" }} />
+      </Modal>
 
       {openOptions && message.senderId._id === userId && (
         <IonAlert

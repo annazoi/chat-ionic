@@ -54,10 +54,8 @@ import Modal from "../../../components/ui/Modal";
 import ChatOptions from "../../../components/ChatOptions";
 import { RiGroup2Fill } from "react-icons/ri";
 import Title from "../../../components/ui/Title";
-import { ref } from "yup";
-import { set } from "react-hook-form";
 import { useInterval } from "react-use";
-import { h } from "ionicons/dist/types/stencil-public-runtime";
+import { boolean } from "yup";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -76,6 +74,7 @@ const Chat: React.FC = () => {
 
   const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
+  const isEntered = useRef(false);
 
   const { mutate: readMessageMutate } = useMutation({
     mutationFn: ({ chatId, messageId }: any) => readMessage(chatId, messageId),
@@ -125,7 +124,12 @@ const Chat: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    contentRef?.current?.scrollToBottom();
+    // console.log("isEntered", isEntered.current);
+    if (!isEntered.current) {
+      isEntered.current = true;
+      contentRef?.current?.scrollToBottom();
+      // console.log("scrollToBottom");
+    }
   }, [messages, contentRef]);
 
   const deletedChat = () => {
@@ -193,12 +197,27 @@ const Chat: React.FC = () => {
     }
   };
 
-  const takePicture = async () => {
+  const handleGallery = async () => {
     const image = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
-      source: CameraSource.Prompt,
+      source: CameraSource.Photos,
+    });
+
+    let imageUrl = image.dataUrl;
+
+    setImage(imageUrl || "");
+
+    return imageUrl;
+  };
+
+  const handleCamera = async () => {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Camera,
     });
 
     let imageUrl = image.dataUrl;
@@ -331,22 +350,47 @@ const Chat: React.FC = () => {
           display: "flex",
           // justifyContent: "space-between",
           flexDirection: "row",
-          gap: "15px",
+          gap: "5px",
         }}
       >
-        <IonIcon icon={imageOutline} color="primary" size="small"></IonIcon>
-
-        <IonIcon icon={cameraOutline} size="small" color="primary"></IonIcon>
-        <IonIcon
-          icon={documentTextOutline}
+        <IonButton
+          onClick={handleGallery}
+          className="ion-no-margin"
+          shape="round"
           size="small"
-          color="primary"
-        ></IonIcon>
-        <IonIcon icon={happyOutline} size="small" color="primary"></IonIcon>
-        <div>
-          <IonButton onClick={takePicture}>Take Picture</IonButton>
-          {/* <img src={image} alt="" /> */}
-        </div>
+        >
+          <IonIcon icon={imageOutline} color="light" size="small"></IonIcon>
+        </IonButton>
+        <IonButton
+          onClick={handleCamera}
+          className="ion-no-margin"
+          shape="round"
+          size="small"
+        >
+          <IonIcon icon={cameraOutline} size="small" color="light"></IonIcon>
+        </IonButton>
+
+        <IonButton
+          // onClick={handleGallery}
+          className="ion-no-margin"
+          shape="round"
+          size="small"
+        >
+          <IonIcon
+            icon={documentTextOutline}
+            size="small"
+            color="light"
+          ></IonIcon>
+        </IonButton>
+        <IonButton
+          // onClick={handleGallery}
+          className="ion-no-margin"
+          shape="round"
+          size="small"
+        >
+          <IonIcon icon={happyOutline} size="small" color="light"></IonIcon>
+        </IonButton>
+        <div>{/* <img src={image} alt="" /> */}</div>
       </IonCard>
       <Modal
         isOpen={openOptions}

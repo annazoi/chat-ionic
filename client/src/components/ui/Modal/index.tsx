@@ -14,10 +14,11 @@ import { closeOutline } from "ionicons/icons";
 
 interface ModalProps {
   isOpen: any;
-  title: string;
+  title?: string;
   onClose: any;
   children?: any;
   closeModal?: any;
+  image?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -26,12 +27,14 @@ const Modal: React.FC<ModalProps> = ({
   title,
   children,
   closeModal,
+  image,
 }) => {
   return (
     <IonModal isOpen={isOpen} onDidDismiss={closeModal}>
       <IonHeader>
         <IonToolbar>
-          <Title title={title} className="ion-padding"></Title>
+          {title && <Title title={title} className="ion-padding"></Title>}
+
           <IonButtons slot="end">
             <Button
               name="Close"
