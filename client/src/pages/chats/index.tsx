@@ -86,7 +86,7 @@ const Chats: React.FC = () => {
     data?.forEach((chat: any) => {
       if (
         chat.messages[chat.messages.length - 1]?.read === false &&
-        userId !== chat.messages[chat.messages.length - 1]?.senderId._id
+        userId !== chat.messages[chat.messages.length - 1]?.senderId?._id
       ) {
         unreadChats++;
       }
@@ -110,6 +110,30 @@ const Chats: React.FC = () => {
       return userDefaulfAvatar;
     } else {
       return member.avatar;
+    }
+  };
+
+  const getGroupAvatar = (chat: any) => {
+    if (!chat.avatar) {
+      return (
+        <IonAvatar slot="start" className=" ion-no-margin">
+          <RiGroup2Fill size="100%" color="black" />
+        </IonAvatar>
+      );
+    } else {
+      return (
+        <img
+          src={chat.avatar}
+          alt=""
+          style={{
+            width: "37px",
+            height: "37px",
+            borderRadius: "50%",
+            marginLeft: "4px",
+            marginTop: "12px",
+          }}
+        ></img>
+      );
     }
   };
 
@@ -188,7 +212,7 @@ const Chats: React.FC = () => {
                       }}
                     >
                       <div style={{ display: "flex" }}>
-                        {chat.type === "private" ? (
+                        {chat.type === "private" && (
                           <IonAvatar>
                             <img
                               src={getAvatar(chat)}
@@ -202,11 +226,9 @@ const Chats: React.FC = () => {
                               }}
                             />
                           </IonAvatar>
-                        ) : (
-                          <IonAvatar slot="start" className=" ion-no-margin">
-                            <RiGroup2Fill size="100%" color="black" />
-                          </IonAvatar>
                         )}
+
+                        {chat.type === "group" && getGroupAvatar(chat)}
 
                         <div
                           style={

@@ -67,9 +67,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({
           setAvatar(data?.chat.avatar);
           setMembers(data?.chat.members);
           reset({
-            avatar: avatar
-              ? data?.chat.avatar
-              : "https://img.myloview.de/bilder/people-vector-icon-person-symbol-work-group-team-persons-crowd-vector-illustration-icon-group-of-people-pictogram-isolated-illustration-of-people-icon-symbol-of-the-crowd-people-standing-next-700-223068863.jpg",
+            avatar: avatar ? data?.chat.avatar : "",
             name: data?.chat.name,
           });
         },

@@ -254,8 +254,9 @@ const Chat: React.FC = () => {
                 color="secondary"
               >
                 <IonAvatar>
-                  {chat.type === "private" ? (
-                    <img src={getAvatar()} alt="" />
+                  {chat.type === "private" && <img src={getAvatar()} alt="" />}
+                  {chat.type === "group" && chat.avatar ? (
+                    <img src={chat.avatar} alt="" />
                   ) : (
                     <RiGroup2Fill size="100%" color="black" />
                   )}

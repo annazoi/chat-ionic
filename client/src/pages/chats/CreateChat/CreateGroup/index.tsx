@@ -58,6 +58,7 @@ const CreateGroup: FC<GroupProps> = ({
           onSuccess: (res: any) => {
             setOpenGroupModal(false);
             closeModal();
+            console.log(res);
             router.push(`/chat/${res.chat._id}`);
           },
         }
