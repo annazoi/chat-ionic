@@ -50,7 +50,7 @@ const Chats: React.FC = () => {
     queryFn: getChats,
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
-    refetchInterval: 1000,
+    refetchInterval: openCreateChat ? 0 : 1000,
   });
 
   // const joinRoom = (chatId: string) => {

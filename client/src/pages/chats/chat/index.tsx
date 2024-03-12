@@ -86,6 +86,12 @@ const Chat: React.FC = () => {
       setIsLoading(true);
       setMessages(res?.chat.messages);
       setChat(res?.chat);
+      // console.log("isEntered.current", isEntered.current);
+      // if (!isEntered.current) {
+      //   contentRef?.current?.scrollToBottom();
+      //   isEntered.current = true;
+      // }
+
       if (res?.chat.messages.length > 0) {
         if (
           res?.chat.messages[res?.chat.messages.length - 1].senderId._id !==
@@ -110,27 +116,30 @@ const Chat: React.FC = () => {
     mutationFn: ({ chatId }: any) => deleteChat(chatId),
   });
 
-  useInterval(
-    () => {
-      if (isRunning && !openOptions) {
-        mutateChat();
-      }
-    },
-    isRunning ? 5000 : null
-  );
+  // useInterval(
+  //   () => {
+  //     if (isRunning && !openOptions) {
+  //       mutateChat();
+  //     }
+  //   },
+  //   isRunning ? 5000 : null
+  // );
 
   useEffect(() => {
+    console.log("1111");
+    if (isEntered.current) return;
+    console.log("222");
     mutateChat();
   }, []);
 
   useEffect(() => {
-    // console.log("isEntered", isEntered.current);
+    console.log("isEntered", isEntered.current);
     if (!isEntered.current) {
       isEntered.current = true;
       contentRef?.current?.scrollToBottom();
-      // console.log("scrollToBottom");
+      console.log("scrollToBottom");
     }
-  }, [messages, contentRef]);
+  }, [messages, contentRef.current]);
 
   const deletedChat = () => {
     mutateDeleteChat(
@@ -405,7 +414,6 @@ const Chat: React.FC = () => {
           closeModal={() => {
             setOpenOptions(false);
           }}
-          mutateChat={mutateChat}
           chat={chat}
           isLoading={isLoading}
         ></ChatOptions>

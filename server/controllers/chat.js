@@ -1,4 +1,5 @@
 const Chat = require("../model/Chat");
+const uploadImage = require("../lib/uploadImage");
 
 const createChat = async (req, res) => {
   const { name, type, avatar, members } = req.body;
@@ -13,9 +14,9 @@ const createChat = async (req, res) => {
         return res.status(200).json({ message: "ok", chat: existingChat });
       }
     }
+    let result;
     if (avatar) {
-      const result = await uploadImage(avatar);
-      avatar = result;
+      result = await uploadImage(avatar);
     }
 
     const chat = await Chat.create({
@@ -70,9 +71,7 @@ const updateChat = async (req, res) => {
     }
     await Chat.updateOne({ _id: req.params.chatId }, query).exec();
 
-    const updatedChat = await Chat.findById(req.params.chatId).exec();
-
-    res.status(201).json({ message: "ok", chat: updatedChat });
+    res.status(201).json({ message: "ok", chat: chat });
   } catch (err) {
     res.status(404).json({ message: err, chat: null });
   }
