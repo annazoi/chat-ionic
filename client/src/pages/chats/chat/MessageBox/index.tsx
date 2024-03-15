@@ -88,7 +88,7 @@ const MessageBox: React.FC<MessageConfig> = ({
               style={{
                 paddingLeft: "10px",
                 paddingRight: "10px",
-                color: userId === message.senderId._id ? "black" : "black",
+                color: "var(--ion-color-warning)",
               }}
             >
               {message.message}

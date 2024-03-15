@@ -63,7 +63,7 @@ const deleteMessage = async (req, res) => {
     const message = chat.messages.find(
       (message) => message._id == req.params.messageId
     );
-    message.message = "";
+    message.message = "User deleted this message";
     await chat.save();
     res.status(200).json({ message: "ok", chat: chat });
   } catch (err) {

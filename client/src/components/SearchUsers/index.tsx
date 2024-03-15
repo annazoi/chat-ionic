@@ -86,6 +86,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
         }}
         placeholder={placeholder}
         className={className}
+        color="transparent"
       ></IonSearchbar>
       {type === "group" && (
         <>

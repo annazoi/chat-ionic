@@ -28,7 +28,6 @@ import CreateChat from "./CreateChat";
 import Modal from "../../components/ui/Modal";
 // import { useSocket } from "../../hooks/sockets";
 import { RiGroup2Fill } from "react-icons/ri";
-import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import Title from "../../components/ui/Title";
 import Menu from "../../components/Menu";
 import userDefaulfAvatar from "../../assets/user.png";
@@ -170,6 +169,7 @@ const Chats: React.FC = () => {
             </IonButtons>
           </IonToolbar>
         </IonHeader>
+        {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
 
         <IonContent>
           {data?.length === 0 ? (
@@ -200,10 +200,10 @@ const Chats: React.FC = () => {
               {data?.map((chat: any, index: any) => {
                 return (
                   <div key={index}>
-                    {isLoading && (
-                      <IonProgressBar type="indeterminate"></IonProgressBar>
-                    )}
                     <IonItem
+                      // style={{
+                      //   borderBottom: "1px solid var(--ion-color-primary)",
+                      // }}
                       className="ion-no-padding"
                       // lines="none"
                       routerLink={`/chat/${chat._id}`}
@@ -253,7 +253,7 @@ const Chats: React.FC = () => {
                                 }
                           }
                         >
-                          <IonLabel color="primary">
+                          <IonLabel color="warning">
                             {chat.type === "private"
                               ? getName(chat)
                               : chat.name}
@@ -264,6 +264,7 @@ const Chats: React.FC = () => {
                               whiteSpace: "nowrap",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
+                              color: "var(--ion-color-warning)",
                             }}
                           >
                             {handleLastMessage(chat)}
@@ -289,7 +290,7 @@ const Chats: React.FC = () => {
               <IonIcon
                 size="large"
                 icon={chatbubbleEllipsesOutline}
-                color="light"
+                // color="light"
               />
             </IonFabButton>
           </IonFab>

@@ -369,7 +369,7 @@ const Chat: React.FC = () => {
           shape="round"
           size="small"
         >
-          <IonIcon icon={imageOutline} color="light" size="small"></IonIcon>
+          <IonIcon icon={imageOutline} color="secondary" size="small"></IonIcon>
         </IonButton>
         <IonButton
           onClick={handleCamera}
@@ -377,7 +377,11 @@ const Chat: React.FC = () => {
           shape="round"
           size="small"
         >
-          <IonIcon icon={cameraOutline} size="small" color="light"></IonIcon>
+          <IonIcon
+            icon={cameraOutline}
+            size="small"
+            color="secondary"
+          ></IonIcon>
         </IonButton>
 
         <IonButton
@@ -389,7 +393,7 @@ const Chat: React.FC = () => {
           <IonIcon
             icon={documentTextOutline}
             size="small"
-            color="light"
+            color="secondary"
           ></IonIcon>
         </IonButton>
         <IonButton
@@ -398,7 +402,7 @@ const Chat: React.FC = () => {
           shape="round"
           size="small"
         >
-          <IonIcon icon={happyOutline} size="small" color="light"></IonIcon>
+          <IonIcon icon={happyOutline} size="small" color="secondary"></IonIcon>
         </IonButton>
         <div>{/* <img src={image} alt="" /> */}</div>
       </IonCard>
@@ -420,11 +424,11 @@ const Chat: React.FC = () => {
       </Modal>
       <IonFab slot="fixed" horizontal="end">
         <IonFabButton size="small" color="primary">
-          <IonIcon icon={informationOutline}></IonIcon>
+          <IonIcon icon={informationOutline} color="dark"></IonIcon>
         </IonFabButton>
         <IonFabList side="bottom">
           <IonFabButton>
-            <IonIcon icon={imagesOutline}></IonIcon>
+            <IonIcon icon={imagesOutline} color="warning"></IonIcon>
           </IonFabButton>
           <IonFabButton
             onClick={() => {
@@ -432,7 +436,7 @@ const Chat: React.FC = () => {
             }}
             routerLink="/inbox"
           >
-            <IonIcon icon={trashBinOutline}></IonIcon>
+            <IonIcon icon={trashBinOutline} color="warning"></IonIcon>
           </IonFabButton>
           {chat?.type === "group" && (
             <IonFabButton
@@ -440,7 +444,7 @@ const Chat: React.FC = () => {
                 setOpenOptions(!openOptions);
               }}
             >
-              <IonIcon icon={peopleOutline}></IonIcon>
+              <IonIcon icon={peopleOutline} color="warning"></IonIcon>
             </IonFabButton>
           )}
         </IonFabList>
