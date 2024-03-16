@@ -188,12 +188,26 @@ const Chats: React.FC = () => {
           ) : (
             <div style={{ padding: "5px" }}>
               <p
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                  paddingLeft: "4px",
-                  color: "var(--ion-color-primary)",
-                }}
+                // style={{
+                //   fontWeight: "bold",
+                //   fontSize: "14px",
+                //   paddingLeft: "4px",
+                //   color: "var(--ion-color-primary)",
+                // }}
+                style={
+                  handleUnreadChats() > 0
+                    ? {
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        paddingLeft: "4px",
+                        color: "var(--ion-color-primary)",
+                      }
+                    : {
+                        fontSize: "14px",
+                        paddingLeft: "4px",
+                        color: "var(--ion-color-primary)",
+                      }
+                }
               >
                 Unread Chats({handleUnreadChats()})
               </p>
