@@ -9,7 +9,7 @@
 
 # SERVER
 ## Run
-### nodemon
+### Nodemon
 - `npm run dev`
-
+### Node
 - `npm start`
