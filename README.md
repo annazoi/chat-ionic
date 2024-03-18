@@ -1,16 +1,15 @@
 # CLIENT
-# Run
--ionic serve
+## Run
+- `ionic serve`
 
 # Manual installations
--npm install -g @ionic/cli
--npm i 
--npm i @ionic/pwa-elements
+- `npm install -g @ionic/cli`
+- `npm i` 
+- `npm i @ionic/pwa-elements`
 
 # SERVER
-# Run
+## Run
+### nodemon
+- `npm run dev`
 
---nodemon--
--npm run dev
-
--npm start
+- `npm start`
