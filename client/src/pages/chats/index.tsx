@@ -237,6 +237,7 @@ const Chats: React.FC = () => {
                                 borderRadius: "50%",
                                 marginLeft: "4px",
                                 marginTop: "12px",
+                                backgroundColor: "var(--ion-color-warning)",
                               }}
                             />
                           </IonAvatar>

@@ -86,7 +86,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
         }}
         placeholder={placeholder}
         className={className}
-        color="transparent"
+        color="secondary"
       ></IonSearchbar>
       {type === "group" && (
         <>
@@ -95,7 +95,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
               {user._id !== userId && (
                 <IonCard>
                   <IonCardContent className="ion-no-padding">
-                    <IonItem lines="none">
+                    <IonItem lines="none" color={"secondary"}>
                       <IonAvatar slot="start">
                         <IonImg
                           src={user.avatar ? user.avatar : userDefaultAvatar}
