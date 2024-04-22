@@ -28,7 +28,6 @@ import CreateChat from "./CreateChat";
 import Modal from "../../components/ui/Modal";
 // import { useSocket } from "../../hooks/sockets";
 import { RiGroup2Fill } from "react-icons/ri";
-import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import Title from "../../components/ui/Title";
 import Menu from "../../components/Menu";
 import userDefaulfAvatar from "../../assets/user.png";
@@ -42,7 +41,6 @@ const Chats: React.FC = () => {
   const { avatar, userId, username } = authStore((store: any) => store);
 
   const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);
-  const [isOpenChat, setIsOpenChat] = useState<boolean>(false);
 
   // const { socket } = useSocket();
 
@@ -51,10 +49,7 @@ const Chats: React.FC = () => {
     queryFn: getChats,
     refetchOnMount: "always",
     refetchIntervalInBackground: true,
-    refetchInterval: 1000,
-    onSuccess: (data) => {
-      console.log("data", data);
-    },
+    refetchInterval: openCreateChat ? 0 : 1000,
   });
 
   // const joinRoom = (chatId: string) => {
@@ -90,7 +85,7 @@ const Chats: React.FC = () => {
     data?.forEach((chat: any) => {
       if (
         chat.messages[chat.messages.length - 1]?.read === false &&
-        userId !== chat.messages[chat.messages.length - 1]?.senderId._id
+        userId !== chat.messages[chat.messages.length - 1]?.senderId?._id
       ) {
         unreadChats++;
       }
@@ -114,6 +109,30 @@ const Chats: React.FC = () => {
       return userDefaulfAvatar;
     } else {
       return member.avatar;
+    }
+  };
+
+  const getGroupAvatar = (chat: any) => {
+    if (!chat.avatar) {
+      return (
+        <IonAvatar slot="start" className=" ion-no-margin">
+          <RiGroup2Fill size="100%" color="black" />
+        </IonAvatar>
+      );
+    } else {
+      return (
+        <img
+          src={chat.avatar}
+          alt=""
+          style={{
+            width: "37px",
+            height: "37px",
+            borderRadius: "50%",
+            marginLeft: "4px",
+            marginTop: "12px",
+          }}
+        ></img>
+      );
     }
   };
 
@@ -150,6 +169,7 @@ const Chats: React.FC = () => {
             </IonButtons>
           </IonToolbar>
         </IonHeader>
+        {isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
 
         <IonContent>
           {data?.length === 0 ? (
@@ -168,22 +188,36 @@ const Chats: React.FC = () => {
           ) : (
             <div style={{ padding: "5px" }}>
               <p
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                  paddingLeft: "4px",
-                  color: "var(--ion-color-primary)",
-                }}
+                // style={{
+                //   fontWeight: "bold",
+                //   fontSize: "14px",
+                //   paddingLeft: "4px",
+                //   color: "var(--ion-color-primary)",
+                // }}
+                style={
+                  handleUnreadChats() > 0
+                    ? {
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        paddingLeft: "4px",
+                        color: "var(--ion-color-primary)",
+                      }
+                    : {
+                        fontSize: "14px",
+                        paddingLeft: "4px",
+                        color: "var(--ion-color-primary)",
+                      }
+                }
               >
                 Unread Chats({handleUnreadChats()})
               </p>
               {data?.map((chat: any, index: any) => {
                 return (
                   <div key={index}>
-                    {isLoading && (
-                      <IonProgressBar type="indeterminate"></IonProgressBar>
-                    )}
                     <IonItem
+                      // style={{
+                      //   borderBottom: "1px solid var(--ion-color-primary)",
+                      // }}
                       className="ion-no-padding"
                       // lines="none"
                       routerLink={`/chat/${chat._id}`}
@@ -192,7 +226,7 @@ const Chats: React.FC = () => {
                       }}
                     >
                       <div style={{ display: "flex" }}>
-                        {chat.type === "private" ? (
+                        {chat.type === "private" && (
                           <IonAvatar>
                             <img
                               src={getAvatar(chat)}
@@ -206,11 +240,9 @@ const Chats: React.FC = () => {
                               }}
                             />
                           </IonAvatar>
-                        ) : (
-                          <IonAvatar slot="start" className=" ion-no-margin">
-                            <RiGroup2Fill size="100%" color="black" />
-                          </IonAvatar>
                         )}
+
+                        {chat.type === "group" && getGroupAvatar(chat)}
 
                         <div
                           style={
@@ -235,7 +267,7 @@ const Chats: React.FC = () => {
                                 }
                           }
                         >
-                          <IonLabel color="primary">
+                          <IonLabel color="warning">
                             {chat.type === "private"
                               ? getName(chat)
                               : chat.name}
@@ -246,6 +278,7 @@ const Chats: React.FC = () => {
                               whiteSpace: "nowrap",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
+                              color: "var(--ion-color-warning)",
                             }}
                           >
                             {handleLastMessage(chat)}
@@ -271,7 +304,7 @@ const Chats: React.FC = () => {
               <IonIcon
                 size="large"
                 icon={chatbubbleEllipsesOutline}
-                color="light"
+                // color="light"
               />
             </IonFabButton>
           </IonFab>

@@ -19,7 +19,8 @@ import {
   IonToolbar,
   useIonRouter,
 } from "@ionic/react";
-import { Camera, CameraResultType } from "@capacitor/camera";
+import EmojiPicker from "emoji-picker-react";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import {
   arrowBack,
   send,
@@ -54,9 +55,9 @@ import Modal from "../../../components/ui/Modal";
 import ChatOptions from "../../../components/ChatOptions";
 import { RiGroup2Fill } from "react-icons/ri";
 import Title from "../../../components/ui/Title";
-import { ref } from "yup";
-import { set } from "react-hook-form";
 import { useInterval } from "react-use";
+import { boolean } from "yup";
+import { set } from "js-cookie";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -69,10 +70,14 @@ const Chat: React.FC = () => {
   const [delay, setDelay] = useState(1000);
   const [isRunning, setIsRunning] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [image, setImage] = useState<any>(null);
+  const [openTakePicture, setOpenTakePicture] = useState(false);
+  const [image, setImage] = useState<string>("");
+  const [newImage, setNewImage] = useState<string>("");
+  const [openEmoji, setOpenEmoji] = useState<boolean>(false);
 
   const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
+  const isEntered = useRef(false);
 
   const { mutate: readMessageMutate } = useMutation({
     mutationFn: ({ chatId, messageId }: any) => readMessage(chatId, messageId),
@@ -84,44 +89,60 @@ const Chat: React.FC = () => {
       setIsLoading(true);
       setMessages(res?.chat.messages);
       setChat(res?.chat);
-      if (
-        res?.chat.messages[res?.chat.messages.length - 1].senderId._id !==
-          userId &&
-        !res?.chat.messages[res?.chat.messages.length - 1].read
-      ) {
-        readMessageMutate({
-          chatId,
-          messageId: res?.chat.messages[res?.chat.messages.length - 1]._id,
-        });
+      // console.log("isEntered.current", isEntered.current);
+      // if (!isEntered.current) {
+      //   contentRef?.current?.scrollToBottom();
+      //   isEntered.current = true;
+      // }
+
+      if (res?.chat.messages.length > 0) {
+        if (
+          res?.chat.messages[res?.chat.messages.length - 1].senderId._id !==
+            userId &&
+          !res?.chat.messages[res?.chat.messages.length - 1].read
+        ) {
+          readMessageMutate({
+            chatId,
+            messageId: res?.chat.messages[res?.chat.messages.length - 1]._id,
+          });
+        }
       }
     },
   });
 
   const { mutate, isLoading: messageIsLoading } = useMutation({
-    mutationFn: ({ chatId, newMessage }: any) =>
-      sendMessage(chatId, newMessage),
+    mutationFn: ({ chatId, newMessage, image }: any) =>
+      sendMessage({ chatId, newMessage, image }),
   });
 
   const { mutate: mutateDeleteChat } = useMutation({
     mutationFn: ({ chatId }: any) => deleteChat(chatId),
   });
 
-  useInterval(
-    () => {
-      if (isRunning && !openOptions) {
-        mutateChat();
-      }
-    },
-    isRunning ? 1000 : null
-  );
+  // useInterval(
+  //   () => {
+  //     if (isRunning && !openOptions) {
+  //       mutateChat();
+  //     }
+  //   },
+  //   isRunning ? 5000 : null
+  // );
 
   useEffect(() => {
+    console.log("1111");
+    if (isEntered.current) return;
+    // console.log("222");
     mutateChat();
   }, []);
 
   useEffect(() => {
-    contentRef?.current?.scrollToBottom();
-  }, [messages, contentRef]);
+    console.log("isEntered", isEntered.current);
+    if (!isEntered.current) {
+      isEntered.current = true;
+      contentRef?.current?.scrollToBottom();
+      console.log("scrollToBottom");
+    }
+  }, [messages, contentRef.current]);
 
   const deletedChat = () => {
     mutateDeleteChat(
@@ -138,14 +159,14 @@ const Chat: React.FC = () => {
   };
 
   const handleNewMessage = () => {
-    if (newMessage === "") return;
+    if (newMessage === "" && !image) return;
     mutate(
-      { chatId, newMessage },
+      { chatId, newMessage, image },
       {
         onSuccess: (res: any) => {
           const messageData = {
             ...res.chat.messages[res.chat.messages.length - 1],
-            room: chatId,
+            // room: chatId,
           };
           // socket?.emit("send_message", messageData);
           setMessages((prevMessages) => [...prevMessages, messageData]);
@@ -188,22 +209,34 @@ const Chat: React.FC = () => {
     }
   };
 
-  const takePicture = async () => {
+  const handleGallery = async () => {
     const image = await Camera.getPhoto({
       quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Uri,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Photos,
     });
 
-    // image.webPath will contain a path that can be set as an image src.
-    // You can access the original file using image.path, which can be
-    // passed to the Filesystem API to read the raw data of the image,
-    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    var imageUrl = image.webPath;
+    let imageUrl = image.dataUrl;
 
-    // Can be set to the src of an image now
+    setImage(imageUrl || "");
 
-    // image.src = imageUrl;
+    return imageUrl;
+  };
+
+  const handleCamera = async () => {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Camera,
+    });
+
+    let imageUrl = image.dataUrl;
+
+    setImage(imageUrl || "");
+
+    return imageUrl;
   };
 
   // sockets
@@ -233,8 +266,9 @@ const Chat: React.FC = () => {
                 color="secondary"
               >
                 <IonAvatar>
-                  {chat.type === "private" ? (
-                    <img src={getAvatar()} alt="" />
+                  {chat.type === "private" && <img src={getAvatar()} alt="" />}
+                  {chat.type === "group" && chat.avatar ? (
+                    <img src={chat.avatar} alt="" />
                   ) : (
                     <RiGroup2Fill size="100%" color="black" />
                   )}
@@ -279,6 +313,7 @@ const Chat: React.FC = () => {
 
                 <MessageBox
                   message={message}
+                  image={image}
                   chatId={chatId}
                   // refetch={refetch}
                 ></MessageBox>
@@ -328,19 +363,62 @@ const Chat: React.FC = () => {
           display: "flex",
           // justifyContent: "space-between",
           flexDirection: "row",
-          gap: "15px",
+          gap: "5px",
         }}
       >
-        <IonIcon icon={imageOutline} color="primary" size="small"></IonIcon>
-
-        <IonIcon icon={cameraOutline} size="small" color="primary"></IonIcon>
-        <IonIcon
-          icon={documentTextOutline}
+        <IonButton
+          onClick={handleGallery}
+          className="ion-no-margin"
+          shape="round"
           size="small"
-          color="primary"
-        ></IonIcon>
-        <IonIcon icon={happyOutline} size="small" color="primary"></IonIcon>
+        >
+          <IonIcon icon={imageOutline} color="secondary" size="small"></IonIcon>
+        </IonButton>
+        <IonButton
+          onClick={handleCamera}
+          className="ion-no-margin"
+          shape="round"
+          size="small"
+        >
+          <IonIcon
+            icon={cameraOutline}
+            size="small"
+            color="secondary"
+          ></IonIcon>
+        </IonButton>
+
+        {/* <IonButton
+          className="ion-no-margin"
+          shape="round"
+          size="small"
+        >
+          <IonIcon
+            icon={documentTextOutline}
+            size="small"
+            color="secondary"
+          ></IonIcon>
+        </IonButton> */}
+        {/* <IonButton
+          className="ion-no-margin"
+          shape="round"
+          size="small"
+          onClick={() => {
+            setOpenEmoji(!openEmoji);
+          }}
+        >
+          <IonIcon icon={happyOutline} size="small" color="secondary"></IonIcon>
+        </IonButton> */}
       </IonCard>
+      {/* <div>
+        {openEmoji && (
+          <EmojiPicker
+            width={"100%"}
+            onEmojiClick={(event, emojiObject) => {
+              console.log("emojiObject", emojiObject);
+            }}
+          />
+        )}
+      </div> */}
       <Modal
         isOpen={openOptions}
         onClose={setOpenOptions}
@@ -353,26 +431,25 @@ const Chat: React.FC = () => {
           closeModal={() => {
             setOpenOptions(false);
           }}
-          mutateChat={mutateChat}
           chat={chat}
           isLoading={isLoading}
         ></ChatOptions>
       </Modal>
       <IonFab slot="fixed" horizontal="end">
         <IonFabButton size="small" color="primary">
-          <IonIcon icon={informationOutline}></IonIcon>
+          <IonIcon icon={informationOutline} color="dark"></IonIcon>
         </IonFabButton>
         <IonFabList side="bottom">
-          <IonFabButton>
-            <IonIcon icon={imagesOutline}></IonIcon>
-          </IonFabButton>
+          {/* <IonFabButton>
+            <IonIcon icon={imagesOutline} color="warning"></IonIcon>
+          </IonFabButton> */}
           <IonFabButton
             onClick={() => {
               deletedChat();
             }}
             routerLink="/inbox"
           >
-            <IonIcon icon={trashBinOutline}></IonIcon>
+            <IonIcon icon={trashBinOutline} color="warning"></IonIcon>
           </IonFabButton>
           {chat?.type === "group" && (
             <IonFabButton
@@ -380,7 +457,7 @@ const Chat: React.FC = () => {
                 setOpenOptions(!openOptions);
               }}
             >
-              <IonIcon icon={peopleOutline}></IonIcon>
+              <IonIcon icon={peopleOutline} color="warning"></IonIcon>
             </IonFabButton>
           )}
         </IonFabList>

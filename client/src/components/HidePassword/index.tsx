@@ -27,6 +27,7 @@ const HidePassword = ({ register }: any) => {
         slot="end"
         className="show-hide-password-button"
         onClick={handlePassword}
+        color={showPassword ? "medium" : "tertiary"}
       >
         <IonIcon
           slot="icon-only"

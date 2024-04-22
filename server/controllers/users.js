@@ -1,6 +1,7 @@
 const User = require("../model/User");
 const bcrypt = require("bcryptjs");
 const cloudinary = require("../utils/cloudinary");
+const uploadImage = require("../lib/uploadImage");
 
 const getUsers = async (req, res) => {
   try {
@@ -54,10 +55,8 @@ const updateUser = async (req, res) => {
       user.password = await bcrypt.hash(password, 10);
     }
     if (avatar && avatar !== user.avatar) {
-      const result = await cloudinary.uploader.upload(avatar, {
-        folder: "users",
-      });
-      user.avatar = result.url;
+      const result = await uploadImage(avatar);
+      user.avatar = result;
     }
     if (username !== user.username) {
       const existingUser = await User.findOne({

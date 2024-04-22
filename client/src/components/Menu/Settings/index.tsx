@@ -56,7 +56,7 @@ const Settings: React.FC = () => {
         <Title title={username} className="ion-padding"></Title>
       </div>
       <IonCard>
-        <IonItem
+        {/* <IonItem
           onClick={() => {
             setOpenAccount(true);
           }}
@@ -69,7 +69,7 @@ const Settings: React.FC = () => {
           ></IonIcon>
           Active Status
           <IonIcon slot="end" icon={arrowForward}></IonIcon>
-        </IonItem>
+        </IonItem> */}
         <IonItem
           onClick={() => {
             setOpenAccount(true);
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
           Account Settings
           <IonIcon slot="end" icon={arrowForward}></IonIcon>
         </IonItem>
-        <IonItem>
+        {/* <IonItem>
           <IonIcon
             icon={contrastOutline}
             slot="start"
@@ -98,7 +98,7 @@ const Settings: React.FC = () => {
             justify="space-between"
             slot="end"
           ></IonToggle>
-        </IonItem>
+        </IonItem> */}
       </IonCard>
 
       <Modal

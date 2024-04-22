@@ -160,7 +160,7 @@ const Register: React.FC = () => {
                 className="ion-margin-top"
                 expand="block"
                 disabled={isLoading}
-                color={isLoading ? "medium" : "primary"}
+                color={isLoading ? "medium" : "tertiary"}
               >
                 Register
               </IonButton>
@@ -172,7 +172,7 @@ const Register: React.FC = () => {
               isError={isError}
             />
           </IonCardContent>
-          <IonButton routerLink="/register" fill="clear" expand="block">
+          <IonButton routerLink="/login" fill="clear" expand="block">
             Login
           </IonButton>
         </IonCard>

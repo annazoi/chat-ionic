@@ -47,7 +47,6 @@ const Input: React.FC<InputProps> = ({
       label={label}
       className={className || "ion-margin-top"}
       onIonChange={onIonChange}
-      // color={error ? "danger" : "primary"}
     ></IonInput>
   );
 };

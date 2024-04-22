@@ -127,6 +127,7 @@ const Login: React.FC = () => {
                 className="ion-margin-top"
                 expand="block"
                 disabled={isLoading}
+                color={isLoading ? "medium" : "tertiary"}
               >
                 Login
               </IonButton>

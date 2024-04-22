@@ -2,22 +2,21 @@ const Chat = require("../model/Chat");
 const FCM = require("fcm-node");
 const fcm = new FCM(process.env.SERVER_KEY);
 const cloudinary = require("../utils/cloudinary");
+const uploadImage = require("../lib/uploadImage");
 
 const createMessage = async (req, res) => {
   try {
     const { image } = req.body;
     let result;
     if (image) {
-      result = await cloudinary.uploader.upload(image, {
-        folder: "chat",
-      });
+      result = await uploadImage(image);
     }
 
     const chat = await Chat.findById(req.params.chatId);
     chat.messages.push({
       senderId: req.userId,
-      message: req.body.message,
-      image: result?.url || "",
+      message: req.body.message || "",
+      image: result || "",
     });
 
     await chat.populate("members creatorId messages.senderId", "-password");
@@ -34,7 +33,7 @@ const createMessage = async (req, res) => {
 
         notification: {
           title: sender.username,
-          body: req.body.message,
+          body: req.body.message || "Send an image",
           // image: sender.avatar,
         },
 
@@ -64,7 +63,7 @@ const deleteMessage = async (req, res) => {
     const message = chat.messages.find(
       (message) => message._id == req.params.messageId
     );
-    message.message = "";
+    message.message = "User deleted this message";
     await chat.save();
     res.status(200).json({ message: "ok", chat: chat });
   } catch (err) {

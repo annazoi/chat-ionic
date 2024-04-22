@@ -23,21 +23,18 @@ import { closeOutline } from "ionicons/icons";
 
 interface ChatOptionsProps {
   closeModal: () => void;
-  mutateChat?: any;
   chat?: any;
   isLoading?: boolean;
 }
 
 const ChatOptions: React.FC<ChatOptionsProps> = ({
   closeModal,
-  mutateChat,
   chat,
   isLoading,
 }) => {
   const { chatId } = useParams<{ chatId: string }>();
   const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
   const [openAlert, setOpenAlert] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string>("");
   const [members, setMembers] = useState<any[]>([]);
 
   const { register, handleSubmit, setValue, getValues, reset } =
@@ -56,28 +53,31 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({
   const { mutate: removeMemberMutate } = useMutation({
     mutationFn: (memberId: string) => removeMember(chatId, memberId),
   });
-  useEffect(() => {
-    mutateChat(chatId);
-  }, []);
+
+  // useEffect(() => {
+  //   try {
+  //     chat(chatId, {
+  //       onSuccess: (data: any) => {
+  //         setAvatar(data?.chat.avatar);
+  //         setMembers(data?.chat.members);
+  //         reset({
+  //           avatar: avatar ? data?.chat.avatar : "",
+  //           name: data?.chat.name,
+  //         });
+  //       },
+  //     });
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    try {
-      mutateChat(chatId, {
-        onSuccess: (data: any) => {
-          setAvatar(data?.chat.avatar);
-          setMembers(data?.chat.members);
-          reset({
-            avatar: avatar
-              ? data?.chat.avatar
-              : "https://img.myloview.de/bilder/people-vector-icon-person-symbol-work-group-team-persons-crowd-vector-illustration-icon-group-of-people-pictogram-isolated-illustration-of-people-icon-symbol-of-the-crowd-people-standing-next-700-223068863.jpg",
-            name: data?.chat.name,
-          });
-        },
-      });
-    } catch (error) {
-      console.log("error", error);
-    }
-  }, []);
+    setMembers(chat?.members);
+    reset({
+      avatar: chat?.avatar ? chat?.avatar : "",
+      name: chat?.name,
+    });
+  }, [chat]);
 
   const handleImage = (avatar: string) => {
     setValue("avatar", avatar);
@@ -92,6 +92,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({
   };
 
   const handleAddMembers = () => {
+    if (selectedUsers.length === 0) return;
     try {
       addMembersMutate(selectedUsers, {
         onSuccess: (res: any) => {
