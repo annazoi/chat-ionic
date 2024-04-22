@@ -372,7 +372,7 @@ const Chat: React.FC = () => {
           shape="round"
           size="small"
         >
-          <IonIcon icon={imageOutline} color="secondary" size="small"></IonIcon>
+          <IonIcon icon={imageOutline} color="warning" size="small"></IonIcon>
         </IonButton>
         <IonButton
           onClick={handleCamera}
@@ -380,11 +380,7 @@ const Chat: React.FC = () => {
           shape="round"
           size="small"
         >
-          <IonIcon
-            icon={cameraOutline}
-            size="small"
-            color="secondary"
-          ></IonIcon>
+          <IonIcon icon={cameraOutline} size="small" color="warning"></IonIcon>
         </IonButton>
 
         {/* <IonButton
@@ -395,7 +391,7 @@ const Chat: React.FC = () => {
           <IonIcon
             icon={documentTextOutline}
             size="small"
-            color="secondary"
+            color="warning"
           ></IonIcon>
         </IonButton> */}
         {/* <IonButton
@@ -406,7 +402,7 @@ const Chat: React.FC = () => {
             setOpenEmoji(!openEmoji);
           }}
         >
-          <IonIcon icon={happyOutline} size="small" color="secondary"></IonIcon>
+          <IonIcon icon={happyOutline} size="small" color="warning"></IonIcon>
         </IonButton> */}
       </IonCard>
       {/* <div>

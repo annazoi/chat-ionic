@@ -81,7 +81,7 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
                     }}
                   >
                     <IonCardContent className="ion-no-padding">
-                      <IonItem lines="none">
+                      <IonItem lines="none" color={"secondary"}>
                         <IonAvatar slot="start">
                           <IonImg
                             src={user.avatar ? user.avatar : userDefaultAvatar}

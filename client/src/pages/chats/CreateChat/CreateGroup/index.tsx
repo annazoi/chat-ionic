@@ -102,6 +102,7 @@ const CreateGroup: FC<GroupProps> = ({
             onIonChange={(e: any) => {
               setName(e.detail.value);
             }}
+            style={{ background: "white" }}
           ></IonInput>
         </div>
         <SearchUsers

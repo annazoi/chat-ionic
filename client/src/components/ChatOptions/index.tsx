@@ -20,6 +20,7 @@ import { ChatConfig } from "../../validations-schemas/interfaces/chat";
 import SearchUsers from "../SearchUsers";
 import userDefaultAvatar from "../../assets/user.png";
 import { closeOutline } from "ionicons/icons";
+import Title from "../ui/Title";
 
 interface ChatOptionsProps {
   closeModal: () => void;
@@ -154,6 +155,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({
           label="Change name"
           className="ion-margin-top"
           {...register("name", { required: true })}
+          style={{ backgroundColor: "white" }}
         />
         <IonButton type="submit" expand="block" className="ion-margin-top">
           {updatedIsLoading ? "Updating..." : "Update"}
@@ -168,7 +170,10 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({
                     alt=""
                   />
                 </IonAvatar>
-                <IonTitle>{member.username}</IonTitle>
+                <Title
+                  title={member.username}
+                  className="ion-padding-start"
+                ></Title>
                 <IonIcon
                   icon={closeOutline}
                   onClick={() => {

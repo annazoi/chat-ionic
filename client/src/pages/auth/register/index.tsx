@@ -160,7 +160,7 @@ const Register: React.FC = () => {
                 className="ion-margin-top"
                 expand="block"
                 disabled={isLoading}
-                color={isLoading ? "medium" : "tertiary"}
+                color={isLoading ? "medium" : "primary"}
               >
                 Register
               </IonButton>
