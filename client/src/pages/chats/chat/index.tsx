@@ -19,6 +19,7 @@ import {
   IonToolbar,
   useIonRouter,
 } from "@ionic/react";
+import EmojiPicker from "emoji-picker-react";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import {
   arrowBack,
@@ -56,6 +57,7 @@ import { RiGroup2Fill } from "react-icons/ri";
 import Title from "../../../components/ui/Title";
 import { useInterval } from "react-use";
 import { boolean } from "yup";
+import { set } from "js-cookie";
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -71,6 +73,7 @@ const Chat: React.FC = () => {
   const [openTakePicture, setOpenTakePicture] = useState(false);
   const [image, setImage] = useState<string>("");
   const [newImage, setNewImage] = useState<string>("");
+  const [openEmoji, setOpenEmoji] = useState<boolean>(false);
 
   const router = useIonRouter();
   const contentRef = useRef<HTMLIonContentElement>(null);
@@ -128,7 +131,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     console.log("1111");
     if (isEntered.current) return;
-    console.log("222");
+    // console.log("222");
     mutateChat();
   }, []);
 
@@ -384,8 +387,7 @@ const Chat: React.FC = () => {
           ></IonIcon>
         </IonButton>
 
-        <IonButton
-          // onClick={handleGallery}
+        {/* <IonButton
           className="ion-no-margin"
           shape="round"
           size="small"
@@ -395,17 +397,28 @@ const Chat: React.FC = () => {
             size="small"
             color="secondary"
           ></IonIcon>
-        </IonButton>
-        <IonButton
-          // onClick={handleGallery}
+        </IonButton> */}
+        {/* <IonButton
           className="ion-no-margin"
           shape="round"
           size="small"
+          onClick={() => {
+            setOpenEmoji(!openEmoji);
+          }}
         >
           <IonIcon icon={happyOutline} size="small" color="secondary"></IonIcon>
-        </IonButton>
-        <div>{/* <img src={image} alt="" /> */}</div>
+        </IonButton> */}
       </IonCard>
+      {/* <div>
+        {openEmoji && (
+          <EmojiPicker
+            width={"100%"}
+            onEmojiClick={(event, emojiObject) => {
+              console.log("emojiObject", emojiObject);
+            }}
+          />
+        )}
+      </div> */}
       <Modal
         isOpen={openOptions}
         onClose={setOpenOptions}
@@ -427,9 +440,9 @@ const Chat: React.FC = () => {
           <IonIcon icon={informationOutline} color="dark"></IonIcon>
         </IonFabButton>
         <IonFabList side="bottom">
-          <IonFabButton>
+          {/* <IonFabButton>
             <IonIcon icon={imagesOutline} color="warning"></IonIcon>
-          </IonFabButton>
+          </IonFabButton> */}
           <IonFabButton
             onClick={() => {
               deletedChat();
