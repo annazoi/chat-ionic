@@ -200,12 +200,12 @@ const Chats: React.FC = () => {
                         fontWeight: "bold",
                         fontSize: "14px",
                         paddingLeft: "4px",
-                        color: "var(--ion-color-primary)",
+                        color: "var(--ion-color-warning)",
                       }
                     : {
                         fontSize: "14px",
                         paddingLeft: "4px",
-                        color: "var(--ion-color-primary)",
+                        color: "var(--ion-color-warning)",
                       }
                 }
               >
