@@ -2,11 +2,6 @@
 ## Run
 - `ionic serve`
 
-# Manual installations
-- `npm install -g @ionic/cli`
-- `npm i` 
-- `npm i @ionic/pwa-elements`
-
 ### env
 - DB_CONNECTION = your_db_connection
 - CLOUD_NAME = your_cloud_name_from_cloudinary
