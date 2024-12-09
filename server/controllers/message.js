@@ -1,6 +1,6 @@
 const Chat = require("../model/Chat");
 const FCM = require("fcm-node");
-const fcm = new FCM(process.env.SERVER_KEY);
+const fcm = new FCM(process.env.API_KEY);
 const cloudinary = require("../utils/cloudinary");
 const uploadImage = require("../lib/uploadImage");
 
