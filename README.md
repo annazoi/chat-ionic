@@ -34,7 +34,7 @@ Alerts for new group invitations or activities.
 
 This project is built with modern web technologies:
 
-Frontend: React
+Frontend: React / Ionic
 
 Backend: Node.js
 
