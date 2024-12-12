@@ -68,9 +68,13 @@ https://github.com/annazoi/chat-ionic.git
 
 ### Run
 
-### 1. Nodemon: - `npm run dev`
+### 1. Nodemon:
 
-### 2. Node: - `npm start`
+- `npm run dev`
+
+### 2. Node:
+
+- `npm start`
 
 ### env
 
