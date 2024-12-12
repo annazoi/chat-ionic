@@ -54,6 +54,8 @@ https://github.com/annazoi/chat-ionic.git
 
 ### CLIENT
 
+- `npm install`
+
 - `npm install -g @ionic/cli`
 
 ### Run
@@ -65,6 +67,8 @@ https://github.com/annazoi/chat-ionic.git
 - VITE_API_URL = your_api_url
 
 ### SERVER
+
+- `npm install`
 
 ### Run
 
