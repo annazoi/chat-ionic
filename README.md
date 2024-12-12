@@ -44,35 +44,35 @@ Real-Time Communication: Firebase, Socket.IO
 
 ## Installation
 
-# 1. Clone the repository:
+### 1. Clone the repository:
 
 https://github.com/annazoi/chat-ionic.git
 
-# 2. Navigate to the project directory
+### 2. Navigate to the project directory
 
-# 3. Install dependencies:
+### 3. Install dependencies:
 
-# CLIENT
+### CLIENT
 
 - `npm install -g @ionic/cli`
 
-# Run
+### Run
 
 - `ionic serve`
 
-# env
+### env
 
 - VITE_API_URL = your_api_url
 
-# SERVER
+### SERVER
 
-# Run
+### Run
 
-# 1. Nodemon: - `npm run dev`
+### 1. Nodemon: - `npm run dev`
 
-# 2. Node: - `npm start`
+### 2. Node: - `npm start`
 
-# env
+### env
 
 - DB_CONNECTION = your_db_connection
 - CLOUD_NAME = your_cloud_name_from_cloudinary
