@@ -147,7 +147,12 @@ const Chats: React.FC = () => {
 								display: 'flex',
 							}}
 						>
-							<IonMenuToggle>
+							<IonMenuToggle
+								style={{
+									zIndex: 10000,
+									cursor: 'pointer',
+								}}
+							>
 								<img
 									src={avatar ? avatar : userDefaulfAvatar}
 									alt=""
@@ -157,6 +162,7 @@ const Chats: React.FC = () => {
 										borderRadius: '50%',
 										marginLeft: '10px',
 										boxShadow: '0px 0px 8px 0px #000000',
+										zIndex: 10000,
 									}}
 								></img>
 							</IonMenuToggle>

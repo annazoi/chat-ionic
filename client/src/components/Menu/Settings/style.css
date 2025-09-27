@@ -1,4 +1,21 @@
-/* This is added for the flashing that happens when toggling between themes */
 ion-item {
-  --transition: none;
+	--transition: none;
+}
+
+.settings-header {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+}
+
+.ios.settings-header {
+	padding: 0.5rem 1rem;
+}
+
+.md.settings-header {
+	padding-top: 1rem;
+}
+
+.md.settings-header ion-avatar {
+	margin: 0 auto;
 }
