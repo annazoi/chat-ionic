@@ -13,6 +13,10 @@
 	margin-left: 0.5rem;
 }
 
+.chats-item .ion-color.sc-ion-label-md-h {
+	color: var(--ion-color-light-contrast);
+}
+
 .chats-item ion-avatar {
 	max-width: 40px;
 	max-height: 40px;

@@ -205,12 +205,12 @@ const Chats: React.FC = () => {
 												fontWeight: 'bold',
 												fontSize: '14px',
 												paddingLeft: '4px',
-												color: 'var(--ion-color-warning)',
+												color: 'var(--ion-color-light-contrast)',
 										  }
 										: {
 												fontSize: '14px',
 												paddingLeft: '4px',
-												color: 'var(--ion-color-warning)',
+												color: 'var(--ion-color-light-contrast)',
 										  }
 								}
 							>
@@ -249,7 +249,7 @@ const Chats: React.FC = () => {
 															  }
 													}
 												>
-													<IonLabel color="warning">
+													<IonLabel color="var(--ion-color-light-contrast)">
 														{chat.type === 'private' ? getName(chat) : chat.name}
 													</IonLabel>
 													<IonText
@@ -258,7 +258,7 @@ const Chats: React.FC = () => {
 															whiteSpace: 'nowrap',
 															overflow: 'hidden',
 															textOverflow: 'ellipsis',
-															color: 'var(--ion-color-warning)',
+															color: 'var(--ion-color-light-contrast)',
 														}}
 													>
 														{handleLastMessage(chat)}

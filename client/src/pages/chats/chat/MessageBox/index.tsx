@@ -76,7 +76,7 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId, image }
 							style={{
 								paddingLeft: '10px',
 								paddingRight: '10px',
-								color: 'var(--ion-color-warning)',
+								color: 'var(--ion-color-light-contrast)',
 							}}
 						>
 							{message.message}
