@@ -3,37 +3,28 @@ import {
 	IonBackButton,
 	IonButton,
 	IonButtons,
-	IonCard,
 	IonContent,
 	IonFab,
 	IonFabButton,
 	IonFabList,
 	IonHeader,
 	IonIcon,
-	IonInput,
-	IonItem,
 	IonPage,
 	IonProgressBar,
-	IonTabBar,
-	IonTitle,
 	IonToolbar,
 	useIonRouter,
 } from '@ionic/react';
-import EmojiPicker from 'emoji-picker-react';
+// import EmojiPicker from 'emoji-picker-react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import {
 	arrowBack,
 	send,
 	peopleOutline,
 	informationOutline,
-	imagesOutline,
 	ellipsisHorizontalOutline,
 	trashBinOutline,
 	cameraOutline,
 	imageOutline,
-	happy,
-	happyOutline,
-	documentTextOutline,
 } from 'ionicons/icons';
 import { getChat, sendMessage, deleteChat, readMessage } from '../../../services/chat';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -43,6 +34,7 @@ import { authStore } from '../../../store/auth';
 // import { useSocket } from "../../../hooks/sockets";
 import MessageBox from './MessageBox';
 import userDefaulfAvatar from '../../../assets/user.png';
+import groupDefaulfAvatar from '../../../assets/group.png';
 
 import './style.css';
 import Modal from '../../../components/ui/Modal';
@@ -50,9 +42,6 @@ import Modal from '../../../components/ui/Modal';
 import ChatOptions from '../../../components/ChatOptions';
 import { RiGroup2Fill } from 'react-icons/ri';
 import Title from '../../../components/ui/Title';
-import { useInterval } from 'react-use';
-import { boolean } from 'yup';
-import { set } from 'js-cookie';
 
 const Chat: React.FC = () => {
 	const { chatId } = useParams<{ chatId: string }>();
@@ -264,12 +253,15 @@ const Chat: React.FC = () => {
 						>
 							<IonAvatar class="chat-user-avatar">
 								{chat.type === 'private' && <img src={getAvatar()} alt="user image" />}
-								{chat.type === 'group' && chat.avatar ? (
+
+								{/* {chat.type === 'group' && chat.avatar ? (
 									<img src={chat.avatar} alt="group image" />
 								) : (
-									<RiGroup2Fill size="100%" color="black" />
-								)}
+									<img src={groupDefaulfAvatar} alt="group image" />
+								)} */}
+								{chat.avatar && chat.type === 'group' && <img src={chat.avatar}></img>}
 							</IonAvatar>
+
 							<Title title={getName(chat)} className="ion-padding"></Title>
 						</div>
 					)}

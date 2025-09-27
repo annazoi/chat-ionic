@@ -79,7 +79,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
 				color="light"
 			></IonSearchbar>
 			{type === 'group' && (
-				<>
+				<IonCard className="search-users-container ">
 					{handleExistingUsers?.map((user: any, index: number) => (
 						<div key={index}>
 							{user._id !== userId && (
@@ -102,7 +102,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
 							)}
 						</div>
 					))}
-				</>
+				</IonCard>
 			)}
 		</>
 	);

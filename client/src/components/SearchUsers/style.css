@@ -1,7 +1,26 @@
-.ios.search-bar {
+.search-bar {
 	padding: 0;
+}
+
+.md.search-bar {
+	padding-top: 0.8rem;
 }
 
 .ios.searched-user {
 	padding-block: 0.5rem;
+}
+
+.search-users-container {
+	box-shadow: unset;
+	margin: 0;
+	padding: 0;
+}
+.search-users-container ion-card {
+	margin: 0;
+	box-shadow: unset;
+	margin-bottom: 0.8rem;
+}
+
+.md.search-users-container {
+	margin-top: 1rem;
 }
