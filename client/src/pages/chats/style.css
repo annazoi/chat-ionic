@@ -1,0 +1,19 @@
+.chats-header ion-title {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.chats-item {
+	display: flex;
+	gap: 0.4rem;
+	width: 100%;
+	align-items: center;
+	margin-left: 0.5rem;
+}
+
+.chats-item ion-avatar {
+	max-width: 40px;
+	max-height: 40px;
+}

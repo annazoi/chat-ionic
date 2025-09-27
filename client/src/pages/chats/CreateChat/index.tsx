@@ -19,6 +19,7 @@ import { createChat } from '../../../services/chat';
 import CreateGroup from './CreateGroup';
 import SearchUsers from '../../../components/SearchUsers';
 import userDefaultAvatar from '../../../assets/user.png';
+import './style.css';
 
 interface UsersProps {
 	closeModal: any;
@@ -26,7 +27,7 @@ interface UsersProps {
 }
 
 const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
-	const { userId, isLoggedIn, username } = authStore((store: any) => store);
+	const { userId } = authStore((store: any) => store);
 
 	const [openGroupModal, setOpenGroupModal] = useState<boolean>(false);
 	const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
@@ -53,7 +54,7 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
 	return (
 		<>
 			<IonContent>
-				<IonCardContent>
+				<IonCardContent className="new-chat-container">
 					<SearchUsers
 						type="private"
 						onUsersFiltered={(users) => {
@@ -63,7 +64,6 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
 						// className="ion-no-padding"
 					/>
 					<IonButton
-						style={{ marginLeft: '8px' }}
 						onClick={() => {
 							setOpenGroupModal(true);
 						}}

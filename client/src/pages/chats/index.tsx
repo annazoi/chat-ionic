@@ -14,14 +14,13 @@ import {
 	IonMenuToggle,
 	IonPage,
 	IonProgressBar,
-	IonTabBar,
 	IonText,
 	IonToolbar,
 } from '@ionic/react';
 import { authStore } from '../../store/auth';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { chatbubbleEllipsesOutline, create, sync } from 'ionicons/icons';
+import { useState } from 'react';
+import { chatbubbleEllipsesOutline, sync } from 'ionicons/icons';
 import { getChats } from '../../services/chat';
 import React from 'react';
 import CreateChat from './CreateChat';
@@ -31,9 +30,11 @@ import { RiGroup2Fill } from 'react-icons/ri';
 import Title from '../../components/ui/Title';
 import Menu from '../../components/Menu';
 import userDefaulfAvatar from '../../assets/user.png';
-import Button from '../../components/ui/Button';
+import groupDefaulfAvatar from '../../assets/group.png';
+
 import { useNotifications } from '../../hooks/notifications';
-import { io } from 'socket.io-client';
+import './style.css';
+// import { io } from 'socket.io-client';
 
 const Chats: React.FC = () => {
 	useNotifications();
@@ -114,8 +115,8 @@ const Chats: React.FC = () => {
 	const getGroupAvatar = (chat: any) => {
 		if (!chat.avatar) {
 			return (
-				<IonAvatar slot="start" className=" ion-no-margin">
-					<RiGroup2Fill size="100%" color="black" />
+				<IonAvatar>
+					<img src={groupDefaulfAvatar}></img>
 				</IonAvatar>
 			);
 		} else {
@@ -139,31 +140,36 @@ const Chats: React.FC = () => {
 		<>
 			<Menu />
 			<IonPage id="main-content">
-				<IonHeader>
+				<IonHeader className="chats-header">
 					<IonToolbar>
-						<IonMenuToggle>
-							<img
-								src={avatar ? avatar : userDefaulfAvatar}
-								alt=""
-								style={{
-									width: '40px',
-									height: '40px',
-									borderRadius: '50%',
-									marginLeft: '10px',
-									boxShadow: '0px 0px 8px 0px #000000',
-								}}
-							></img>
-						</IonMenuToggle>
-						<IonButtons slot="end">
+						<div
+							style={{
+								display: 'flex',
+							}}
+						>
+							<IonMenuToggle>
+								<img
+									src={avatar ? avatar : userDefaulfAvatar}
+									alt=""
+									style={{
+										width: '40px',
+										height: '40px',
+										borderRadius: '50%',
+										marginLeft: '10px',
+										boxShadow: '0px 0px 8px 0px #000000',
+									}}
+								></img>
+							</IonMenuToggle>
 							<Title title={`${username}'s inbox`} />
-
+						</div>
+						<IonButtons slot="end">
 							<IonButton
 								slot="end"
 								onClick={() => {
 									getRefresh();
 								}}
 							>
-								<IonIcon icon={sync}></IonIcon>
+								<IonIcon icon={sync} color="light"></IonIcon>
 							</IonButton>
 						</IonButtons>
 					</IonToolbar>
@@ -187,12 +193,6 @@ const Chats: React.FC = () => {
 					) : (
 						<div style={{ padding: '5px' }}>
 							<p
-								// style={{
-								//   fontWeight: "bold",
-								//   fontSize: "14px",
-								//   paddingLeft: "4px",
-								//   color: "var(--ion-color-primary)",
-								// }}
 								style={
 									handleUnreadChats() > 0
 										? {
@@ -213,31 +213,11 @@ const Chats: React.FC = () => {
 							{data?.map((chat: any, index: any) => {
 								return (
 									<div key={index}>
-										<IonItem
-											// style={{
-											//   borderBottom: "1px solid var(--ion-color-primary)",
-											// }}
-											className="ion-no-padding"
-											// lines="none"
-											routerLink={`/chat/${chat._id}`}
-											onClick={() => {
-												// joinRoom(chat._id);
-											}}
-										>
-											<div style={{ display: 'flex' }}>
+										<IonItem className="ion-no-padding" routerLink={`/chat/${chat._id}`} onClick={() => {}}>
+											<div className="chats-item">
 												{chat.type === 'private' && (
 													<IonAvatar>
-														<img
-															src={getAvatar(chat)}
-															alt=""
-															style={{
-																width: '37px',
-																height: '37px',
-																borderRadius: '50%',
-																marginLeft: '4px',
-																marginTop: '12px',
-															}}
-														/>
+														<img src={getAvatar(chat)} alt="user image" />
 													</IonAvatar>
 												)}
 

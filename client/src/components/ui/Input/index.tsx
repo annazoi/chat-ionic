@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonInput } from '@ionic/react';
 import React from 'react';
 type IonInputProps = React.ComponentProps<typeof IonInput>;
 

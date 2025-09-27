@@ -6,6 +6,8 @@ import { authStore } from '../../../../store/auth';
 import ConfirmModal from '../../../../components/ConfirmModal';
 import ImagePicker from '../../../../components/ImagePicker';
 import SearchUsers from '../../../../components/SearchUsers';
+import '../style.css';
+
 interface GroupProps {
 	closeModal: any;
 	setOpenGroupModal: any;
@@ -68,7 +70,7 @@ const CreateGroup: FC<GroupProps> = ({ closeModal, setOpenGroupModal, openGroupM
 		>
 			<IonContent className="ion-padding">
 				<ImagePicker onChange={handleImage} value={avatar} text="You can add a group image."></ImagePicker>
-				<div style={{ padding: '8px', paddingTop: '20px' }}>
+				<div className="create-group-container">
 					<IonInput
 						labelPlacement="floating"
 						label="Enter group name"
@@ -76,7 +78,7 @@ const CreateGroup: FC<GroupProps> = ({ closeModal, setOpenGroupModal, openGroupM
 						onIonChange={(e: any) => {
 							setName(e.detail.value);
 						}}
-						className="input-container"
+						className="input-container group-input-container"
 					></IonInput>
 				</div>
 				<SearchUsers
