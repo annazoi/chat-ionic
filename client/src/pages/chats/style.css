@@ -21,3 +21,8 @@
 	max-width: 40px;
 	max-height: 40px;
 }
+
+.default-img {
+	/* border: 1px solid var(--ion-color-light-contrast); */
+	background-color: white;
+}

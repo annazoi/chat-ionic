@@ -30,6 +30,12 @@
 	border-radius: 10px;
 	background-color: var(--ion-color-light);
 	/* padding-left: 1rem; */
+	color: var(--ion-color-placeholder);
+}
+
+.input-container {
+	--placeholder-color: 'var(--ion-color-light-contrast)' !important;
+	--placeholder-opacity: 1;
 }
 
 .input-container label > div {
@@ -70,4 +76,8 @@
 	text-align: center;
 	/* letter-spacing: 1px; */
 	font-weight: bold;
+}
+
+.submit-button::part(native) {
+	--ion-color-contrast: white;
 }

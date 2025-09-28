@@ -1,4 +1,4 @@
-import { IonAlert, IonContent, IonInput, useIonRouter } from '@ionic/react';
+import { IonAlert, IonCardContent, IonContent, IonInput, useIonRouter } from '@ionic/react';
 import { useMutation } from '@tanstack/react-query';
 import { FC, useState } from 'react';
 import { createChat } from '../../../../services/chat';
@@ -7,6 +7,7 @@ import ConfirmModal from '../../../../components/ConfirmModal';
 import ImagePicker from '../../../../components/ImagePicker';
 import SearchUsers from '../../../../components/SearchUsers';
 import '../style.css';
+import Loading from '../../../../components/Loading';
 
 interface GroupProps {
 	closeModal: any;
@@ -23,7 +24,7 @@ const CreateGroup: FC<GroupProps> = ({ closeModal, setOpenGroupModal, openGroupM
 	const [openAlert, setOpenAlert] = useState<boolean>(false);
 	const [errorMessage, setErrorMessage] = useState<string>('');
 
-	const { mutate } = useMutation({
+	const { mutate, isLoading } = useMutation({
 		mutationFn: ({ name, type, avatar, members }: any) => createChat({ name, type, avatar, members }),
 	});
 
@@ -68,25 +69,29 @@ const CreateGroup: FC<GroupProps> = ({ closeModal, setOpenGroupModal, openGroupM
 			onClick={createGroupChat}
 			title="New Group"
 		>
-			<IonContent className="ion-padding">
-				<ImagePicker onChange={handleImage} value={avatar} text="You can add a group image."></ImagePicker>
-				<div className="create-group-container">
-					<IonInput
-						labelPlacement="floating"
-						label="Enter group name"
-						value={name}
-						onIonChange={(e: any) => {
-							setName(e.detail.value);
-						}}
-						className="input-container group-input-container"
-					></IonInput>
-				</div>
-				<SearchUsers
-					type="group"
-					placeholder="Search Users..."
-					handleSelectUser={handleSelectUser}
-					selectedUsers={selectedUsers}
-				/>
+			<IonContent className="modal-bg">
+				<IonCardContent>
+					<ImagePicker onChange={handleImage} value={avatar} text="You can add a group image."></ImagePicker>
+					<Loading showLoading={isLoading} />
+					<div>
+						<IonInput
+							labelPlacement="floating"
+							label="Enter group name"
+							value={name}
+							onIonChange={(e: any) => {
+								setName(e.detail.value);
+							}}
+							className="input-container group-input-container"
+						></IonInput>
+					</div>
+					<SearchUsers
+						type="group"
+						placeholder="Search Users..."
+						handleSelectUser={handleSelectUser}
+						selectedUsers={selectedUsers}
+					/>
+				</IonCardContent>
+
 				{/* 
         {filteredUser.map((user: any, index: any) => (
           <div key={index}>

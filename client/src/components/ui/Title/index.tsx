@@ -5,19 +5,15 @@ interface TitleProps {
 	title: string;
 	className?: string;
 	color?: string;
+	style?: any;
 }
 
-const Title: React.FC<TitleProps> = ({ title, className, color }) => {
+const Title: React.FC<TitleProps> = ({ title, className, color, style }) => {
 	return (
 		<IonTitle
 			className={className ? className : 'ion-no-padding'}
-			style={{
-				fontWeight: 'bold',
-				letterSpacing: '2px',
-				// textAlign: "center",
-				color: 'var(--ion-color-light-contrast)',
-			}}
-			color={color || 'light-contrast'}
+			style={{ fontWeight: 'bold', letterSpacing: '2px', color: 'white', ...style }}
+			color={color || 'white'}
 		>
 			{title}
 		</IonTitle>

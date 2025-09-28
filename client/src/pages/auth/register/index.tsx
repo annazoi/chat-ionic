@@ -139,7 +139,7 @@ const Register: React.FC = () => {
 
 							<IonButton
 								type="submit"
-								className="ion-margin-top"
+								className="ion-margin-top submit-button"
 								expand="block"
 								disabled={isLoading}
 								color={isLoading ? 'medium' : 'primary'}

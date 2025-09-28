@@ -1,3 +1,9 @@
 .md.new-chat-container ion-button {
 	margin-top: 1rem;
 }
+
+.new-chat-container ion-card {
+	margin: 0;
+	margin: 0.15rem;
+	margin-top: 0.5rem;
+}

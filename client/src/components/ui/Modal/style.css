@@ -2,3 +2,8 @@
   opacity: 0.9;
   background: var(--ion-color-primary);
 } */
+
+.modal-bg ion-card-content {
+	background: var(--ion-color-modal);
+	height: 100%;
+}

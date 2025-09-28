@@ -53,8 +53,19 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
 
 	return (
 		<>
-			<IonContent>
+			<IonContent className="modal-bg">
 				<IonCardContent className="new-chat-container">
+					<IonButton
+						style={{
+							color: 'white',
+							margin: 0,
+						}}
+						onClick={() => {
+							setOpenGroupModal(true);
+						}}
+					>
+						Create a Group
+					</IonButton>
 					<SearchUsers
 						type="private"
 						onUsersFiltered={(users) => {
@@ -63,13 +74,6 @@ const CreateChat: React.FC<UsersProps> = ({ closeModal, refetch }) => {
 						placeholder="Search Users..."
 						// className="ion-no-padding"
 					/>
-					<IonButton
-						onClick={() => {
-							setOpenGroupModal(true);
-						}}
-					>
-						Create a Group
-					</IonButton>
 					<>
 						{filteredUsers?.map((user: any, index: number) => (
 							<div key={user._id}>

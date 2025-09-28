@@ -1,0 +1,4 @@
+.chat-members-content ion-item {
+	--background: var(--ion-color-modal);
+	margin-top: 1rem;
+}

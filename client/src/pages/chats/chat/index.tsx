@@ -237,7 +237,12 @@ const Chat: React.FC = () => {
 			<IonHeader>
 				<IonToolbar>
 					<IonButtons slot="start">
-						<IonBackButton defaultHref="/inbox" color={'light-contrast'}>
+						<IonBackButton
+							defaultHref="/inbox"
+							style={{
+								color: 'white',
+							}}
+						>
 							<IonIcon icon={arrowBack} size="medium"></IonIcon>
 						</IonBackButton>
 					</IonButtons>
@@ -289,8 +294,10 @@ const Chat: React.FC = () => {
 										width: '20px',
 										margin: '10px',
 										marginTop: '15px',
+										backgroundColor: 'white',
+										objectFit: 'cover',
 									}}
-									alt=""
+									alt="user image"
 								/>
 
 								<MessageBox
@@ -395,7 +402,7 @@ const Chat: React.FC = () => {
 						}}
 						routerLink="/inbox"
 					>
-						<IonIcon icon={trashBinOutline} color="light-contrast"></IonIcon>
+						<IonIcon icon={trashBinOutline} color="primary"></IonIcon>
 					</IonFabButton>
 					{chat?.type === 'group' && (
 						<IonFabButton
@@ -403,7 +410,7 @@ const Chat: React.FC = () => {
 								setOpenOptions(!openOptions);
 							}}
 						>
-							<IonIcon icon={peopleOutline} color="light-contrast"></IonIcon>
+							<IonIcon icon={peopleOutline} color="primary"></IonIcon>
 						</IonFabButton>
 					)}
 				</IonFabList>
