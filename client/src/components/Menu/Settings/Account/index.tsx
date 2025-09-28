@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { getUser, updateUser } from '../../../../services/users';
 import { authStore } from '../../../../store/auth';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { logIn } from 'ionicons/icons';
+import { colorFill, logIn } from 'ionicons/icons';
 import { get, set, useForm } from 'react-hook-form';
 import ImagePicker from '../../../../components/ImagePicker';
 import Loading from '../../../../components/Loading';
@@ -14,6 +14,7 @@ import { RegisterConfig } from '../../../../validations-schemas/interfaces/user'
 import { useEffect } from 'react';
 import userDefaultAvatar from '../../../../assets/user.png';
 import HidePassword from '../../../HidePassword';
+import './style.css';
 
 const Settings: React.FC = () => {
 	const {
@@ -74,8 +75,8 @@ const Settings: React.FC = () => {
 	};
 
 	return (
-		<IonContent>
-			<IonCard>
+		<IonContent style={{ '--background': 'var(--ion-color-modal)' }}>
+			<IonCard style={{ '--background': 'var(--ion-color-settings)' }}>
 				<IonCardContent>
 					<Loading showLoading={isLoading} />
 					<form onSubmit={handleSubmit(onSubmit)}>
@@ -115,7 +116,15 @@ const Settings: React.FC = () => {
 							value={storeAvatar ? getValues('avatar') : userDefaultAvatar}
 						></ImagePicker>
 
-						<IonButton id="open-toast" type="submit" className="ion-margin-top" expand="block">
+						<IonButton
+							id="open-toast"
+							type="submit"
+							className="ion-margin-top account-img"
+							expand="block"
+							style={{
+								color: 'white',
+							}}
+						>
 							Confirm Changes
 						</IonButton>
 					</form>

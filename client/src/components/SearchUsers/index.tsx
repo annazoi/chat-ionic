@@ -14,6 +14,7 @@ interface SearchUsersProps {
 	handleSelectUser?: any;
 	selectedUsers?: any[];
 	existingMembers?: any[];
+	style?: React.CSSProperties;
 }
 
 const SearchUsers: React.FC<SearchUsersProps> = ({
@@ -24,6 +25,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
 	selectedUsers,
 	onUsersFiltered,
 	existingMembers,
+	style,
 }) => {
 	const { userId } = authStore((store: any) => store);
 
@@ -77,6 +79,7 @@ const SearchUsers: React.FC<SearchUsersProps> = ({
 				placeholder={placeholder}
 				className={`search-bar ${className}`}
 				color="light"
+				style={style}
 			></IonSearchbar>
 			{type === 'group' && (
 				<IonCard className="search-users-container ">

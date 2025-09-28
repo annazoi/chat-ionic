@@ -106,32 +106,32 @@ const Chats: React.FC = () => {
 	const getAvatar = (chat: any) => {
 		const member = chat.members.find((member: any) => member._id !== userId);
 		if (!member.avatar) {
-			return userDefaulfAvatar;
+			return (
+				<IonAvatar class="default-img">
+					<img src={userDefaulfAvatar}></img>
+				</IonAvatar>
+			);
 		} else {
-			return member.avatar;
+			return (
+				<IonAvatar>
+					<img src={member.avatar}></img>
+				</IonAvatar>
+			);
 		}
 	};
 
 	const getGroupAvatar = (chat: any) => {
 		if (!chat.avatar) {
 			return (
-				<IonAvatar>
+				<IonAvatar class="default-img">
 					<img src={groupDefaulfAvatar}></img>
 				</IonAvatar>
 			);
 		} else {
 			return (
-				<img
-					src={chat.avatar}
-					alt=""
-					style={{
-						width: '37px',
-						height: '37px',
-						borderRadius: '50%',
-						marginLeft: '4px',
-						marginTop: '12px',
-					}}
-				></img>
+				<IonAvatar>
+					<img src={chat.avatar} alt="group image"></img>
+				</IonAvatar>
 			);
 		}
 	};
@@ -163,6 +163,8 @@ const Chats: React.FC = () => {
 										marginLeft: '10px',
 										boxShadow: '0px 0px 8px 0px #000000',
 										zIndex: 10000,
+										objectFit: 'cover',
+										backgroundColor: 'white',
 									}}
 								></img>
 							</IonMenuToggle>
@@ -175,7 +177,12 @@ const Chats: React.FC = () => {
 									getRefresh();
 								}}
 							>
-								<IonIcon icon={sync} color="light"></IonIcon>
+								<IonIcon
+									icon={sync}
+									style={{
+										color: 'white',
+									}}
+								></IonIcon>
 							</IonButton>
 						</IonButtons>
 					</IonToolbar>
@@ -205,12 +212,12 @@ const Chats: React.FC = () => {
 												fontWeight: 'bold',
 												fontSize: '14px',
 												paddingLeft: '4px',
-												color: 'var(--ion-color-warning)',
+												color: 'var(--ion-color-light-contrast)',
 										  }
 										: {
 												fontSize: '14px',
 												paddingLeft: '4px',
-												color: 'var(--ion-color-warning)',
+												color: 'var(--ion-color-light-contrast)',
 										  }
 								}
 							>
@@ -221,11 +228,7 @@ const Chats: React.FC = () => {
 									<div key={index}>
 										<IonItem className="ion-no-padding" routerLink={`/chat/${chat._id}`} onClick={() => {}}>
 											<div className="chats-item">
-												{chat.type === 'private' && (
-													<IonAvatar>
-														<img src={getAvatar(chat)} alt="user image" />
-													</IonAvatar>
-												)}
+												{chat.type === 'private' && getAvatar(chat)}
 
 												{chat.type === 'group' && getGroupAvatar(chat)}
 
@@ -249,7 +252,11 @@ const Chats: React.FC = () => {
 															  }
 													}
 												>
-													<IonLabel color="warning">
+													<IonLabel
+														style={{
+															color: 'var(--ion-color-light-contrast)',
+														}}
+													>
 														{chat.type === 'private' ? getName(chat) : chat.name}
 													</IonLabel>
 													<IonText
@@ -258,7 +265,7 @@ const Chats: React.FC = () => {
 															whiteSpace: 'nowrap',
 															overflow: 'hidden',
 															textOverflow: 'ellipsis',
-															color: 'var(--ion-color-warning)',
+															color: 'var(--ion-color-light-contrast)',
 														}}
 													>
 														{handleLastMessage(chat)}
@@ -285,6 +292,9 @@ const Chats: React.FC = () => {
 								size="large"
 								icon={chatbubbleEllipsesOutline}
 								// color="light"
+								style={{
+									color: 'white',
+								}}
 							/>
 						</IonFabButton>
 					</IonFab>

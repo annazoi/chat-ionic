@@ -44,15 +44,29 @@ const Settings: React.FC = () => {
 					onClick={() => {
 						setOpenAccount(true);
 					}}
+					lines="none"
 				>
 					<IonIcon
 						icon={settings}
 						slot="start"
 						className="ion-no-margin"
-						style={{ paddingRight: '15px' }}
+						style={{ paddingRight: '15px', color: 'white' }}
 					></IonIcon>
-					Account Settings
-					<IonIcon slot="end" icon={arrowForward}></IonIcon>
+					<p
+						style={{
+							// color: 'var(--ion-color-light-contrast)',
+							color: 'white',
+						}}
+					>
+						Account Settings
+					</p>
+					<IonIcon
+						slot="end"
+						icon={arrowForward}
+						style={{
+							color: 'white',
+						}}
+					></IonIcon>
 				</IonItem>
 			</IonCard>
 

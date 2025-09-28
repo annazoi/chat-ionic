@@ -21,7 +21,6 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId, image }
 	const { userId } = authStore((store: any) => store);
 	const [timeOpen, setTimeOpen] = useState<boolean>(false);
 	const [openOptions, setOpenOptions] = useState<boolean>(false);
-	const [onDeletedMessage, setOnDeletedMessage] = useState<boolean>(false);
 	const [openImage, setOpenImage] = useState(false);
 
 	const { mutate: mutateDeleteMessage } = useMutation({
@@ -76,7 +75,7 @@ const MessageBox: React.FC<MessageConfig> = ({ message, refetch, chatId, image }
 							style={{
 								paddingLeft: '10px',
 								paddingRight: '10px',
-								color: 'var(--ion-color-warning)',
+								color: 'var(--ion-color-light-contrast)',
 							}}
 						>
 							{message.message}

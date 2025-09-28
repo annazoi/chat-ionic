@@ -237,7 +237,12 @@ const Chat: React.FC = () => {
 			<IonHeader>
 				<IonToolbar>
 					<IonButtons slot="start">
-						<IonBackButton defaultHref="/inbox" color={'warning'}>
+						<IonBackButton
+							defaultHref="/inbox"
+							style={{
+								color: 'white',
+							}}
+						>
 							<IonIcon icon={arrowBack} size="medium"></IonIcon>
 						</IonBackButton>
 					</IonButtons>
@@ -289,8 +294,10 @@ const Chat: React.FC = () => {
 										width: '20px',
 										margin: '10px',
 										marginTop: '15px',
+										backgroundColor: 'white',
+										objectFit: 'cover',
 									}}
-									alt=""
+									alt="user image"
 								/>
 
 								<MessageBox
@@ -378,11 +385,16 @@ const Chat: React.FC = () => {
 			</Modal>
 			<IonFab slot="fixed" horizontal="end">
 				<IonFabButton size="small" color="secondary">
-					<IonIcon icon={informationOutline} color="dark"></IonIcon>
+					<IonIcon
+						icon={informationOutline}
+						style={{
+							color: 'white',
+						}}
+					></IonIcon>
 				</IonFabButton>
 				<IonFabList side="bottom">
 					{/* <IonFabButton>
-            <IonIcon icon={imagesOutline} color="warning"></IonIcon>
+            <IonIcon icon={imagesOutline} color="light-contrast"></IonIcon>
             </IonFabButton> */}
 					<IonFabButton
 						onClick={() => {
@@ -390,7 +402,7 @@ const Chat: React.FC = () => {
 						}}
 						routerLink="/inbox"
 					>
-						<IonIcon icon={trashBinOutline} color="warning"></IonIcon>
+						<IonIcon icon={trashBinOutline} color="primary"></IonIcon>
 					</IonFabButton>
 					{chat?.type === 'group' && (
 						<IonFabButton
@@ -398,7 +410,7 @@ const Chat: React.FC = () => {
 								setOpenOptions(!openOptions);
 							}}
 						>
-							<IonIcon icon={peopleOutline} color="warning"></IonIcon>
+							<IonIcon icon={peopleOutline} color="primary"></IonIcon>
 						</IonFabButton>
 					)}
 				</IonFabList>
