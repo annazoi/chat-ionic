@@ -19,7 +19,7 @@ import {
 } from '@ionic/react';
 import { authStore } from '../../store/auth';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { chatbubbleEllipsesOutline, sync } from 'ionicons/icons';
 import { getChats } from '../../services/chat';
 import React from 'react';
@@ -34,16 +34,39 @@ import groupDefaulfAvatar from '../../assets/group.png';
 
 import { useNotifications } from '../../hooks/notifications';
 import './style.css';
+import { moon, sunny } from 'ionicons/icons';
 // import { io } from 'socket.io-client';
 
 const Chats: React.FC = () => {
 	useNotifications();
 
+	// const { socket } = useSocket();
 	const { avatar, userId, username } = authStore((store: any) => store);
 
 	const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);
 
-	// const { socket } = useSocket();
+	const getInitialTheme = () => {
+		const savedTheme = localStorage.getItem('theme');
+		if (savedTheme) {
+			return savedTheme;
+		}
+		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+		return prefersDark ? 'dark' : 'light';
+	};
+	const [theme, setTheme] = useState<string>(getInitialTheme);
+
+	useEffect(() => {
+		if (theme === 'dark') {
+			document.body.classList.add('dark');
+		} else {
+			document.body.classList.remove('dark');
+		}
+		localStorage.setItem('theme', theme);
+	}, [theme]);
+
+	const toggleTheme = () => {
+		setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+	};
 
 	const { data, isLoading, refetch } = useQuery<any>({
 		queryKey: ['chats'],
@@ -171,6 +194,9 @@ const Chats: React.FC = () => {
 							<Title title={`${username}'s inbox`} />
 						</div>
 						<IonButtons slot="end">
+							<IonButton onClick={toggleTheme}>
+								<IonIcon icon={theme === 'light' ? moon : sunny} style={{ color: 'white' }} />
+							</IonButton>
 							<IonButton
 								slot="end"
 								onClick={() => {
