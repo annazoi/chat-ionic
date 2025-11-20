@@ -26,70 +26,79 @@ import {
 	cameraOutline,
 	imageOutline,
 } from 'ionicons/icons';
+import { RiRobot2Line } from 'react-icons/ri';
 import { getChat, sendMessage, deleteChat, readMessage } from '../../../services/chat';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 import { useEffect, useState, useRef } from 'react';
 import { authStore } from '../../../store/auth';
-// import { useSocket } from "../../../hooks/sockets";
+import { useSocket } from '../../../hooks/sockets';
 import MessageBox from './MessageBox';
 import userDefaulfAvatar from '../../../assets/user.png';
-import groupDefaulfAvatar from '../../../assets/group.png';
+// import groupDefaulfAvatar from '../../../assets/group.png';
 
 import './style.css';
 import Modal from '../../../components/ui/Modal';
 
 import ChatOptions from '../../../components/ChatOptions';
-import { RiGroup2Fill } from 'react-icons/ri';
+// import { RiGroup2Fill } from 'react-icons/ri';
 import Title from '../../../components/ui/Title';
 
 const Chat: React.FC = () => {
 	const { chatId } = useParams<{ chatId: string }>();
 	const { userId } = authStore((store: any) => store);
-	// const { socket } = useSocket();
+	const { socket } = useSocket();
 	const [newMessage, setNewMessage] = useState<string>('');
 	const [messages, setMessages] = useState<any[]>([]);
 	const [openOptions, setOpenOptions] = useState<boolean>(false);
 	const [chat, setChat] = useState<any>(null);
-	const [delay, setDelay] = useState(1000);
 	const [isRunning, setIsRunning] = useState(true);
 	const [isLoading, setIsLoading] = useState(false);
 	const [openTakePicture, setOpenTakePicture] = useState(false);
 	const [image, setImage] = useState<string>('');
 	const [newImage, setNewImage] = useState<string>('');
 	const [openEmoji, setOpenEmoji] = useState<boolean>(false);
+	const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
+	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 
 	const router = useIonRouter();
 	const contentRef = useRef<HTMLIonContentElement>(null);
-	const isEntered = useRef(false);
 
 	const { mutate: readMessageMutate } = useMutation({
 		mutationFn: ({ chatId, messageId }: any) => readMessage(chatId, messageId),
 	});
 
 	const { mutate: mutateChat } = useMutation({
-		mutationFn: () => getChat(chatId),
-		onSuccess: (res: any) => {
-			setIsLoading(true);
-			setMessages(res?.chat.messages);
-			setChat(res?.chat);
-			// console.log("isEntered.current", isEntered.current);
-			// if (!isEntered.current) {
-			//   contentRef?.current?.scrollToBottom();
-			//   isEntered.current = true;
-			// }
+		mutationFn: ({ chatId, page = 1 }: any) => getChat(chatId, page),
+		onSuccess: async (res: any, variables: any) => {
+			const requestedPage = variables?.page ?? 1;
 
-			if (res?.chat.messages.length > 0) {
-				if (
-					res?.chat.messages[res?.chat.messages.length - 1].senderId._id !== userId &&
-					!res?.chat.messages[res?.chat.messages.length - 1].read
-				) {
-					readMessageMutate({
-						chatId,
-						messageId: res?.chat.messages[res?.chat.messages.length - 1]._id,
-					});
+			setChat(res?.chat);
+			if (requestedPage === 1) {
+				setMessages(res?.chat.messages || []);
+				setTimeout(() => {
+					contentRef.current?.scrollToBottom(300);
+				}, 50);
+			} else {
+				setMessages((prev) => [...(res?.chat.messages || []), ...prev]);
+			}
+
+			setHasMore(Boolean(res.hasMore));
+
+			if (res?.chat.messages?.length > 0) {
+				const lastMsg = res.chat.messages[res.chat.messages.length - 1];
+				if (lastMsg && lastMsg.senderId?._id !== userId && !lastMsg.read) {
+					readMessageMutate({ chatId, messageId: lastMsg._id });
 				}
 			}
+
+			// done loading
+			setIsLoading(false);
+		},
+		onError: () => {
+			setIsLoading(false);
+			setIsLoadingOlder(false);
 		},
 	});
 
@@ -100,31 +109,6 @@ const Chat: React.FC = () => {
 	const { mutate: mutateDeleteChat } = useMutation({
 		mutationFn: ({ chatId }: any) => deleteChat(chatId),
 	});
-
-	// useInterval(
-	//   () => {
-	//     if (isRunning && !openOptions) {
-	//       mutateChat();
-	//     }
-	//   },
-	//   isRunning ? 5000 : null
-	// );
-
-	useEffect(() => {
-		console.log('1111');
-		if (isEntered.current) return;
-		// console.log("222");
-		mutateChat();
-	}, []);
-
-	useEffect(() => {
-		console.log('isEntered', isEntered.current);
-		if (!isEntered.current) {
-			isEntered.current = true;
-			contentRef?.current?.scrollToBottom();
-			console.log('scrollToBottom');
-		}
-	}, [messages, contentRef.current]);
 
 	const deletedChat = () => {
 		mutateDeleteChat(
@@ -148,9 +132,9 @@ const Chat: React.FC = () => {
 				onSuccess: (res: any) => {
 					const messageData = {
 						...res.chat.messages[res.chat.messages.length - 1],
-						// room: chatId,
+						room: chatId,
 					};
-					// socket?.emit("send_message", messageData);
+					socket?.emit('send_message', messageData);
 					setMessages((prevMessages) => [...prevMessages, messageData]);
 					contentRef?.current?.scrollToBottom();
 					setNewMessage('');
@@ -221,16 +205,61 @@ const Chat: React.FC = () => {
 		return imageUrl;
 	};
 
-	// sockets
-	// useEffect(() => {
-	//   socket?.emit("join_room", chatId);
-	// }, [socket]);
-	// useEffect(() => {
-	//   socket?.on("receive_message", (message: any) => {
-	//     console.log("receive_message", message);
-	//     setMessages((prevMessages) => [...prevMessages, message]);
-	//   });
-	// }, [socket]);
+	const handleScroll = async (e: CustomEvent) => {
+		const scrollTop = e.detail.scrollTop;
+		if (scrollTop < 100 && hasMore && !isLoadingOlder) {
+			setIsLoadingOlder(true);
+			const nextPage = page + 1;
+
+			const scrollEl = await contentRef.current?.getScrollElement();
+			const prevHeight = scrollEl?.scrollHeight ?? 0;
+
+			mutateChat(
+				{ chatId, page: nextPage },
+				{
+					onSuccess: async () => {
+						setPage(nextPage);
+						setIsLoadingOlder(false);
+
+						requestAnimationFrame(async () => {
+							const newHeight = scrollEl?.scrollHeight ?? 0;
+							const delta = newHeight - prevHeight;
+							if (delta > 0) {
+								await contentRef.current?.scrollToPoint(0, delta, 0);
+							}
+						});
+					},
+					onError: () => {
+						setIsLoadingOlder(false);
+					},
+				}
+			);
+		}
+	};
+
+	useEffect(() => {
+		socket?.emit('join_room', chatId);
+	}, [socket]);
+
+	useEffect(() => {
+		socket?.on('receive_message', (message: any) => {
+			// console.log('receive_message', message);
+			setMessages((prevMessages) => [...prevMessages, message]);
+		});
+	}, [socket]);
+
+	useEffect(() => {
+		setIsLoading(true);
+		setPage(1);
+		mutateChat({ chatId, page: 1 });
+	}, [chatId]);
+
+	useEffect(() => {
+		if (messages.length === 0) return;
+		setTimeout(() => {
+			contentRef.current?.scrollToBottom(300);
+		}, 100);
+	}, [messages.length]);
 
 	return (
 		<IonPage>
@@ -273,8 +302,9 @@ const Chat: React.FC = () => {
 				</IonToolbar>
 			</IonHeader>
 
-			{!isLoading && <IonProgressBar type="indeterminate"></IonProgressBar>}
-			<IonContent ref={contentRef} className="ion-padding-top">
+			{isLoading && <IonProgressBar type="indeterminate" />}
+			<IonContent ref={contentRef} className="ion-padding-top" scrollEvents={true} onIonScroll={handleScroll}>
+				{isLoadingOlder && <div style={{ textAlign: 'center', padding: '8px 0' }}>Loading older messages...</div>}
 				{messages &&
 					messages.map((message: any, index: any) => {
 						return (
@@ -355,6 +385,9 @@ const Chat: React.FC = () => {
 				<IonButton onClick={handleCamera} className="ion-no-margin new-message-snd-btns" size="small">
 					<IonIcon icon={cameraOutline} size="small" color="white"></IonIcon>
 				</IonButton>
+				<IonButton className="ion-no-margin new-message-snd-btns" size="small">
+					<RiRobot2Line size={18} />
+				</IonButton>
 			</div>
 
 			{/* <div>
@@ -399,6 +432,9 @@ const Chat: React.FC = () => {
 					<IonFabButton
 						onClick={() => {
 							deletedChat();
+						}}
+						style={{
+							transition: 'all 0.3s ease-in-out',
 						}}
 						routerLink="/inbox"
 					>
