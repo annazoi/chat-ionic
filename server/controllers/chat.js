@@ -1,145 +1,160 @@
-const Chat = require("../model/Chat");
-const uploadImage = require("../lib/uploadImage");
+const Chat = require('../model/Chat');
+const uploadImage = require('../lib/uploadImage');
 
 const createChat = async (req, res) => {
-  const { name, type, avatar, members } = req.body;
+	const { name, type, avatar, members } = req.body;
 
-  try {
-    if (type === "private") {
-      const existingChat = await Chat.findOne({
-        members: { $all: members },
-        type: "private",
-      });
-      if (existingChat) {
-        return res.status(200).json({ message: "ok", chat: existingChat });
-      }
-    }
-    let result;
-    if (avatar) {
-      result = await uploadImage(avatar);
-    }
+	try {
+		if (type === 'private') {
+			const existingChat = await Chat.findOne({
+				members: { $all: members },
+				type: 'private',
+			});
+			if (existingChat) {
+				return res.status(200).json({ message: 'ok', chat: existingChat });
+			}
+		}
+		let result;
+		if (avatar) {
+			result = await uploadImage(avatar);
+		}
 
-    const chat = await Chat.create({
-      name,
-      type,
-      avatar: result || "",
-      members,
-      creatorId: req.userId,
-    });
+		const chat = await Chat.create({
+			name,
+			type,
+			avatar: result || '',
+			members,
+			creatorId: req.userId,
+		});
 
-    res.status(200).json({ message: "ok", chat: chat });
-  } catch (err) {
-    res.status(500).json({ message: err, chat: null });
-  }
+		res.status(200).json({ message: 'ok', chat: chat });
+	} catch (err) {
+		res.status(500).json({ message: err, chat: null });
+	}
 };
 const getChats = async (req, res) => {
-  try {
-    const chats = await Chat.find({ members: req.userId }).populate(
-      "members creatorId messages.senderId",
-      "-password"
-    );
-    res.status(200).json({ message: "ok", chats: chats });
-  } catch (err) {
-    res.status(500).json({ message: err, chats: null });
-  }
+	try {
+		const chats = await Chat.find({ members: req.userId }).populate(
+			'members creatorId messages.senderId',
+			'-password'
+		);
+		res.status(200).json({ message: 'ok', chats: chats });
+	} catch (err) {
+		res.status(500).json({ message: err, chats: null });
+	}
 };
 
 const getChat = async (req, res) => {
-  try {
-    const chat = await Chat.findById(req.params.chatId).populate(
-      "members creatorId messages.senderId",
-      "-password"
-    );
-    res.status(200).json({ message: "ok", chat: chat });
-  } catch (err) {
-    res.status(500).json(err);
-  }
+	try {
+		const page = req.query.page ? parseInt(req.query.page) : 1;
+		const limit = req.query.limit ? parseInt(req.query.limit) : 20;
+
+		const chat = await Chat.findById(req.params.chatId)
+			.populate('members creatorId messages.senderId', '-password')
+			.select('members creatorId messages type name avatar messages');
+
+		if (!chat) return res.status(404).json({ message: 'Chat not found' });
+
+		const total = chat.messages.length;
+		const start = Math.max(total - page * limit, 0);
+		const end = total - (page - 1) * limit;
+		const paginatedMessages = chat.messages.slice(start, end);
+
+		await Chat.populate(paginatedMessages, { path: 'senderId', select: '-password' });
+		chat.messages = paginatedMessages;
+		const hasMore = start > 0;
+
+		console.log('chat', chat);
+		res.status(200).json({
+			message: 'ok',
+			chat: chat,
+			hasMore: hasMore,
+		});
+	} catch (err) {
+		res.status(500).json(err);
+	}
 };
 
 const updateChat = async (req, res) => {
-  try {
-    const chat = await Chat.findById(req.params.chatId);
-    if (!chat)
-      return res.status(404).json({
-        message: "The Chat with the given ID was not found.",
-        chat: null,
-      });
+	try {
+		const chat = await Chat.findById(req.params.chatId);
+		if (!chat)
+			return res.status(404).json({
+				message: 'The Chat with the given ID was not found.',
+				chat: null,
+			});
 
-    let query = { $set: {} };
-    for (let key in req.body) {
-      query.$set[key] = req.body[key];
-    }
-    await Chat.updateOne({ _id: req.params.chatId }, query).exec();
+		let query = { $set: {} };
+		for (let key in req.body) {
+			query.$set[key] = req.body[key];
+		}
+		await Chat.updateOne({ _id: req.params.chatId }, query).exec();
 
-    res.status(201).json({ message: "ok", chat: chat });
-  } catch (err) {
-    res.status(404).json({ message: err, chat: null });
-  }
+		res.status(201).json({ message: 'ok', chat: chat });
+	} catch (err) {
+		res.status(404).json({ message: err, chat: null });
+	}
 };
 
 const deleteChat = async (req, res) => {
-  try {
-    const chat = await Chat.findByIdAndDelete(req.params.chatId).exec();
-    res.status(200).json({ message: "ok", chat: chat });
-  } catch (err) {
-    res.status(404).json({ message: err, chat: null });
-  }
+	try {
+		const chat = await Chat.findByIdAndDelete(req.params.chatId).exec();
+		res.status(200).json({ message: 'ok', chat: chat });
+	} catch (err) {
+		res.status(404).json({ message: err, chat: null });
+	}
 };
 
 const addMember = async (req, res) => {
-  try {
-    const chat = await Chat.findById(req.params.chatId);
-    if (!chat)
-      return res.status(404).json({
-        message: "The Chat with the given ID was not found.",
-        chat: null,
-      });
+	try {
+		const chat = await Chat.findById(req.params.chatId);
+		if (!chat)
+			return res.status(404).json({
+				message: 'The Chat with the given ID was not found.',
+				chat: null,
+			});
 
-    const { members } = req.body;
-    const existingMembers = chat.members.map((member) => member.toString());
-    if (members.some((member) => existingMembers.includes(member.toString()))) {
-      return res
-        .status(400)
-        .json({ message: "Some members already exist in chat", chat: null });
-    }
-    chat.members.push(...members);
-    await chat.save();
+		const { members } = req.body;
+		const existingMembers = chat.members.map((member) => member.toString());
+		if (members.some((member) => existingMembers.includes(member.toString()))) {
+			return res.status(400).json({ message: 'Some members already exist in chat', chat: null });
+		}
+		chat.members.push(...members);
+		await chat.save();
 
-    res.status(201).json({ message: "ok", chat: chat });
-  } catch (err) {
-    res.status(404).json({ message: err, chat: null });
-  }
+		res.status(201).json({ message: 'ok', chat: chat });
+	} catch (err) {
+		res.status(404).json({ message: err, chat: null });
+	}
 };
 
 const removeMember = async (req, res) => {
-  const memberId = req.params.memberId;
-  try {
-    const chat = await Chat.findById(req.params.chatId);
-    if (!chat)
-      return res.status(404).json({
-        message: "The Chat with the given ID was not found.",
-        chat: null,
-      });
+	const memberId = req.params.memberId;
+	try {
+		const chat = await Chat.findById(req.params.chatId);
+		if (!chat)
+			return res.status(404).json({
+				message: 'The Chat with the given ID was not found.',
+				chat: null,
+			});
 
-    console.log("req.body", memberId);
+		console.log('req.body', memberId);
 
-    chat.members = chat.members.filter(
-      (member) => member.toString() !== memberId
-    );
+		chat.members = chat.members.filter((member) => member.toString() !== memberId);
 
-    await chat.save();
-    res.status(200).json({ message: "ok", chat: chat });
-  } catch (err) {
-    res.status(404).json({ message: err, chat: null });
-  }
+		await chat.save();
+		res.status(200).json({ message: 'ok', chat: chat });
+	} catch (err) {
+		res.status(404).json({ message: err, chat: null });
+	}
 };
 
 module.exports = {
-  createChat,
-  getChats,
-  getChat,
-  updateChat,
-  deleteChat,
-  addMember,
-  removeMember,
+	createChat,
+	getChats,
+	getChat,
+	updateChat,
+	deleteChat,
+	addMember,
+	removeMember,
 };

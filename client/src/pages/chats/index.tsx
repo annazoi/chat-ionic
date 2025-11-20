@@ -25,7 +25,7 @@ import { getChats } from '../../services/chat';
 import React from 'react';
 import CreateChat from './CreateChat';
 import Modal from '../../components/ui/Modal';
-// import { useSocket } from "../../hooks/sockets";
+import { useSocket } from '../../hooks/sockets';
 import { RiGroup2Fill } from 'react-icons/ri';
 import Title from '../../components/ui/Title';
 import Menu from '../../components/Menu';
@@ -35,12 +35,11 @@ import groupDefaulfAvatar from '../../assets/group.png';
 import { useNotifications } from '../../hooks/notifications';
 import './style.css';
 import { moon, sunny } from 'ionicons/icons';
-// import { io } from 'socket.io-client';
 
 const Chats: React.FC = () => {
 	useNotifications();
 
-	// const { socket } = useSocket();
+	const { socket } = useSocket();
 	const { avatar, userId, username } = authStore((store: any) => store);
 
 	const [openCreateChat, setOpenCreateChat] = useState<boolean>(false);
@@ -73,18 +72,18 @@ const Chats: React.FC = () => {
 		queryFn: getChats,
 		refetchOnMount: 'always',
 		refetchIntervalInBackground: true,
-		refetchInterval: openCreateChat ? 0 : 1000,
+		// refetchInterval: openCreateChat ? 0 : 1000,
 	});
 
 	// const joinRoom = (chatId: string) => {
-	//   socket.emit("join_room", chatId);
+	// 	socket.emit('join_room', chatId);
 	// };
 
-	// useEffect(() => {
-	//   socket?.on("new_message", (data: any) => {
-	//     console.log("new message", data);
-	//   });
-	// }, [socket]);
+	useEffect(() => {
+		socket?.on('new_message', (data: any) => {
+			// console.log('new message', data);
+		});
+	}, [socket]);
 
 	const handleLastMessage = (chat: any) => {
 		const lastMessage = chat?.messages[chat.messages.length - 1];
