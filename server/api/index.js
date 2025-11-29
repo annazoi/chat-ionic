@@ -65,6 +65,81 @@ socket.on('connection', (socket) => {
 			socket.to(data.room).emit('receive_message', data);
 			console.log('receive_message', data);
 		});
+
+		// Join video call room
+		socket.on('join_video', (roomId) => {
+			socket.join(roomId);
+			console.log(`User ${socket.id} joined video room: ${roomId}`);
+		});
+
+		// Send WebRTC offer
+		socket.on('webrtc_offer', (data) => {
+			console.log('Sending offer:', data);
+			socket.to(data.roomId).emit('webrtc_offer', {
+				sdp: data.sdp,
+				sender: socket.id,
+			});
+		});
+
+		// Send WebRTC answer
+		socket.on('webrtc_answer', (data) => {
+			console.log('Sending answer:', data);
+			socket.to(data.roomId).emit('webrtc_answer', {
+				sdp: data.sdp,
+				sender: socket.id,
+			});
+		});
+
+		// ICE Candidate exchange
+		socket.on('webrtc_ice_candidate', (data) => {
+			console.log('Sending ICE candidate:', data);
+			socket.to(data.roomId).emit('webrtc_ice_candidate', {
+				candidate: data.candidate,
+				sender: socket.id,
+			});
+		});
+
+		// VIDEO CALL SIGNALING
+		socket.on('video_call_user', ({ roomId, fromUser }) => {
+			socket.to(roomId).emit('incoming_video_call', { roomId, fromUser });
+		});
+
+		socket.on('video_call_accept', ({ roomId }) => {
+			socket.to(roomId).emit('video_call_accepted');
+		});
+
+		socket.on('video_call_reject', ({ roomId }) => {
+			socket.to(roomId).emit('video_call_rejected');
+		});
+
+		socket.on('video_call_end', ({ roomId }) => {
+			socket.to(roomId).emit('video_call_ended');
+		});
+
+		// Audio Call
+		socket.on('call_user', ({ roomId, fromUser }) => {
+			socket.to(roomId).emit('incoming_call', {
+				roomId,
+				fromUser: {
+					_id: fromUser._id,
+					username: fromUser.username,
+					avatar: fromUser.avatar,
+				},
+			});
+		});
+		// Accept call
+		socket.on('accept_call', ({ roomId }) => {
+			socket.to(roomId).emit('call_accepted');
+		});
+
+		// Reject call
+		socket.on('reject_call', ({ roomId }) => {
+			socket.to(roomId).emit('call_rejected');
+		});
+
+		socket.on('end_call', ({ roomId }) => {
+			socket.to(roomId).emit('call_ended');
+		});
 	});
 
 	socket.on('disconnect', () => {
