@@ -65,97 +65,97 @@ socket.on('connection', (socket) => {
 			socket.to(data.room).emit('receive_message', data);
 			console.log('receive_message', data);
 		});
+	});
 
-		socket.on('join_video', (roomId) => {
-			socket.join(roomId);
-			console.log(`User ${socket.id} joined video room: ${roomId}`);
-		});
+	socket.on('join_video', (roomId) => {
+		socket.join(roomId);
+		console.log(`User ${socket.id} joined video room: ${roomId}`);
+	});
 
-		socket.on('webrtc_offer', (data) => {
-			// data: { roomId, sdp, type }
-			console.log('Sending offer:', data);
-			socket.to(data.roomId).emit('webrtc_offer', {
-				sdp: data.sdp,
-				type: data.type,
-				sender: socket.id,
-			});
+	socket.on('webrtc_offer', (data) => {
+		// data: { roomId, sdp, type }
+		console.log('Sending offer:', data);
+		socket.to(data.roomId).emit('webrtc_offer', {
+			sdp: data.sdp,
+			type: data.type,
+			sender: socket.id,
 		});
+	});
 
-		socket.on('webrtc_answer', (data) => {
-			// data: { roomId, sdp, type? }
-			console.log('Sending answer:', data);
-			socket.to(data.roomId).emit('webrtc_answer', {
-				sdp: data.sdp,
-				type: data.type,
-				sender: socket.id,
-			});
+	socket.on('webrtc_answer', (data) => {
+		// data: { roomId, sdp, type? }
+		console.log('Sending answer:', data);
+		socket.to(data.roomId).emit('webrtc_answer', {
+			sdp: data.sdp,
+			type: data.type,
+			sender: socket.id,
 		});
+	});
 
-		socket.on('webrtc_ice_candidate', (data) => {
-			// data: { roomId, candidate }
-			console.log('Sending ICE candidate:', data);
-			socket.to(data.roomId).emit('webrtc_ice_candidate', {
-				candidate: data.candidate,
-				sender: socket.id,
-			});
+	socket.on('webrtc_ice_candidate', (data) => {
+		// data: { roomId, candidate }
+		console.log('Sending ICE candidate:', data);
+		socket.to(data.roomId).emit('webrtc_ice_candidate', {
+			candidate: data.candidate,
+			sender: socket.id,
 		});
+	});
 
-		socket.on('call_user', ({ roomId, fromUser }) => {
-			// fromUser: { _id, username, avatar }
-			console.log('call_user -> incoming_call', { roomId, fromUser });
-			socket.to(roomId).emit('incoming_call', {
-				roomId,
-				fromUser: {
-					_id: fromUser._id,
-					username: fromUser.username,
-					avatar: fromUser.avatar,
-				},
-				type: 'audio',
-			});
+	socket.on('call_user', ({ roomId, fromUser }) => {
+		// fromUser: { _id, username, avatar }
+		console.log('call_user -> incoming_call', { roomId, fromUser });
+		socket.to(roomId).emit('incoming_call', {
+			roomId,
+			fromUser: {
+				_id: fromUser._id,
+				username: fromUser.username,
+				avatar: fromUser.avatar,
+			},
+			type: 'audio',
 		});
+	});
 
-		socket.on('accept_call', ({ roomId }) => {
-			console.log('accept_call', roomId);
-			socket.to(roomId).emit('call_accepted');
-		});
+	socket.on('accept_call', ({ roomId }) => {
+		console.log('accept_call', roomId);
+		socket.to(roomId).emit('call_accepted');
+	});
 
-		socket.on('reject_call', ({ roomId }) => {
-			console.log('reject_call', roomId);
-			socket.to(roomId).emit('call_rejected');
-		});
+	socket.on('reject_call', ({ roomId }) => {
+		console.log('reject_call', roomId);
+		socket.to(roomId).emit('call_rejected');
+	});
 
-		socket.on('end_call', ({ roomId }) => {
-			console.log('end_call', roomId);
-			socket.to(roomId).emit('call_ended');
-		});
+	socket.on('end_call', ({ roomId }) => {
+		console.log('end_call', roomId);
+		socket.to(roomId).emit('call_ended');
+	});
 
-		socket.on('video_call_user', ({ roomId, fromUser }) => {
-			console.log('video_call_user -> incoming_video_call', { roomId, fromUser });
-			socket.to(roomId).emit('incoming_video_call', {
-				roomId,
-				fromUser: {
-					_id: fromUser._id,
-					username: fromUser.username,
-					avatar: fromUser.avatar,
-				},
-				type: 'video',
-			});
+	socket.on('video_call_user', ({ roomId, fromUser }) => {
+		console.log('video_call_user -> incoming_video_call', { roomId, fromUser });
+		socket.to(roomId).emit('incoming_video_call', {
+			roomId,
+			fromUser: {
+				_id: fromUser._id,
+				username: fromUser.username,
+				avatar: fromUser.avatar,
+			},
+			type: 'video',
 		});
+	});
 
-		socket.on('video_call_accept', ({ roomId }) => {
-			console.log('video_call_accept', roomId);
-			socket.to(roomId).emit('video_call_accepted');
-		});
+	socket.on('video_call_accept', ({ roomId }) => {
+		console.log('video_call_accept', roomId);
+		socket.to(roomId).emit('video_call_accepted');
+	});
 
-		socket.on('video_call_reject', ({ roomId }) => {
-			console.log('video_call_reject', roomId);
-			socket.to(roomId).emit('video_call_rejected');
-		});
+	socket.on('video_call_reject', ({ roomId }) => {
+		console.log('video_call_reject', roomId);
+		socket.to(roomId).emit('video_call_rejected');
+	});
 
-		socket.on('video_call_end', ({ roomId }) => {
-			console.log('video_call_end', roomId);
-			socket.to(roomId).emit('video_call_ended');
-		});
+	socket.on('video_call_end', ({ roomId }) => {
+		console.log('video_call_end', roomId);
+		socket.to(roomId).emit('video_call_ended');
 	});
 
 	socket.on('disconnect', () => {
