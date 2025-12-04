@@ -93,11 +93,21 @@ const Chat: React.FC = () => {
 		ringtoneSrc: ringtonePlayer,
 	});
 
-	// helpers για FABs
+	useEffect(() => {
+		const unlockAudio = () => {
+			const a = new Audio();
+			a.play().catch(() => {});
+			document.removeEventListener('touchstart', unlockAudio);
+			document.removeEventListener('click', unlockAudio);
+		};
+
+		document.addEventListener('touchstart', unlockAudio, { once: true });
+		document.addEventListener('click', unlockAudio, { once: true });
+	}, []);
+
 	const startAudioCall = () => startCall('audio');
 	const startVideoCall = () => startCall('video');
 
-	// ----------------- React Query mutations -----------------
 	const { mutate: readMessageMutate } = useMutation({
 		mutationFn: ({ chatId, messageId }: any) => readMessage(chatId, messageId),
 	});
@@ -266,7 +276,6 @@ const Chat: React.FC = () => {
 		}
 	};
 
-	// ----------------- useEffects -----------------
 	useEffect(() => {
 		if (!socket || !chatId) return;
 		socket.emit('join_room', chatId);

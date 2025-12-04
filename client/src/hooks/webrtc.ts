@@ -72,14 +72,13 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		ringtoneRef.current.loop = true;
 	}, [ringtoneSrc]);
 
-	const startRingtone = () => {
+	const startRingtone = async () => {
 		try {
-			ringtoneRef.current?.play();
-		} catch (e) {
-			console.warn('Ringtone play error', e);
+			await ringtoneRef.current?.play();
+		} catch (err) {
+			console.warn('🔇 Autoplay blocked — waiting for user gesture', err);
 		}
 	};
-
 	const stopRingtone = () => {
 		if (!ringtoneRef.current) return;
 		ringtoneRef.current.pause();
