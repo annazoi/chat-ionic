@@ -292,7 +292,11 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 		const stream = await navigator.mediaDevices.getUserMedia({
 			video: { facingMode: newMode },
-			audio: true,
+			audio: {
+				echoCancellation: true,
+				noiseSuppression: true,
+				autoGainControl: true,
+			},
 		});
 
 		const newVideoTrack = stream.getVideoTracks()[0];
