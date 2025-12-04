@@ -90,12 +90,14 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 			}
 		};
 
-		pc.onicecandidate = (e) => {
-			if (e.candidate) {
+		pc.onicecandidate = (event) => {
+			if (event.candidate) {
+				console.log('📤 sending ICE:', event.candidate);
+
 				socket?.emit('webrtc_ice_candidate', {
 					roomId,
-					candidate: e.candidate.toJSON(),
-				} as IceCandidatePayload);
+					candidate: event.candidate,
+				});
 			}
 		};
 
