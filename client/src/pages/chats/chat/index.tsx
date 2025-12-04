@@ -38,19 +38,18 @@ import { useSocket } from '../../../hooks/sockets';
 import MessageBox from './MessageBox';
 import ringtonePlayer from '/ringtone.mp3';
 import userDefaulfAvatar from '../../../assets/user.png';
-// import groupDefaulfAvatar from '../../../assets/group.png';
+import { useWebRTC } from '../../../hooks/webrtc'; // βεβαιώσου ότι αυτό είναι το σωστό path/filename
 
 import './style.css';
 import Modal from '../../../components/ui/Modal';
-
 import ChatOptions from '../../../components/ChatOptions';
-// import { RiGroup2Fill } from 'react-icons/ri';
 import Title from '../../../components/ui/Title';
 
 const Chat: React.FC = () => {
 	const { chatId } = useParams<{ chatId: string }>();
 	const { userId } = authStore((store: any) => store);
 	const { socket } = useSocket();
+
 	const [newMessage, setNewMessage] = useState<string>('');
 	const [messages, setMessages] = useState<any[]>([]);
 	const [openOptions, setOpenOptions] = useState<boolean>(false);
@@ -64,29 +63,41 @@ const Chat: React.FC = () => {
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
 	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
-	// WebRTC
-	const [callType, setCallType] = useState<'audio' | 'video' | null>(null);
-	const [isCaller, setIsCaller] = useState(false);
-	const [inCall, setInCall] = useState(false);
-	const [incomingCall, setIncomingCall] = useState<any>(null);
-
-	const pcRef = useRef<RTCPeerConnection | null>(null);
-	const localStreamRef = useRef<MediaStream | null>(null);
-
-	const localVideoRef = useRef<HTMLVideoElement>(null);
-	const remoteVideoRef = useRef<HTMLVideoElement>(null);
-	const localAudioRef = useRef<HTMLAudioElement>(null);
-	const remoteAudioRef = useRef<HTMLAudioElement>(null);
-
-	const ringtoneRef = useRef<HTMLAudioElement | null>(null);
-
-	const [isMicMuted, setIsMicMuted] = useState(false);
-	const [isCamOn, setIsCamOn] = useState(true);
-	const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
 	const router = useIonRouter();
 	const contentRef = useRef<HTMLIonContentElement>(null);
 
+	// ----------------- WebRTC hook -----------------
+	// remoteUserId μπορεί να είναι undefined στην αρχή, οπότε βάζουμε fallback σε '' (το hook απλώς θα μην καλέσει call_user αν δεν το χρειαστείς).
+	const remoteUserId = chat?.members?.find((member: any) => member._id !== userId)?._id ?? '';
+
+	const {
+		callType,
+		inCall,
+		incomingCall,
+		localVideoRef,
+		remoteVideoRef,
+		localAudioRef,
+		remoteAudioRef,
+		startCall,
+		acceptCall,
+		rejectCall,
+		endCall,
+		toggleMute,
+		flipCamera,
+	} = useWebRTC({
+		socket,
+		roomId: chatId!,
+		localUserId: userId,
+		remoteUserId,
+		ringtoneSrc: ringtonePlayer,
+	});
+
+	// helpers για FABs
+	const startAudioCall = () => startCall('audio');
+	const startVideoCall = () => startCall('video');
+
+	// ----------------- React Query mutations -----------------
 	const { mutate: readMessageMutate } = useMutation({
 		mutationFn: ({ chatId, messageId }: any) => readMessage(chatId, messageId),
 	});
@@ -98,24 +109,23 @@ const Chat: React.FC = () => {
 
 			setChat(res?.chat);
 			if (requestedPage === 1) {
-				setMessages(res?.chat.messages || []);
+				setMessages(res?.chat?.messages || []);
 				setTimeout(() => {
 					contentRef.current?.scrollToBottom(300);
 				}, 50);
 			} else {
-				setMessages((prev) => [...(res?.chat.messages || []), ...prev]);
+				setMessages((prev) => [...(res?.chat?.messages || []), ...prev]);
 			}
 
 			setHasMore(Boolean(res.hasMore));
 
-			if (res?.chat.messages?.length > 0) {
+			if (res?.chat?.messages?.length > 0) {
 				const lastMsg = res.chat.messages[res.chat.messages.length - 1];
 				if (lastMsg && lastMsg.senderId?._id !== userId && !lastMsg.read) {
 					readMessageMutate({ chatId, messageId: lastMsg._id });
 				}
 			}
 
-			// done loading
 			setIsLoading(false);
 		},
 		onError: () => {
@@ -160,6 +170,7 @@ const Chat: React.FC = () => {
 					setMessages((prevMessages) => [...prevMessages, messageData]);
 					contentRef?.current?.scrollToBottom();
 					setNewMessage('');
+					setImage('');
 				},
 				onError: (error: any) => {
 					console.log('error', error);
@@ -168,21 +179,21 @@ const Chat: React.FC = () => {
 		);
 	};
 
-	const handleEnterPress = (event: any) => {
+	const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter') {
 			handleNewMessage();
 		}
 	};
 
-	const handleInputChange = (event: any) => {
+	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { value } = event.target;
-		setIsRunning(event.target.value.length > 0);
+		setIsRunning(value.length > 0);
 		setNewMessage(value);
 	};
 
 	const getAvatar = () => {
-		const member = chat?.members.find((member: any) => member._id !== userId);
-		if (!member.avatar) {
+		const member = chat?.members?.find((member: any) => member._id !== userId);
+		if (!member?.avatar) {
 			return userDefaulfAvatar;
 		}
 		return member.avatar;
@@ -190,8 +201,8 @@ const Chat: React.FC = () => {
 
 	const getName = (chat: any) => {
 		if (chat.type === 'private') {
-			const member = chat?.members.find((member: any) => member._id !== userId);
-			return member.username;
+			const member = chat?.members?.find((member: any) => member._id !== userId);
+			return member?.username ?? '';
 		} else {
 			return chat.name;
 		}
@@ -205,10 +216,8 @@ const Chat: React.FC = () => {
 			source: CameraSource.Photos,
 		});
 
-		let imageUrl = image.dataUrl;
-
-		setImage(imageUrl || '');
-
+		const imageUrl = image.dataUrl || '';
+		setImage(imageUrl);
 		return imageUrl;
 	};
 
@@ -220,10 +229,8 @@ const Chat: React.FC = () => {
 			source: CameraSource.Camera,
 		});
 
-		let imageUrl = image.dataUrl;
-
-		setImage(imageUrl || '');
-
+		const imageUrl = image.dataUrl || '';
+		setImage(imageUrl);
 		return imageUrl;
 	};
 
@@ -258,177 +265,25 @@ const Chat: React.FC = () => {
 			);
 		}
 	};
-	const createPeer = () => {
-		const pc = new RTCPeerConnection({
-			iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-		});
 
-		pc.ontrack = (e) => {
-			if (callType === 'audio') {
-				if (remoteAudioRef.current) remoteAudioRef.current.srcObject = e.streams[0];
-			} else {
-				if (remoteVideoRef.current) remoteVideoRef.current.srcObject = e.streams[0];
-			}
-		};
-
-		pc.onicecandidate = (e) => {
-			if (e.candidate) {
-				socket.emit('webrtc_ice_candidate', {
-					roomId: chatId,
-					candidate: e.candidate,
-				});
-			}
-		};
-
-		return pc;
-	};
-
-	const startCall = async (type: 'audio' | 'video') => {
-		startRingtone();
-		setCallType(type);
-		setIsCaller(true);
-		setIncomingCall(null);
-		setInCall(true);
-
-		if (chat?.type === 'private') {
-		}
-
-		const constraints = type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
-
-		localStreamRef.current = await navigator.mediaDevices.getUserMedia(constraints);
-
-		if (type === 'audio') {
-			if (localAudioRef.current) localAudioRef.current.srcObject = localStreamRef.current;
-		} else {
-			if (localVideoRef.current) localVideoRef.current.srcObject = localStreamRef.current;
-		}
-
-		pcRef.current = createPeer();
-
-		localStreamRef.current.getTracks().forEach((t) => {
-			pcRef.current?.addTrack(t, localStreamRef.current!);
-		});
-
-		const offer = await pcRef.current.createOffer();
-		await pcRef.current.setLocalDescription(offer);
-
-		socket.emit('webrtc_offer', {
-			roomId: chatId,
-			sdp: offer,
-			type,
-		});
-
-		socket.emit(type === 'audio' ? 'call_user' : 'video_call_user', {
-			roomId: chatId,
-			fromUser: chat?.members?.find((m: any) => m._id !== userId),
-		});
-	};
-
-	const acceptCall = async () => {
-		stopRingtone();
-		if (!incomingCall) return;
-
-		setCallType(incomingCall.type);
-		setIsCaller(false);
-		setInCall(true);
-
-		socket.emit(incomingCall.type === 'audio' ? 'accept_call' : 'video_call_accept', { roomId: chatId });
-
-		const constraints = incomingCall.type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
-
-		localStreamRef.current = await navigator.mediaDevices.getUserMedia(constraints);
-
-		if (incomingCall.type === 'audio') {
-			if (localAudioRef.current) localAudioRef.current.srcObject = localStreamRef.current;
-		} else {
-			if (localVideoRef.current) localVideoRef.current.srcObject = localStreamRef.current;
-		}
-
-		pcRef.current = createPeer();
-
-		localStreamRef.current.getTracks().forEach((t) => pcRef.current?.addTrack(t, localStreamRef.current!));
-	};
-
-	const rejectCall = () => {
-		stopRingtone();
-		if (!incomingCall) return;
-
-		socket.emit(incomingCall.type === 'audio' ? 'reject_call' : 'video_call_reject', { roomId: chatId });
-
-		setIncomingCall(null);
-		setCallType(null);
-	};
-
-	const startAudioCall = () => startCall('audio');
-	const startVideoCall = () => startCall('video');
-
-	const endCall = (sendEvent = true) => {
-		stopRingtone();
-
-		if (localStreamRef.current) {
-			localStreamRef.current.getTracks().forEach((t) => t.stop());
-			localStreamRef.current = null;
-		}
-
-		if (pcRef.current) {
-			pcRef.current.close();
-			pcRef.current = null;
-		}
-
-		if (sendEvent && callType) {
-			socket.emit(callType === 'audio' ? 'end_call' : 'video_call_end', { roomId: chatId });
-		}
-
-		setInCall(false);
-		setCallType(null);
-		setIncomingCall(null);
-		setIsCaller(false);
-	};
-
-	const toggleMute = () => {
-		setIsMicMuted((v) => !v);
-		localStreamRef.current?.getAudioTracks().forEach((t) => (t.enabled = isMicMuted));
-	};
-
-	const flipCamera = async () => {
-		setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
-
-		const stream = await navigator.mediaDevices.getUserMedia({
-			audio: true,
-			video: { facingMode: facingMode === 'user' ? 'environment' : 'user' },
-		});
-
-		localStreamRef.current?.getTracks().forEach((t) => t.stop());
-		localStreamRef.current = stream;
-
-		localVideoRef.current!.srcObject = stream;
-
-		const sender = pcRef.current?.getSenders().find((s) => s.track?.kind === 'video');
-
-		sender?.replaceTrack(stream.getVideoTracks()[0]);
-	};
-
-	const startRingtone = () => {
-		try {
-			ringtoneRef.current?.play();
-		} catch (e) {}
-	};
-
-	const stopRingtone = () => {
-		if (!ringtoneRef.current) return;
-		ringtoneRef.current.pause();
-		ringtoneRef.current.currentTime = 0;
-	};
+	// ----------------- useEffects -----------------
+	useEffect(() => {
+		if (!socket || !chatId) return;
+		socket.emit('join_room', chatId);
+	}, [socket, chatId]);
 
 	useEffect(() => {
-		socket?.emit('join_room', chatId);
-	}, [socket]);
+		if (!socket) return;
 
-	useEffect(() => {
-		socket?.on('receive_message', (message: any) => {
-			// console.log('receive_message', message);
+		const handleReceive = (message: any) => {
 			setMessages((prevMessages) => [...prevMessages, message]);
-		});
+		};
+
+		socket.on('receive_message', handleReceive);
+
+		return () => {
+			socket.off('receive_message', handleReceive);
+		};
 	}, [socket]);
 
 	useEffect(() => {
@@ -444,69 +299,7 @@ const Chat: React.FC = () => {
 		}, 100);
 	}, [messages.length]);
 
-	// webrtc socket events
-	useEffect(() => {
-		if (!socket) return;
-
-		socket.on('incoming_call', (data: any) => {
-			setIncomingCall({ ...data, type: 'audio' });
-			console.log('incoming_call data', data);
-		});
-
-		socket.on('incoming_video_call', (data: any) => {
-			setIncomingCall({ ...data, type: 'video' });
-		});
-
-		socket.on('call_accepted', () => {
-			stopRingtone();
-		});
-
-		socket.on('video_call_accepted', () => {
-			stopRingtone();
-		});
-
-		socket.on('call_rejected', () => {
-			stopRingtone();
-			endCall(false);
-		});
-
-		socket.on('video_call_rejected', () => {
-			stopRingtone();
-			endCall(false);
-		});
-
-		socket.on('call_ended', () => {
-			endCall(false);
-		});
-
-		socket.on('video_call_ended', () => {
-			endCall(false);
-		});
-
-		socket.on('webrtc_offer', async ({ sdp, type }: any) => {
-			if (!pcRef.current) pcRef.current = createPeer();
-			await pcRef.current.setRemoteDescription(new RTCSessionDescription(sdp));
-
-			const answer = await pcRef.current.createAnswer();
-			await pcRef.current.setLocalDescription(answer);
-
-			socket.emit('webrtc_answer', { roomId: chatId, sdp: answer });
-		});
-
-		socket.on('webrtc_answer', async ({ sdp }: any) => {
-			await pcRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
-		});
-
-		socket.on('webrtc_ice_candidate', async ({ candidate }: any) => {
-			if (candidate) await pcRef.current?.addIceCandidate(candidate);
-		});
-	}, [socket]);
-
-	useEffect(() => {
-		ringtoneRef.current = new Audio(ringtonePlayer);
-		ringtoneRef.current.loop = true;
-	}, []);
-
+	// ----------------- JSX -----------------
 	return (
 		<IonPage>
 			<IonHeader>
@@ -533,16 +326,10 @@ const Chat: React.FC = () => {
 						>
 							<IonAvatar class="chat-user-avatar">
 								{chat.type === 'private' && <img src={getAvatar()} alt="user image" />}
-
-								{/* {chat.type === 'group' && chat.avatar ? (
-									<img src={chat.avatar} alt="group image" />
-								) : (
-									<img src={groupDefaulfAvatar} alt="group image" />
-								)} */}
-								{chat.avatar && chat.type === 'group' && <img src={chat.avatar}></img>}
+								{chat.avatar && chat.type === 'group' && <img src={chat.avatar} alt="group image" />}
 							</IonAvatar>
 
-							<Title title={getName(chat)} className="ion-padding"></Title>
+							<Title title={getName(chat)} className="ion-padding" />
 						</div>
 					)}
 				</IonToolbar>
@@ -552,14 +339,15 @@ const Chat: React.FC = () => {
 			<IonContent ref={contentRef} className="ion-padding-top" scrollEvents={true} onIonScroll={handleScroll}>
 				{isLoadingOlder && <div style={{ textAlign: 'center', padding: '8px 0' }}>Loading older messages...</div>}
 				{messages &&
-					messages.map((message: any, index: any) => {
+					messages.map((message: any, index: number) => {
+						const isMine = userId === message.senderId._id;
 						return (
 							<div
 								key={index}
 								style={{
 									display: 'flex',
-									flexDirection: userId === message.senderId._id ? 'row-reverse' : 'row',
-									alignSelf: userId === message.senderId._id ? 'flex-end' : 'flex-start',
+									flexDirection: isMine ? 'row-reverse' : 'row',
+									alignSelf: isMine ? 'flex-end' : 'flex-start',
 								}}
 							>
 								<img
@@ -573,25 +361,20 @@ const Chat: React.FC = () => {
 										backgroundColor: 'white',
 										objectFit: 'cover',
 									}}
-									alt="user image"
+									alt="user"
 								/>
 
-								<MessageBox
-									message={message}
-									image={image}
-									chatId={chatId}
-									// refetch={refetch}
-								></MessageBox>
+								<MessageBox message={message} image={image} chatId={chatId} />
 							</div>
 						);
 					})}
 			</IonContent>
 
+			{/* Input / send area */}
 			<div
 				style={{
 					justifyItems: 'flex-end',
 					boxShadow: '0px 0px 0px 0px var(--ion-color-primary)',
-					// border: "1px solid var(--ion-color-primary)",
 					display: 'flex',
 					backgroundColor: 'var(--ion-color-secondary)',
 					paddingRight: '.2rem',
@@ -602,17 +385,13 @@ const Chat: React.FC = () => {
 					value={newMessage}
 					placeholder="Aa..."
 					onKeyUp={handleEnterPress}
-					// onIonChange={handleInputChange}
 					onChange={handleInputChange}
 					className="new-message-input"
-					// checked={isRunning}
 				/>
 				<IonButton
 					onClick={handleNewMessage}
 					expand="block"
 					color="primary"
-					// fill="outline"
-					// shape="round"
 					style={{
 						margin: '.5rem',
 					}}
@@ -623,29 +402,20 @@ const Chat: React.FC = () => {
 							margin: '0 auto',
 							color: 'white',
 						}}
-					></IonIcon>
+					/>
 				</IonButton>
 				<IonButton onClick={handleGallery} className="ion-no-margin new-message-snd-btns" size="small">
-					<IonIcon icon={imageOutline} color="white" size="small"></IonIcon>
+					<IonIcon icon={imageOutline} color="white" size="small" />
 				</IonButton>
 				<IonButton onClick={handleCamera} className="ion-no-margin new-message-snd-btns" size="small">
-					<IonIcon icon={cameraOutline} size="small" color="white"></IonIcon>
+					<IonIcon icon={cameraOutline} size="small" color="white" />
 				</IonButton>
 				<IonButton className="ion-no-margin new-message-snd-btns" size="small">
 					<RiRobot2Line size={18} />
 				</IonButton>
 			</div>
 
-			{/* <div>
-        {openEmoji && (
-          <EmojiPicker
-            width={"100%"}
-            onEmojiClick={(event, emojiObject) => {
-              console.log("emojiObject", emojiObject);
-            }}
-          />
-        )}
-      </div> */}
+			{/* Modal με options */}
 			<Modal
 				isOpen={openOptions}
 				onClose={setOpenOptions}
@@ -660,9 +430,10 @@ const Chat: React.FC = () => {
 					}}
 					chat={chat}
 					isLoading={isLoading}
-				></ChatOptions>
+				/>
 			</Modal>
 
+			{/* FAB για κλήσεις */}
 			<IonFab
 				slot="fixed"
 				horizontal="end"
@@ -676,18 +447,19 @@ const Chat: React.FC = () => {
 						style={{
 							color: 'white',
 						}}
-					></IonIcon>
+					/>
 				</IonFabButton>
 				<IonFabList side="bottom">
 					<IonFabButton onClick={startAudioCall}>
-						<IonIcon icon={call} color="primary"></IonIcon>
+						<IonIcon icon={call} color="primary" />
 					</IonFabButton>
 					<IonFabButton onClick={startVideoCall} style={{ transition: 'all 0.3s ease-in-out' }}>
-						<IonIcon icon={videocam} color="primary"></IonIcon>
+						<IonIcon icon={videocam} color="primary" />
 					</IonFabButton>
 				</IonFabList>
 			</IonFab>
 
+			{/* FAB για πληροφορίες / delete / μέλη */}
 			<IonFab slot="fixed" horizontal="end">
 				<IonFabButton size="small" color="secondary">
 					<IonIcon
@@ -695,19 +467,17 @@ const Chat: React.FC = () => {
 						style={{
 							color: 'white',
 						}}
-					></IonIcon>
+					/>
 				</IonFabButton>
 				<IonFabList side="bottom">
 					<IonFabButton
-						onClick={() => {
-							deletedChat();
-						}}
+						onClick={deletedChat}
 						style={{
 							transition: 'all 0.3s ease-in-out',
 						}}
 						routerLink="/inbox"
 					>
-						<IonIcon icon={trashBinOutline} color="primary"></IonIcon>
+						<IonIcon icon={trashBinOutline} color="primary" />
 					</IonFabButton>
 					{chat?.type === 'group' && (
 						<IonFabButton
@@ -715,12 +485,13 @@ const Chat: React.FC = () => {
 								setOpenOptions(!openOptions);
 							}}
 						>
-							<IonIcon icon={peopleOutline} color="primary"></IonIcon>
+							<IonIcon icon={peopleOutline} color="primary" />
 						</IonFabButton>
 					)}
 				</IonFabList>
 			</IonFab>
 
+			{/* Incoming call popup */}
 			{incomingCall && (
 				<div className="incoming-call-container">
 					<div className="popup">
@@ -742,15 +513,17 @@ const Chat: React.FC = () => {
 				</div>
 			)}
 
+			{/* Video call UI */}
 			{inCall && callType === 'video' && (
 				<div className="video-call-ui">
 					<video ref={localVideoRef} autoPlay muted playsInline className="local-video" />
 					<video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
 
 					<div className="call-controls">
-						<IonButton onClick={toggleMute} color="secondary">
+						{/* Αν θες mute, ξε-κάνε comment αυτό */}
+						{/* <IonButton onClick={toggleMute} color="secondary">
 							{isMicMuted ? 'Unmute' : 'Mute'}
-						</IonButton>
+						</IonButton> */}
 
 						<IonButton onClick={flipCamera} color="secondary">
 							Flip
@@ -763,32 +536,25 @@ const Chat: React.FC = () => {
 				</div>
 			)}
 
+			{/* Audio call UI */}
 			{inCall && callType === 'audio' && (
 				<div className="audio-call-ui">
-					{chat?.type === 'private' && chat?.members?.find((member: any) => member._id == userId)?.avatar ? (
+					{chat?.type === 'private' && chat?.members?.find((member: any) => member._id === userId)?.avatar ? (
 						<img
-							src={chat?.members?.find((member: any) => member._id == userId)?.avatar}
+							src={chat?.members?.find((member: any) => member._id === userId)?.avatar}
 							className="audio-call-avatar"
 						/>
 					) : (
 						<img src={userDefaulfAvatar} className="audio-call-avatar" />
 					)}
 
-					{/* {chat?.type === 'private' && chat?.members?.find((member: any) => member._id! == userId)?.avatar && (
-						<img
-							src={chat?.members?.find((member: any) => member._id! == userId)?.avatar}
-							className="audio-call-avatar"
-						/>
-					)} */}
-
 					<audio ref={localAudioRef} autoPlay muted />
 					<audio ref={remoteAudioRef} autoPlay />
 
 					<div className="call-controls">
-						<IonButton onClick={toggleMute} color="secondary">
+						{/* <IonButton onClick={toggleMute} color="secondary">
 							{isMicMuted ? 'Unmute' : 'Mute'}
-						</IonButton>
-
+						</IonButton> */}
 						<IonButton onClick={() => endCall(true)} color="danger">
 							End
 						</IonButton>
