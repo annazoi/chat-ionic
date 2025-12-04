@@ -52,6 +52,12 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 	const localAudioRef = useRef<HTMLAudioElement | null>(null);
 	const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
 
+	// extra refs για flow
+	const hasAcceptedRef = useRef(false);
+	const pendingOfferRef = useRef<WebRTCOfferPayload | null>(null);
+	const localTracksAddedRef = useRef(false);
+
+	// join room για WebRTC
 	useEffect(() => {
 		if (socket && roomId) {
 			console.log('JOINING ROOM (WEBRTC):', roomId);
@@ -83,10 +89,14 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 	// ---------- PEER CONNECTION ----------
 	const createPeerConnection = () => {
 		const pc = new RTCPeerConnection({
-			iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+			iceServers: [
+				{ urls: 'stun:stun.l.google.com:19302' },
+				// εδώ αν θες βάζεις TURN server
+			],
 		});
 
 		pc.ontrack = (event: RTCTrackEvent) => {
+			console.log('🎥 ontrack fired, streams:', event.streams);
 			const remoteStream = event.streams[0];
 			if (!remoteStream) return;
 
@@ -109,7 +119,36 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 			}
 		};
 
+		pc.onconnectionstatechange = () => {
+			console.log('🔗 PC state:', pc.connectionState);
+		};
+
 		return pc;
+	};
+
+	// helper: βάζει local stream πάνω στο PC και στο UI (μία φορά)
+	const ensureLocalStreamAndTracks = async (type: 'audio' | 'video') => {
+		if (!localStreamRef.current) {
+			const constraints: MediaStreamConstraints =
+				type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
+
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			localStreamRef.current = stream;
+
+			if (type === 'video' && localVideoRef.current) {
+				localVideoRef.current.srcObject = stream;
+			}
+			if (type === 'audio' && localAudioRef.current) {
+				localAudioRef.current.srcObject = stream;
+			}
+		}
+
+		if (pcRef.current && !localTracksAddedRef.current && localStreamRef.current) {
+			localStreamRef.current.getTracks().forEach((track) => {
+				pcRef.current!.addTrack(track, localStreamRef.current!);
+			});
+			localTracksAddedRef.current = true;
+		}
 	};
 
 	// ---------- START CALL (caller) ----------
@@ -121,26 +160,16 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		setInCall(true);
 		setIncomingCall(null);
 		setIsMicMuted(false);
+		hasAcceptedRef.current = false;
+		pendingOfferRef.current = null;
+		localTracksAddedRef.current = false;
 
 		startRingtone(); // ο caller ακούει ringtone μέχρι να γίνει accept/reject
 
-		const constraints: MediaStreamConstraints =
-			type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
-
-		const stream = await navigator.mediaDevices.getUserMedia(constraints);
-		localStreamRef.current = stream;
-
-		if (type === 'video' && localVideoRef.current) {
-			localVideoRef.current.srcObject = stream;
-		}
-		if (type === 'audio' && localAudioRef.current) {
-			localAudioRef.current.srcObject = stream;
-		}
-
 		pcRef.current = createPeerConnection();
-		stream.getTracks().forEach((track) => {
-			pcRef.current?.addTrack(track, stream);
-		});
+
+		// local media & tracks
+		await ensureLocalStreamAndTracks(type);
 
 		const offer = await pcRef.current!.createOffer();
 		await pcRef.current!.setLocalDescription(offer);
@@ -156,7 +185,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		// σηματοδοσία κλήσης (popup στον άλλο)
 		socket.emit(type === 'audio' ? 'call_user' : 'video_call_user', {
 			roomId,
-			fromUser: { _id: localUserId }, // στο backend το συμπληρώνεις αν θες παραπάνω
+			fromUser: { _id: localUserId }, // στο backend μπορείς να βάλεις κι άλλα
 		});
 	};
 
@@ -172,32 +201,18 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		setInCall(true);
 		setIsMicMuted(false);
 
-		const constraints: MediaStreamConstraints =
-			type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
+		hasAcceptedRef.current = true;
 
-		// 1️⃣ ΠΡΩΤΑ φτιάχνουμε local stream
-		const stream = await navigator.mediaDevices.getUserMedia(constraints);
-		localStreamRef.current = stream;
-
-		// 2️⃣ Δείχνουμε local
-		if (type === 'video' && localVideoRef.current) {
-			localVideoRef.current.srcObject = stream;
-		}
-		if (type === 'audio' && localAudioRef.current) {
-			localAudioRef.current.srcObject = stream;
-		}
-
-		// 3️⃣ Φτιάχνουμε PC αν δεν υπάρχει
-		if (!pcRef.current) pcRef.current = createPeerConnection();
-
-		stream.getTracks().forEach((track) => {
-			pcRef.current?.addTrack(track, stream);
-		});
-
-		// 4️⃣ Στέλνουμε accept στο άλλο άκρο
+		// ενημερώνουμε τον caller ότι δεχτήκαμε
 		socket.emit(type === 'audio' ? 'accept_call' : 'video_call_accept', { roomId });
 
 		setIncomingCall(null);
+
+		// αν είχε έρθει ήδη offer, το χειριζόμαστε τώρα
+		if (pendingOfferRef.current) {
+			await handleIncomingOffer(pendingOfferRef.current);
+			pendingOfferRef.current = null;
+		}
 	};
 
 	// ---------- REJECT CALL ----------
@@ -210,6 +225,8 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 		setIncomingCall(null);
 		setCallType(null);
+		hasAcceptedRef.current = false;
+		pendingOfferRef.current = null;
 	};
 
 	// ---------- END CALL (και για τους δύο) ----------
@@ -234,6 +251,9 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		setCallType(null);
 		setIncomingCall(null);
 		setIsCaller(false);
+		hasAcceptedRef.current = false;
+		pendingOfferRef.current = null;
+		localTracksAddedRef.current = false;
 	};
 
 	// ---------- MUTE ----------
@@ -275,44 +295,62 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		}
 	};
 
+	// ---------- HANDLE INCOMING OFFER (callee) ----------
+	const handleIncomingOffer = async (data: WebRTCOfferPayload) => {
+		console.log('📩 handling incoming offer:', data);
+
+		// αν δεν έχει πατήσει Accept ακόμα, απλά το κρατάμε
+		if (!hasAcceptedRef.current) {
+			console.log('⏸ Offer received but call not accepted yet. Storing as pending.');
+			pendingOfferRef.current = data;
+			return;
+		}
+
+		if (!pcRef.current) {
+			pcRef.current = createPeerConnection();
+		}
+
+		// local media & tracks (callee)
+		await ensureLocalStreamAndTracks(data.type);
+
+		// τώρα βάζουμε το remote SDP
+		await pcRef.current!.setRemoteDescription(new RTCSessionDescription(data.sdp));
+
+		const answer = await pcRef.current!.createAnswer();
+		await pcRef.current!.setLocalDescription(answer);
+
+		socket?.emit('webrtc_answer', {
+			roomId,
+			sdp: answer,
+			type: data.type,
+		});
+	};
+
 	// ---------- SOCKET EVENTS ----------
 	useEffect(() => {
 		if (!socket) return;
 
 		const onIncomingCall = (data: IncomingCallData) => {
+			console.log('📲 incoming_call', data);
 			setIncomingCall(data);
 			startRingtone(); // ο callee ακούει μέχρι accept/reject
 		};
 
 		const onOffer = async (data: WebRTCOfferPayload) => {
 			console.log('📩 webrtc_offer', data);
-
-			if (!pcRef.current) {
-				pcRef.current = createPeerConnection();
-			}
-
-			await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
-
-			const answer = await pcRef.current.createAnswer();
-			await pcRef.current.setLocalDescription(answer);
-
-			const payload: WebRTCAnswerPayload = {
-				roomId,
-				sdp: answer,
-				type: data.type,
-			};
-
-			socket.emit('webrtc_answer', payload);
+			await handleIncomingOffer(data);
 		};
 
 		const onAnswer = async (data: WebRTCAnswerPayload) => {
 			console.log('📩 webrtc_answer', data);
 			if (!pcRef.current) return;
+
 			await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
-			// εδώ ΕΠΙΣΗΣ θα μπορούσες να κάνεις stopRingtone για extra safety
 		};
 
 		const onIceCandidate = async (data: IceCandidatePayload) => {
+			console.log('📩 received ICE:', data.candidate);
+
 			if (data.candidate && pcRef.current) {
 				try {
 					await pcRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
@@ -324,7 +362,6 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 		const onCallAccepted = () => {
 			console.log('📞 call_accepted');
-			// Ο CALLER σταματάει ringtone εδώ
 			stopRingtone();
 		};
 
