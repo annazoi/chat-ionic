@@ -4,18 +4,23 @@ import { API_URL } from '../constants';
 
 export const useSocket = () => {
 	const [socket, setSocket] = useState<any>();
+
 	useEffect(() => {
-		const s = io(`${API_URL}`);
-		console.log('Socket connected');
+		const s = io(API_URL, {
+			transports: ['websocket'],
+			withCredentials: true,
+		});
+
+		s.on('connect', () => {
+			console.log('Socket connected:', s.id);
+		});
+
 		setSocket(s);
 
 		return () => {
 			s.disconnect();
-			console.log('Socket disconnected');
 		};
 	}, []);
 
-	return {
-		socket,
-	};
+	return { socket };
 };
