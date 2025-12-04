@@ -1,4 +1,3 @@
-// /hooks/useWebRTC.ts
 import { useEffect, useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
 
@@ -20,6 +19,7 @@ interface WebRTCOfferPayload {
 interface WebRTCAnswerPayload {
 	roomId: string;
 	sdp: RTCSessionDescriptionInit;
+	type?: 'audio' | 'video';
 }
 
 interface IceCandidatePayload {
@@ -52,7 +52,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 	const localAudioRef = useRef<HTMLAudioElement | null>(null);
 	const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
 
-	// -- Ringtone -------------------------------------------------------
+	// ---------- RINGTONE ----------
 	useEffect(() => {
 		ringtoneRef.current = new Audio(ringtoneSrc);
 		ringtoneRef.current.loop = true;
@@ -61,7 +61,9 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 	const startRingtone = () => {
 		try {
 			ringtoneRef.current?.play();
-		} catch {}
+		} catch (e) {
+			console.warn('Ringtone play error', e);
+		}
 	};
 
 	const stopRingtone = () => {
@@ -70,7 +72,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		ringtoneRef.current.currentTime = 0;
 	};
 
-	// -- PeerConnection --------------------------------------------------
+	// ---------- PEER CONNECTION ----------
 	const createPeerConnection = () => {
 		const pc = new RTCPeerConnection({
 			iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
@@ -78,6 +80,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 		pc.ontrack = (event: RTCTrackEvent) => {
 			const remoteStream = event.streams[0];
+			if (!remoteStream) return;
 
 			if (remoteVideoRef.current) {
 				remoteVideoRef.current.srcObject = remoteStream;
@@ -99,15 +102,17 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		return pc;
 	};
 
-	// -- Start Call -----------------------------------------------------
+	// ---------- START CALL (caller) ----------
 	const startCall = async (type: 'audio' | 'video') => {
-		if (!socket) return;
+		if (!socket || !roomId) return;
 
 		setCallType(type);
 		setIsCaller(true);
 		setInCall(true);
+		setIncomingCall(null);
+		setIsMicMuted(false);
 
-		startRingtone();
+		startRingtone(); // ο caller ακούει ringtone μέχρι να γίνει accept/reject
 
 		const constraints: MediaStreamConstraints =
 			type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
@@ -115,7 +120,6 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		const stream = await navigator.mediaDevices.getUserMedia(constraints);
 		localStreamRef.current = stream;
 
-		// Show local media
 		if (type === 'video' && localVideoRef.current) {
 			localVideoRef.current.srcObject = stream;
 		}
@@ -124,43 +128,48 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		}
 
 		pcRef.current = createPeerConnection();
-
-		stream.getTracks().forEach((track) => pcRef.current!.addTrack(track, stream));
+		stream.getTracks().forEach((track) => {
+			pcRef.current?.addTrack(track, stream);
+		});
 
 		const offer = await pcRef.current!.createOffer();
 		await pcRef.current!.setLocalDescription(offer);
 
-		socket.emit('webrtc_offer', {
+		const payload: WebRTCOfferPayload = {
 			roomId,
 			sdp: offer,
 			type,
-		} as WebRTCOfferPayload);
+		};
 
+		socket.emit('webrtc_offer', payload);
+
+		// σηματοδοσία κλήσης (popup στον άλλο)
 		socket.emit(type === 'audio' ? 'call_user' : 'video_call_user', {
 			roomId,
-			fromUser: remoteUserId,
+			fromUser: { _id: localUserId }, // στο backend το συμπληρώνεις αν θες παραπάνω
 		});
 	};
 
+	// ---------- ACCEPT CALL (callee) ----------
 	const acceptCall = async () => {
 		if (!incomingCall || !socket) return;
 
-		stopRingtone();
+		stopRingtone(); // σταματάει το ringtone στον callee
 
 		const type = incomingCall.type;
 		setCallType(type);
 		setIsCaller(false);
 		setInCall(true);
+		setIsMicMuted(false);
 
-		if (!pcRef.current) {
-			pcRef.current = createPeerConnection();
-		}
+		const constraints: MediaStreamConstraints =
+			type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
 
-		const constraints = type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
-
+		// 1️⃣ ΠΡΩΤΑ φτιάχνουμε local stream
 		const stream = await navigator.mediaDevices.getUserMedia(constraints);
 		localStreamRef.current = stream;
 
+		// 2️⃣ Δείχνουμε local
 		if (type === 'video' && localVideoRef.current) {
 			localVideoRef.current.srcObject = stream;
 		}
@@ -168,41 +177,47 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 			localAudioRef.current.srcObject = stream;
 		}
 
-		stream.getTracks().forEach((track) => pcRef.current?.addTrack(track, stream));
+		// 3️⃣ Φτιάχνουμε PC αν δεν υπάρχει
+		if (!pcRef.current) pcRef.current = createPeerConnection();
 
-		socket.emit(type === 'audio' ? 'accept_call' : 'video_call_accept', {
-			roomId,
+		stream.getTracks().forEach((track) => {
+			pcRef.current?.addTrack(track, stream);
 		});
+
+		// 4️⃣ Στέλνουμε accept στο άλλο άκρο
+		socket.emit(type === 'audio' ? 'accept_call' : 'video_call_accept', { roomId });
 
 		setIncomingCall(null);
 	};
 
-	// -- Reject Call ----------------------------------------------------
+	// ---------- REJECT CALL ----------
 	const rejectCall = () => {
-		if (!incomingCall) return;
+		if (!incomingCall || !socket) return;
 
 		stopRingtone();
 
-		socket?.emit(incomingCall.type === 'audio' ? 'reject_call' : 'video_call_reject', { roomId });
+		socket.emit(incomingCall.type === 'audio' ? 'reject_call' : 'video_call_reject', { roomId });
 
 		setIncomingCall(null);
 		setCallType(null);
 	};
 
-	// -- End Call -------------------------------------------------------
+	// ---------- END CALL (και για τους δύο) ----------
 	const endCall = (notify = true) => {
 		stopRingtone();
 
-		localStreamRef.current?.getTracks().forEach((t) => t.stop());
-		localStreamRef.current = null;
+		if (localStreamRef.current) {
+			localStreamRef.current.getTracks().forEach((t) => t.stop());
+			localStreamRef.current = null;
+		}
 
 		if (pcRef.current) {
 			pcRef.current.close();
 			pcRef.current = null;
 		}
 
-		if (notify && callType) {
-			socket?.emit(callType === 'audio' ? 'end_call' : 'video_call_end', { roomId });
+		if (notify && socket && callType) {
+			socket.emit(callType === 'audio' ? 'end_call' : 'video_call_end', { roomId });
 		}
 
 		setInCall(false);
@@ -211,17 +226,17 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		setIsCaller(false);
 	};
 
-	// -- Mute / Unmute --------------------------------------------------
+	// ---------- MUTE ----------
 	const toggleMute = () => {
 		setIsMicMuted((prev) => {
 			localStreamRef.current?.getAudioTracks().forEach((t) => {
-				t.enabled = prev; // reverse
+				t.enabled = prev; // αντιστρέφουμε
 			});
 			return !prev;
 		});
 	};
 
-	// -- Flip Camera ----------------------------------------------------
+	// ---------- FLIP CAMERA ----------
 	const flipCamera = async () => {
 		if (!localStreamRef.current || callType !== 'video' || !pcRef.current) return;
 
@@ -237,10 +252,12 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 		const sender = pcRef.current.getSenders().find((s) => s.track?.kind === 'video');
 
-		if (sender) await sender.replaceTrack(newVideoTrack);
+		if (sender) {
+			await sender.replaceTrack(newVideoTrack);
+		}
 
+		// σταματάμε τα παλιά tracks
 		localStreamRef.current.getTracks().forEach((t) => t.stop());
-
 		localStreamRef.current = stream;
 
 		if (localVideoRef.current) {
@@ -248,37 +265,84 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		}
 	};
 
-	// -- Socket Events (Offer / Answer / ICE / incoming calls) ----------
+	// ---------- SOCKET EVENTS ----------
 	useEffect(() => {
 		if (!socket) return;
 
 		const onIncomingCall = (data: IncomingCallData) => {
 			setIncomingCall(data);
-			startRingtone();
+			startRingtone(); // ο callee ακούει μέχρι accept/reject
 		};
 
 		const onOffer = async (data: WebRTCOfferPayload) => {
-			if (!pcRef.current) pcRef.current = createPeerConnection();
+			console.log('📩 webrtc_offer', data);
+
+			if (!pcRef.current) {
+				pcRef.current = createPeerConnection();
+			}
 
 			await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
 
 			const answer = await pcRef.current.createAnswer();
 			await pcRef.current.setLocalDescription(answer);
 
-			socket.emit('webrtc_answer', {
+			const payload: WebRTCAnswerPayload = {
 				roomId,
 				sdp: answer,
-			} as WebRTCAnswerPayload);
+				type: data.type,
+			};
+
+			socket.emit('webrtc_answer', payload);
 		};
 
 		const onAnswer = async (data: WebRTCAnswerPayload) => {
-			await pcRef.current?.setRemoteDescription(new RTCSessionDescription(data.sdp));
+			console.log('📩 webrtc_answer', data);
+			if (!pcRef.current) return;
+			await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
+			// εδώ ΕΠΙΣΗΣ θα μπορούσες να κάνεις stopRingtone για extra safety
 		};
 
 		const onIceCandidate = async (data: IceCandidatePayload) => {
-			if (data.candidate) {
-				await pcRef.current?.addIceCandidate(new RTCIceCandidate(data.candidate));
+			if (data.candidate && pcRef.current) {
+				try {
+					await pcRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+				} catch (err) {
+					console.error('Error adding ICE candidate', err);
+				}
 			}
+		};
+
+		const onCallAccepted = () => {
+			console.log('📞 call_accepted');
+			// Ο CALLER σταματάει ringtone εδώ
+			stopRingtone();
+		};
+
+		const onVideoCallAccepted = () => {
+			console.log('📹 video_call_accepted');
+			stopRingtone();
+		};
+
+		const onCallRejected = () => {
+			console.log('📞 call_rejected');
+			stopRingtone();
+			endCall(false);
+		};
+
+		const onVideoCallRejected = () => {
+			console.log('📹 video_call_rejected');
+			stopRingtone();
+			endCall(false);
+		};
+
+		const onCallEnded = () => {
+			console.log('📞 call_ended');
+			endCall(false);
+		};
+
+		const onVideoCallEnded = () => {
+			console.log('📹 video_call_ended');
+			endCall(false);
 		};
 
 		socket.on('incoming_call', onIncomingCall);
@@ -286,8 +350,13 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		socket.on('webrtc_offer', onOffer);
 		socket.on('webrtc_answer', onAnswer);
 		socket.on('webrtc_ice_candidate', onIceCandidate);
-		socket.on('call_ended', () => endCall(false));
-		socket.on('video_call_ended', () => endCall(false));
+
+		socket.on('call_accepted', onCallAccepted);
+		socket.on('video_call_accepted', onVideoCallAccepted);
+		socket.on('call_rejected', onCallRejected);
+		socket.on('video_call_rejected', onVideoCallRejected);
+		socket.on('call_ended', onCallEnded);
+		socket.on('video_call_ended', onVideoCallEnded);
 
 		return () => {
 			socket.off('incoming_call', onIncomingCall);
@@ -295,12 +364,16 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 			socket.off('webrtc_offer', onOffer);
 			socket.off('webrtc_answer', onAnswer);
 			socket.off('webrtc_ice_candidate', onIceCandidate);
-			socket.off('call_ended');
-			socket.off('video_call_ended');
-		};
-	}, [socket, roomId]);
 
-	// -- Return API ------------------------------------------------------
+			socket.off('call_accepted', onCallAccepted);
+			socket.off('video_call_accepted', onVideoCallAccepted);
+			socket.off('call_rejected', onCallRejected);
+			socket.off('video_call_rejected', onVideoCallRejected);
+			socket.off('call_ended', onCallEnded);
+			socket.off('video_call_ended', onVideoCallEnded);
+		};
+	}, [socket, roomId, facingMode]);
+
 	return {
 		// state
 		callType,
