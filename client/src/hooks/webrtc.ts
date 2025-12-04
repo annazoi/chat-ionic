@@ -52,6 +52,14 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 	const localAudioRef = useRef<HTMLAudioElement | null>(null);
 	const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
 
+	useEffect(() => {
+		if (socket && roomId) {
+			console.log('JOINING ROOM (WEBRTC):', roomId);
+			socket.emit('join_room', roomId);
+			socket.emit('join_video', roomId);
+		}
+	}, [socket, roomId]);
+
 	// ---------- RINGTONE ----------
 	useEffect(() => {
 		ringtoneRef.current = new Audio(ringtoneSrc);
