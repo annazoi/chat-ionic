@@ -130,24 +130,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 	const ensureLocalStreamAndTracks = async (type: 'audio' | 'video') => {
 		if (!localStreamRef.current) {
 			const constraints: MediaStreamConstraints =
-				type === 'audio'
-					? {
-							audio: {
-								echoCancellation: true,
-								noiseSuppression: true,
-								autoGainControl: true,
-								channelCount: 1,
-							},
-					  }
-					: {
-							audio: {
-								echoCancellation: true,
-								noiseSuppression: true,
-								autoGainControl: true,
-								channelCount: 1,
-							},
-							video: { facingMode },
-					  };
+				type === 'audio' ? { audio: true } : { audio: true, video: { facingMode } };
 
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
 			localStreamRef.current = stream;
@@ -292,11 +275,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 		const stream = await navigator.mediaDevices.getUserMedia({
 			video: { facingMode: newMode },
-			audio: {
-				echoCancellation: true,
-				noiseSuppression: true,
-				autoGainControl: true,
-			},
+			audio: true,
 		});
 
 		const newVideoTrack = stream.getVideoTracks()[0];
