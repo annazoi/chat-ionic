@@ -498,7 +498,6 @@ const Chat: React.FC = () => {
 				</IonFabList>
 			</IonFab>
 
-			{/* Incoming call popup */}
 			{incomingCall && (
 				<div className="incoming-call-container">
 					<div className="popup">
@@ -520,7 +519,6 @@ const Chat: React.FC = () => {
 				</div>
 			)}
 
-			{/* Video call UI */}
 			{inCall && callType === 'video' && (
 				<div className="video-call-ui">
 					<video ref={localVideoRef} autoPlay muted playsInline className="local-video" />
@@ -543,7 +541,6 @@ const Chat: React.FC = () => {
 				</div>
 			)}
 
-			{/* Audio call UI */}
 			{inCall && callType === 'audio' && (
 				<div className="audio-call-ui">
 					{chat?.type === 'private' && chat?.members?.find((member: any) => member._id === userId)?.avatar ? (
