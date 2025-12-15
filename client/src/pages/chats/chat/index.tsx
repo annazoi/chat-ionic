@@ -38,7 +38,7 @@ import { useSocket } from '../../../hooks/sockets';
 import MessageBox from './MessageBox';
 import ringtonePlayer from '/ringtone.mp3';
 import userDefaulfAvatar from '../../../assets/user.png';
-import { useWebRTC } from '../../../hooks/webrtc'; // βεβαιώσου ότι αυτό είναι το σωστό path/filename
+import { useWebRTC } from '../../../hooks/webrtc';
 
 import './style.css';
 import Modal from '../../../components/ui/Modal';
@@ -67,8 +67,6 @@ const Chat: React.FC = () => {
 	const router = useIonRouter();
 	const contentRef = useRef<HTMLIonContentElement>(null);
 
-	// ----------------- WebRTC hook -----------------
-	// remoteUserId μπορεί να είναι undefined στην αρχή, οπότε βάζουμε fallback σε '' (το hook απλώς θα μην καλέσει call_user αν δεν το χρειαστείς).
 	const remoteUserId = chat?.members?.find((member: any) => member._id !== userId)?._id ?? '';
 
 	const {
