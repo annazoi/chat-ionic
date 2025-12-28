@@ -171,18 +171,3 @@
 	display: flex;
 	gap: 20px;
 }
-
-.ai-options {
-	text-align: center;
-	display: flex;
-	flex-direction: column;
-}
-
-.ai-options img {
-	max-height: 300px;
-	object-fit: cover;
-}
-
-.ai-options ion-button {
-	padding-inline: 0.5rem;
-}

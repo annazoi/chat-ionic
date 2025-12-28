@@ -5,7 +5,7 @@ module.exports = async function summary(transcript) {
 		model: 'gpt-5-mini',
 		instructions:
 			'You summarize chat conversations. Respond in English. ' +
-			'Be concise and clear.' +
+			'Write only the summary, not all chats, not information of chat. in third person' +
 			'If there is not enough information, say so.',
 		input: `Summarize the following chat conversation:\n\n${transcript}`,
 	});

@@ -12,7 +12,7 @@ export const useSocket = () => {
 		});
 
 		s.on('connect', () => {
-			console.log('Socket connected:', s.id);
+			// console.log('Socket connected:', s.id);
 		});
 
 		setSocket(s);

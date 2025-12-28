@@ -38,13 +38,13 @@ import { useSocket } from '../../../hooks/sockets';
 import MessageBox from './MessageBox';
 import ringtonePlayer from '/ringtone.mp3';
 import userDefaulfAvatar from '../../../assets/user.png';
-import ai from '../../../assets/ai.jpg';
 import { useWebRTC } from '../../../hooks/webrtc';
 
 import './style.css';
 import Modal from '../../../components/ui/Modal';
 import ChatOptions from '../../../components/ChatOptions';
 import Title from '../../../components/ui/Title';
+import AiTools from './openAi';
 
 const Chat: React.FC = () => {
 	const { chatId } = useParams<{ chatId: string }>();
@@ -434,11 +434,7 @@ const Chat: React.FC = () => {
 				title="AI Tools"
 				closeModal={() => setOpenAiOptions(false)}
 			>
-				<div className="ai-options">
-					<img src={ai} style={{ marginBottom: '0.5rem' }}></img>
-					<IonButton>Get Chat Summary</IonButton>
-					<IonButton>Emotion Analysis</IonButton>
-				</div>
+				<AiTools chatId={chatId}></AiTools>
 			</Modal>
 
 			<Modal

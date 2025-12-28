@@ -1,4 +1,3 @@
-import { IonPage } from '@ionic/react';
 import Axios from 'axios';
 import { API_URL } from '../constants';
 import { getAuthState } from '../store/auth';

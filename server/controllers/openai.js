@@ -20,8 +20,8 @@ const getChatSummary = async (req, res) => {
 		const { chat, error } = await loadChatForUser(chatId, req.userId);
 		if (error) return res.status(error.status).json({ ok: false, error: error.message });
 
-		const lastN = Number(req.query.lastN || 50); // default 50, μπορείς να το αλλάξεις
-		const messages = chat.messages.slice(-Math.max(1, Math.min(lastN, 200))); // clamp 1..200
+		const lastN = Number(req.query.lastN || 50);
+		const messages = chat.messages.slice(-Math.max(1, Math.min(lastN, 200)));
 
 		const transcript = buildTranscript(messages);
 		const result = await summary(transcript);

@@ -58,7 +58,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 	useEffect(() => {
 		if (socket && roomId) {
-			console.log('JOINING ROOM (WEBRTC):', roomId);
+			// console.log('JOINING ROOM (WEBRTC):', roomId);
 			socket.emit('join_room', roomId);
 			socket.emit('join_video', roomId);
 		}
@@ -88,7 +88,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		});
 
 		pc.ontrack = (event: RTCTrackEvent) => {
-			console.log('ontrack fired, streams:', event.streams);
+			// console.log('ontrack fired, streams:', event.streams);
 			const remoteStream = event.streams[0];
 			if (!remoteStream) return;
 
@@ -102,7 +102,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 
 		pc.onicecandidate = (event) => {
 			if (event.candidate) {
-				console.log('sending ICE:', event.candidate);
+				// console.log('sending ICE:', event.candidate);
 
 				socket?.emit('webrtc_ice_candidate', {
 					roomId,
@@ -112,7 +112,7 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		};
 
 		pc.onconnectionstatechange = () => {
-			console.log('PC state:', pc.connectionState);
+			// console.log('PC state:', pc.connectionState);
 		};
 
 		return pc;
@@ -276,10 +276,10 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 	};
 
 	const handleIncomingOffer = async (data: WebRTCOfferPayload) => {
-		console.log('handling incoming offer:', data);
+		// console.log('handling incoming offer:', data);
 
 		if (!hasAcceptedRef.current) {
-			console.log('⏸ Offer received but call not accepted yet. Storing as pending.');
+			// console.log('⏸ Offer received but call not accepted yet. Storing as pending.');
 			pendingOfferRef.current = data;
 			return;
 		}
@@ -306,25 +306,25 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		if (!socket) return;
 
 		const onIncomingCall = (data: IncomingCallData) => {
-			console.log('incoming_call', data);
+			// console.log('incoming_call', data);
 			setIncomingCall(data);
 			startRingtone();
 		};
 
 		const onOffer = async (data: WebRTCOfferPayload) => {
-			console.log('webrtc_offer', data);
+			// console.log('webrtc_offer', data);
 			await handleIncomingOffer(data);
 		};
 
 		const onAnswer = async (data: WebRTCAnswerPayload) => {
-			console.log('webrtc_answer', data);
+			// console.log('webrtc_answer', data);
 			if (!pcRef.current) return;
 
 			await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.sdp));
 		};
 
 		const onIceCandidate = async (data: IceCandidatePayload) => {
-			console.log('received ICE:', data.candidate);
+			// console.log('received ICE:', data.candidate);
 
 			if (data.candidate && pcRef.current) {
 				try {
@@ -336,34 +336,34 @@ export const useWebRTC = ({ socket, roomId, localUserId, remoteUserId, ringtoneS
 		};
 
 		const onCallAccepted = () => {
-			console.log('call_accepted');
+			// console.log('call_accepted');
 			stopRingtone();
 		};
 
 		const onVideoCallAccepted = () => {
-			console.log('video_call_accepted');
+			// console.log('video_call_accepted');
 			stopRingtone();
 		};
 
 		const onCallRejected = () => {
-			console.log('call_rejected');
+			// console.log('call_rejected');
 			stopRingtone();
 			endCall(false);
 		};
 
 		const onVideoCallRejected = () => {
-			console.log('video_call_rejected');
+			// console.log('video_call_rejected');
 			stopRingtone();
 			endCall(false);
 		};
 
 		const onCallEnded = () => {
-			console.log('call_ended');
+			// console.log('call_ended');
 			endCall(false);
 		};
 
 		const onVideoCallEnded = () => {
-			console.log('video_call_ended');
+			// console.log('video_call_ended');
 			endCall(false);
 		};
 
