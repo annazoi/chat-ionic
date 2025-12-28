@@ -1,15 +1,17 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-require('dotenv/config');
+require('dotenv').config();
 const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const formidable = require('express-formidable');
-// Import the Routes
+
 const authRoutes = require('../routes/auth');
 const userRoutes = require('../routes/users');
 const chatRoutes = require('../routes/chat');
+const openAiRoutes = require('../routes/openai');
+
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const http = require('http').Server(app);
@@ -33,6 +35,7 @@ app.get('/', (req, res) => res.send('Hello express'));
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/chat', chatRoutes);
+app.use('/openai', openAiRoutes);
 
 mongoose.connect(process.env.DB_CONNECTION).then(() => {
 	http.listen(3000, () => {
