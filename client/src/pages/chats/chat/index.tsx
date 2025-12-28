@@ -38,6 +38,7 @@ import { useSocket } from '../../../hooks/sockets';
 import MessageBox from './MessageBox';
 import ringtonePlayer from '/ringtone.mp3';
 import userDefaulfAvatar from '../../../assets/user.png';
+import ai from '../../../assets/ai.jpg';
 import { useWebRTC } from '../../../hooks/webrtc';
 
 import './style.css';
@@ -53,6 +54,7 @@ const Chat: React.FC = () => {
 	const [newMessage, setNewMessage] = useState<string>('');
 	const [messages, setMessages] = useState<any[]>([]);
 	const [openOptions, setOpenOptions] = useState<boolean>(false);
+	const [openAiOptions, setOpenAiOptions] = useState<boolean>(false);
 	const [chat, setChat] = useState<any>(null);
 	const [isRunning, setIsRunning] = useState(true);
 	const [isLoading, setIsLoading] = useState(false);
@@ -417,12 +419,28 @@ const Chat: React.FC = () => {
 				<IonButton onClick={handleCamera} className="ion-no-margin new-message-snd-btns" size="small">
 					<IonIcon icon={cameraOutline} size="small" color="white" />
 				</IonButton>
-				<IonButton className="ion-no-margin new-message-snd-btns" size="small">
+				<IonButton
+					className="ion-no-margin new-message-snd-btns"
+					size="small"
+					onClick={() => setOpenAiOptions(true)}
+				>
 					<RiRobot2Line size={18} />
 				</IonButton>
 			</div>
 
-			{/* Modal με options */}
+			<Modal
+				isOpen={openAiOptions}
+				onClose={setOpenAiOptions}
+				title="AI Tools"
+				closeModal={() => setOpenAiOptions(false)}
+			>
+				<div className="ai-options">
+					<img src={ai} style={{ marginBottom: '0.5rem' }}></img>
+					<IonButton>Get Chat Summary</IonButton>
+					<IonButton>Emotion Analysis</IonButton>
+				</div>
+			</Modal>
+
 			<Modal
 				isOpen={openOptions}
 				onClose={setOpenOptions}
